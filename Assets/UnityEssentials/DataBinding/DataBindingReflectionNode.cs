@@ -33,7 +33,7 @@ namespace UnityEssentials.DataBinding
         /// <summary>
         /// <see cref="DataBinding.boundObject"/> object equality to null check.
         /// </summary>
-        public bool hasBoundObject { get { return !object.Equals(this.boundObject, null); } }
+        public bool hasBoundObject { get { return !Essentials.UnityIsNull(this.boundObject); } }
 
         /// <summary>
         /// Cache element constructor for <see cref="fieldCache"/>
