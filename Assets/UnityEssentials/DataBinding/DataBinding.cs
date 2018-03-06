@@ -22,6 +22,17 @@ namespace UnityEssentials.DataBinding
         }
 
         /// <summary>
+        /// The type this binding was bound to (the type of <see cref="boundObject"/>).
+        /// </summary>
+        public System.Type boundType
+        {
+            get
+            {
+                return this.GetBoundType();
+            }
+        }
+
+        /// <summary>
         /// The parent binding node.
         /// Roots might not have a parent (null).
         /// </summary>
@@ -41,6 +52,11 @@ namespace UnityEssentials.DataBinding
 
             parent.RegisterChild(this);
         }
+
+        /// <summary>
+        /// Returns the type this databinding was bound to.
+        /// </summary>
+        protected abstract System.Type GetBoundType();
 
         /// <summary>
         /// Retrives the object this binding is binding to.

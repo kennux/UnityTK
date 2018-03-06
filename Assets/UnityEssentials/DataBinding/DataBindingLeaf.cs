@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,5 +17,14 @@ namespace UnityEssentials.DataBinding
         /// This will update the value this leaf binds to and can be used to achieve 2-way bindings.
         /// </summary>
         public abstract void OnChanged();
+
+        /// <summary>
+        /// Standard implementation for leafs returns <see cref="DataBinding.GetBindTargetType"/>.
+        /// Can be overridden to return more specific type information.
+        /// </summary>
+        protected override Type GetBoundType()
+        {
+            return this.GetBindTargetType();
+        }
     }
 }

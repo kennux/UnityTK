@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace UnityEssentials.DataBinding
         /// The target object this root is binding to.
         /// </summary>
         [Header("Binding")]
-        public Object target;
+        public UnityEngine.Object target;
 
         /// <summary>
         /// Returns null always, since roots dont have a parent.
@@ -23,6 +24,12 @@ namespace UnityEssentials.DataBinding
             get { return null; }
         }
 
+        protected override Type GetBoundType()
+        {
+            if (Essentials.UnityIsNull(this.target))
+                return typeof(object);
+            return this.target.GetType();
+        }
 
         protected override object GetBoundObject()
         {

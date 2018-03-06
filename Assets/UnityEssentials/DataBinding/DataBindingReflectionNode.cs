@@ -36,6 +36,11 @@ namespace UnityEssentials.DataBinding
         public bool hasBoundObject { get { return !Essentials.UnityIsNull(this.boundObject); } }
 
         /// <summary>
+        /// <see cref="DataBinding.boundType"/> object equality to null check.
+        /// </summary>
+        public bool hasBoundType { get { return !object.ReferenceEquals(this.boundType, null); } }
+
+        /// <summary>
         /// Cache element constructor for <see cref="fieldCache"/>
         /// </summary>
         private DataBindingFieldProperty CacheConstructor(string field)
@@ -59,11 +64,11 @@ namespace UnityEssentials.DataBinding
             ListPool<string>.GetIfNull(ref preAlloc);
 
             // No target set? If so, return empty list
-            if (!this.hasBoundObject)
+            if (!this.hasBoundType)
                 return preAlloc;
 
             // Write fields
-            var props = DataBindingFieldProperty.Get(this.boundObject.GetType());
+            var props = DataBindingFieldProperty.Get(this.boundType);
             for (int i = 0; i < props.Count; i++)
             {
                 if (type.IsAssignableFrom(props[i].fieldType))
@@ -71,6 +76,21 @@ namespace UnityEssentials.DataBinding
             }
 
             return preAlloc;
+        }
+
+        public override Type GetFieldType(string field)
+        {
+            // Get bound type
+            var type = this.boundType;
+            if (type == null)
+                return typeof(object);
+
+            // Get field prop
+            var fieldProp = DataBindingFieldProperty.Get(type, field);
+            if (fieldProp == null)
+                return typeof(object);
+
+            return fieldProp.fieldType;
         }
 
         public override object GetFieldValue(string field)

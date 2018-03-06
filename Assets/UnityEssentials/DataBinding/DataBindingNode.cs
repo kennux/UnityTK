@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -57,6 +58,13 @@ namespace UnityEssentials.DataBinding
         /// <param name="preAlloc">Pre-allocated string list can be passed in to avoid memory allocations. If this is null, a new list is created.</param>
         /// <returns>preAlloc filled with all fields this node can provide.</returns>
         public abstract List<string> GetFields(System.Type type, List<string> preAlloc = null);
+
+        /// <summary>
+        /// Determines the type of the specified field.
+        /// </summary>
+        /// <param name="field">The field name retrieved by <see cref="GetFields(System.Type, List{string})"/></param>
+        /// <returns>The reference to the type of the specified field.</returns>
+        public abstract System.Type GetFieldType(string field);
 
         /// <summary>
         /// Returns the value of the specified field.
