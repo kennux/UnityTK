@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DataBindingExample : MonoBehaviour
 {
+    public float testNumber;
     public string testStr;
     public Nest nest;
 

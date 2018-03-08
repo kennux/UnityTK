@@ -50,10 +50,17 @@ namespace UnityEssentials.DataBinding
         /// </summary>
         public override Type GetBindTargetType()
         {
-            if (object.ReferenceEquals(this.template, null))
+            if (Essentials.UnityIsNull(this.template))
                 return typeof(object);
             else
-                return this.template.GetFieldType();
+            {
+                var type = this.template.GetFieldType();
+
+                if (type == typeof(string))
+                    return typeof(object); // String targets use the ToString() method to convert. See UpdateBinding for special string handling
+
+                return type;
+            }
         }
 
         private void OnValidate()
@@ -79,6 +86,11 @@ namespace UnityEssentials.DataBinding
                 Debug.LogError("Bind target of generic templated leaf is null!", this.gameObject);
                 return;
             }
+            if (Essentials.UnityIsNull(this.template))
+            {
+                Debug.LogError("Bind target of generic templated leaf template is null!", this.gameObject);
+                return;
+            }
 
             // Read template and bind target object data
             var type = this.template.GetTargetType();
@@ -93,7 +105,16 @@ namespace UnityEssentials.DataBinding
             }
 
             // Set value
-            field.SetValue(this.bindTarget, this.parentNode.GetFieldValue(this.field));
+            var obj = this.parentNode.GetFieldValue(this.field);
+            if (this.template.GetFieldType() == typeof(string))
+            {
+                // Special case for strings, if the object retrieved is not a string we run type conversion to string!
+                if (obj == null)
+                    obj = "null";
+                else if (obj.GetType() != typeof(string))
+                    obj = obj.ToString();
+            }
+            field.SetValue(this.bindTarget, obj);
         }
 
         protected override object GetBoundObject()
