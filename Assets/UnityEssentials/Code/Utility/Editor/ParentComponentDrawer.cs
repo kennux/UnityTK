@@ -18,20 +18,35 @@ namespace UnityEssentials.Editor
             if (property.serializedObject.isEditingMultipleObjects)
                 return;
 
+            ParentComponentAttribute attrib = (ParentComponentAttribute)this.attribute;
+
             // Type check
             var self = property.serializedObject.targetObject;
+            GameObject go = null;
             var value = property.objectReferenceValue;
             if (!(self is Component))
             {
-                Debug.LogError("Parent component attribute isnt allowed on non-component classes :(");
+                var goProp = attrib.gameObjectOverrideField;
+                if (string.IsNullOrEmpty(goProp))
+                {
+                    Debug.LogError("Parent component attribute used on an object that doesnt drive from Component and hasnt specified");
+                    return;
+                }
+                else
+                    go = property.serializedObject.FindProperty(goProp).objectReferenceValue as GameObject;
+            }
+            else
+                go = (self as Component).gameObject;
+
+            if (Essentials.UnityIsNull(go))
+            {
+                Debug.LogError("Cannot retrieve a gameobject for the property " + property);
                 return;
             }
 
             // Gather info
-            var attrib = this.attribute as ParentComponentAttribute;
             var valueComponent = value as Component;
-            var selfComponent = self as Component;
-            var availableComponents = selfComponent.GetComponentsInParent(attrib.targetType).Where((c) => !object.ReferenceEquals(self, c)).ToArray();
+            var availableComponents = go.GetComponentsInParent(attrib.targetType).Where((c) => !object.ReferenceEquals(self, c)).ToArray();
             var availableComponentsStr = new string[] { "NULL", }.Concat(availableComponents.Select((c) => c.ToString())).ToArray();
             var currentlySelected = property.objectReferenceValue;
             int currentlySelectedIndex = System.Array.IndexOf(availableComponents, valueComponent) + 1;

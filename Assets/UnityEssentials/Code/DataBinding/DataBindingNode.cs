@@ -20,6 +20,16 @@ namespace UnityEssentials.DataBinding
         protected List<DataBinding> children = new List<DataBinding>();
 
         /// <summary>
+        /// <see cref="DataBinding.boundObject"/> object equality to null check.
+        /// </summary>
+        public bool hasBoundObject { get { return !Essentials.UnityIsNull(this.boundObject); } }
+
+        /// <summary>
+        /// <see cref="DataBinding.boundType"/> object equality to null check.
+        /// </summary>
+        public bool hasBoundType { get { return !object.ReferenceEquals(this.boundType, null); } }
+
+        /// <summary>
         /// Called in order to register a children of this binding.
         /// Called in <see cref="Awake"/>
         /// </summary>
@@ -54,10 +64,10 @@ namespace UnityEssentials.DataBinding
         /// <summary>
         /// Returns all fields this databinding node can provide.
         /// </summary>
-        /// <param name="type">The type the fields must be assignable to. You can pass in typeof(object) to get all fields (since everything is assignable to object).</param>
+        /// <param name="type">The type the fields must be assignable to. You can pass in null to get all fields (since everything is assignable to object).</param>
         /// <param name="preAlloc">Pre-allocated string list can be passed in to avoid memory allocations. If this is null, a new list is created.</param>
         /// <returns>preAlloc filled with all fields this node can provide.</returns>
-        public abstract List<string> GetFields(System.Type type, List<string> preAlloc = null);
+        public abstract List<string> GetFields(System.Type type = null, List<string> preAlloc = null);
 
         /// <summary>
         /// Determines the type of the specified field.
@@ -79,5 +89,32 @@ namespace UnityEssentials.DataBinding
         /// In case the field cannot write a value, an <see cref="System.InvalidOperationException"/> is thrown.
         /// </summary>
         public abstract void SetFieldValue(string field, object value);
+
+        /// <summary>
+        /// Returns all methods this node can provide.
+        /// </summary>
+        /// <param name="signature">The signature to filter for, if null any signature is assumed to be acceptable and added to the return list.</param>
+        /// <param name="returnType">The return type to filter for, if null any return type is assumed to be acceptable.</param>
+        /// <param name="preAlloc">Pre-allocated string list can be passed in to avoid memory allocations. If this is null, a new list is created.</param>
+        /// <returns>List of unique strings mapping to a method provided by this node. The strings map to the method parameter of <see cref="InvokeMethod(string, object[])"/></returns>
+        public abstract List<string> GetMethods(System.Type[] signature = null, System.Type returnType = null, List<string> preAlloc = null);
+
+        /// <summary>
+        /// Executes the specified method with the specified parameters and returns the result.
+        /// </summary>
+        /// <param name="method">The method identifier of the method to invoke. Maps to a string returned from <see cref="GetMethods(Type[], Type, List{string})"/>.</param>
+        /// <param name="parameters">The parameters passed into the method invoke call. You can pass null in to save object array creation if its a parameterless method signature.</param>
+        /// <returns>The object the method returned.</returns>
+        public abstract object InvokeMethod(string method, object[] parameters);
+
+        /// <summary>
+        /// Returns the signature of the specified method.
+        /// </summary>
+        public abstract List<System.Type> GetMethodSignature(string method, List<System.Type> preAlloc = null);
+
+        /// <summary>
+        /// Returns the return type of the specified method.
+        /// </summary>
+        public abstract System.Type GetMethodReturnType(string method);
     }
 }

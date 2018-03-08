@@ -6,8 +6,8 @@ using System.Linq;
 
 namespace UnityEssentials.DataBinding.Editor
 {
-    [CustomPropertyDrawer(typeof(DataBindingFieldAttribute))]
-    public class DataBindingFieldDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(DataBindingMethodAttribute))]
+    public class DataBindingMethodDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -15,24 +15,19 @@ namespace UnityEssentials.DataBinding.Editor
             if (property.serializedObject.isEditingMultipleObjects)
                 return;
 
-            // Validity check
-            if (!(property.serializedObject.targetObject is DataBinding))
-            {
-                Debug.LogError("Databinding field attribute can only be used on databindings!");
-                return;
-            }
+            DataBindingMethodAttribute attrib = (DataBindingMethodAttribute)this.attribute;
 
-            var dataBinding = property.serializedObject.targetObject as DataBinding;
-            if (!(dataBinding.parent is DataBindingNode))
+            var parent = property.serializedObject.FindProperty(attrib.parentNodeField).objectReferenceValue;
+            if (!(parent is DataBindingNode))
             {
-                if (!Essentials.UnityIsNull(dataBinding.parent))
+                if (!Essentials.UnityIsNull(parent))
                     Debug.LogError("Databinding field drawer can only be used on databindings whose parents are DataBindingNode implementations!");
                 return;
             }
 
             // Gather information
-            var node = (DataBindingNode)dataBinding.parent;
-            var fields = node.GetFields(dataBinding.GetBindTargetType()).ToArray();
+            var node = (DataBindingNode)parent;
+            var fields = node.GetMethods().ToArray();
             var currentField = property.stringValue;
             int currentFieldIndex = System.Array.IndexOf(fields, currentField) + 1;
             var fieldsWithNull = new string[] { "NULL", }.Concat(fields).ToArray();

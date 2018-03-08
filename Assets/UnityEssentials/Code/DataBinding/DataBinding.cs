@@ -8,10 +8,10 @@ namespace UnityEssentials.DataBinding
     /// Abstract implementation of an arbitrary databinding.
     /// The binding can be a node (root or branch) or a leaf.
     /// </summary>
-    public abstract class DataBinding : MonoBehaviour
+    public abstract class DataBinding : MonoBehaviour, IDataBinding
     {
         /// <summary>
-        /// The object this databinding is binding to.
+        /// <see cref="IDataBinding.boundObject"/>
         /// </summary>
         public object boundObject
         {
@@ -22,7 +22,7 @@ namespace UnityEssentials.DataBinding
         }
 
         /// <summary>
-        /// The type this binding was bound to (the type of <see cref="boundObject"/>).
+        /// <see cref="IDataBinding.boundType"/>
         /// </summary>
         public System.Type boundType
         {
@@ -33,8 +33,7 @@ namespace UnityEssentials.DataBinding
         }
 
         /// <summary>
-        /// The parent binding node.
-        /// Roots might not have a parent (null).
+        /// <see cref="IDataBinding.parent"/>
         /// </summary>
         public abstract DataBinding parent
         {
@@ -62,19 +61,14 @@ namespace UnityEssentials.DataBinding
         /// Retrives the object this binding is binding to.
         /// </summary>
         protected abstract object GetBoundObject();
-
+        
         /// <summary>
-        /// Called whenever this binding needs to be updated.
+        /// <see cref="IDataBinding.UpdateBinding"/>
         /// </summary>
         public abstract void UpdateBinding();
 
         /// <summary>
-        /// Returns the target type this databinding is accepting.
-        /// This is not necessarily the actual type of the <see cref="boundObject"/>.
-        /// 
-        /// It is used to determine which types can be assigned to this databinding.
-        /// In most cases this will be the upper most type in the inheritance tree this binding can accept.
-        /// For example a root that can bind to any object will return object as target type, while a text leaf will return string for example.
+        /// <see cref="IDataBinding.GetBindTargetType"/>
         /// </summary>
         public abstract System.Type GetBindTargetType();
 
