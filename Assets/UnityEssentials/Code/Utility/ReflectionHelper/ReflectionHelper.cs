@@ -86,7 +86,7 @@ namespace UnityEssentials
 
                 // Get parameters
                 var pString = parts[1].Replace("(", "").Replace(")", "");
-                string[] paramStrings = string.IsNullOrWhiteSpace(pString) ? new string[0] : pString.Split('|');
+                string[] paramStrings = string.IsNullOrEmpty(pString) ? new string[0] : pString.Split('|');
                 Type[] paramTypes = new Type[paramStrings.Length];
 
                 for (int i = 0; i < paramStrings.Length; i++)
