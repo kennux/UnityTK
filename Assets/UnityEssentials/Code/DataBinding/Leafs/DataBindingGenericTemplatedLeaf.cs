@@ -105,6 +105,11 @@ namespace UnityEssentials.DataBinding
             }
 
             // Set value
+            field.SetValue(this.bindTarget, GetBoundObject());
+        }
+
+        protected override object GetBoundObject()
+        {
             var obj = this.parentNode.GetFieldValue(this.field);
             if (this.template.GetFieldType() == typeof(string))
             {
@@ -114,12 +119,8 @@ namespace UnityEssentials.DataBinding
                 else if (obj.GetType() != typeof(string))
                     obj = obj.ToString();
             }
-            field.SetValue(this.bindTarget, obj);
-        }
 
-        protected override object GetBoundObject()
-        {
-            throw new NotImplementedException();
+            return obj;
         }
 
         /// <summary>

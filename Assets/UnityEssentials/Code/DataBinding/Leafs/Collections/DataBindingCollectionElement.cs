@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace UnityEssentials.DataBinding.Collections
+namespace UnityEssentials.DataBinding
 {
     /// <summary>
     /// Represents a single element in a <see cref="DataBindingCollectionLeaf"/> binding.

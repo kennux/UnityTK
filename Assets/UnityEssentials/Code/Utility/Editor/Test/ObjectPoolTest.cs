@@ -39,7 +39,7 @@ namespace UnityEssentials.Test
 
                 Assert.IsTrue(false);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
 
             }

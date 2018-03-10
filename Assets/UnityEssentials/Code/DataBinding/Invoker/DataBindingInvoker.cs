@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace UnityEssentials.DataBinding
@@ -120,6 +121,29 @@ namespace UnityEssentials.DataBinding
                     };
                 }
             }
+        }
+
+        /// <summary>
+        /// Sets <see cref="method"/>, can be used for code-driven databinding.
+        /// Editor created bindings will have <see cref="method"/> set by the editor.
+        /// </summary>
+        public void SetMethod(MethodInfo methodInfo)
+        {
+            if (Essentials.UnityIsNull(this.parentNode) || this.parentNode.boundType != methodInfo.DeclaringType)
+                throw new InvalidOperationException("Assigned method to databinding invoker which is declared on another type not bound to by the invoker parent");
+
+            this.method = ReflectionHelper.MethodToString(methodInfo);
+            this.OnValidate();
+        }
+
+        /// <summary>
+        /// This method can be used to set a invoke parameter binding.
+        /// This provides an easy way to modify <see cref="parameters"/> data.
+        /// </summary>
+        public void SetParameterBinding(int parameter, DataBindingNode node, string field)
+        {
+            this.parameters[parameter].parentNode = node;
+            this.parameters[parameter].field = field;
         }
 
         public void Invoke()

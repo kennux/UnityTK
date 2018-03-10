@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace UnityEssentials.DataBinding
@@ -41,6 +42,7 @@ namespace UnityEssentials.DataBinding
         /// <summary>
         /// Set in <see cref="OnValidate"/> to reflect input data validity.
         /// </summary>
+#pragma warning disable 414
         [SerializeField]
         [ReadOnly]
         private bool _isValid;
@@ -52,6 +54,33 @@ namespace UnityEssentials.DataBinding
             this._field = null;
 
             this._isValid = !object.ReferenceEquals(this.GetTargetType(), null) && !object.ReferenceEquals(this.GetField(), null);
+        }
+#pragma warning restore 414
+
+        /// <summary>
+        /// Sets the target type of this template (<see cref="targetType"/>).
+        /// This setter can be used to set the type via code rather than the unity inspector.
+        /// </summary>
+        public void SetTargetType(Type type)
+        {
+            if (type == null)
+                this.targetType = "";
+            else
+                this.targetType = ReflectionHelper.GetSimpleAssemblyQualifiedName(type);
+        }
+
+        public void SetTargetField(PropertyInfo propertyInfo) { SetTargetField(DataBindingFieldProperty.Get(propertyInfo)); }
+        public void SetTargetField(FieldInfo fieldInfo) { SetTargetField(DataBindingFieldProperty.Get(fieldInfo)); }
+        /// <summary>
+        /// Sets the target field of this template (<see cref="targetField"/>).
+        /// This setter can be used to set the field via code rather than the unity inspector.
+        /// </summary>
+        public void SetTargetField(DataBindingFieldProperty fieldProperty)
+        {
+            if (fieldProperty.declaringType != this.GetTargetType())
+                throw new InvalidOperationException("Cannot set target field of a generic templated leaf to a field property that was not declared on the template target.");
+
+            this.targetField = fieldProperty.name;
         }
 
         /// <summary>

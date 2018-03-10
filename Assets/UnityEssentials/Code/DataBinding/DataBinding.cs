@@ -42,6 +42,8 @@ namespace UnityEssentials.DataBinding
 
         /// <summary>
         /// Registers this binding to its parent, if there is a parent.
+        /// 
+        /// When a databinding is not being created in the editor (i.e. its parent isnt being assigned when Awake in Instantiate) you have to call this manually after setting up the binding.
         /// </summary>
         public virtual void Awake()
         {

@@ -1,8 +1,10 @@
-﻿#if UNITY_EDITOR
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UnityEssentials.DataBinding
 {
@@ -11,6 +13,7 @@ namespace UnityEssentials.DataBinding
 
     }
 
+#if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
     public class ReadOnlyDrawer : PropertyDrawer
     {
@@ -29,5 +32,5 @@ namespace UnityEssentials.DataBinding
             GUI.enabled = true;
         }
     }
-}
 #endif
+}

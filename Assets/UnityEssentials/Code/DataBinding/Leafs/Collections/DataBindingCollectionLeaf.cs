@@ -4,7 +4,7 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-namespace UnityEssentials.DataBinding.Collections
+namespace UnityEssentials.DataBinding
 {
     /// <summary>
     /// A specialized databinding leaf that can be used to bind to arbitrary collections.

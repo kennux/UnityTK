@@ -64,6 +64,22 @@ namespace UnityEssentials.DataBinding
         }
 
         /// <summary>
+        /// Returns a cached field property for the specified field info.
+        /// </summary>
+        public static DataBindingFieldProperty Get(FieldInfo fieldInfo)
+        {
+            return fieldCache.Get(fieldInfo);
+        }
+
+        /// <summary>
+        /// Returns a cached field property for the specified property info.
+        /// </summary>
+        public static DataBindingFieldProperty Get(PropertyInfo propertyInfo)
+        {
+            return propCache.Get(propertyInfo);
+        }
+
+        /// <summary>
         /// The type this field property is.
         /// It can either be binding to <see cref="fieldInfo"/> or <see cref="propertyInfo"/>.
         /// </summary>
@@ -100,6 +116,22 @@ namespace UnityEssentials.DataBinding
                 {
                     case FieldPropertyType.FIELD: return this.fieldInfo.FieldType;
                     case FieldPropertyType.PROPERTY: return this.propertyInfo.PropertyType;
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// The type where this field property was declared on.
+        /// </summary>
+        public System.Type declaringType
+        {
+            get
+            {
+                switch (this.type)
+                {
+                    case FieldPropertyType.FIELD: return this.fieldInfo.DeclaringType;
+                    case FieldPropertyType.PROPERTY: return this.propertyInfo.DeclaringType;
                 }
                 return null;
             }
