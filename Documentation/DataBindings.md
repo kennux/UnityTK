@@ -28,7 +28,7 @@ The most prominent implementation is DataBindingGenericTemplatedLeaf.
 
 #### Invokers
 
-Invokers do bind to a method on its parent.
+Invokers bind to a method on its parent.
 They can be called via code or UnityEvents (UI Buttons, ...) to invoke their bound method.
 Additionally parameter bindings can be established to bind to parameterized methods.
 
@@ -44,7 +44,7 @@ The collection element prefabs contain a root binding that is specifically imple
 
 ### DataBindingRoot
 
-Simple databinding root implementation that can bind to any arbitrary UnityEngine.Object type.
+Simple databinding root implementation that can bind to any arbitrary `UnityEngine.Object` type.
 
 ### DataBindingBranch
 
@@ -57,9 +57,9 @@ The generic templated leaf is the most commonly used databinding leaf.
 This leaf is composed of a template, the bind target object for the template and the leaf binding (parentNode / field).
 
 The template is composed of a type and a field you want to bind to.
-For example a template for a Unity ui text field would set the type to the UnityEngine.UI.Text component.
+For example a template for a Unity UI Text field would set the type to the UnityEngine.UI.Text component.
 The template field would be set to text.
-This template would then bind to the text field of a Unity ui text object.
+This template would then bind to the text field of a Unity UI Text object.
 
-On a leaf this template then is being assigned together with the template bind target (a Unity ui text component).
-Now every object from the parent nodes can be bound to the assigned Unity ui text component's text!
+On a leaf this template then is being assigned together with the template bind target (a Unity UI Text component).
+Now every object from the parent nodes can be bound to the assigned Unity UI Text component's text!

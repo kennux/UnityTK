@@ -14,8 +14,8 @@ MonoBehaviour:
   subfolder: Win64
   playerName: player.exe
   assetBundleManifestPath: Win64/Bundles/Bundles
-  developmentBuild: 1
-  scriptDebugging: 1
+  developmentBuild: 0
+  scriptDebugging: 0
   buildTarget: 19
   buildTargetGroup: 1
   overrideScenes: 0
