@@ -417,11 +417,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 280377216}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f86badea279bb4d9b8f2a2e82b7b7c, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b22a2b9b403f34f91a72c146211abe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bindTarget: {fileID: 280377221}
-  template: {fileID: 11400000, guid: a3767fcaa617fe94ea5e1dd139275845, type: 2}
+  template: {fileID: 11400000, guid: c567db79762f99d42ba81b33b3c512c5, type: 2}
   parentNode: {fileID: 280377219}
   field: testStr
 --- !u!114 &280377219
@@ -432,7 +432,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 280377216}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90e846d555285f548ae4521191d47c6f, type: 3}
+  m_Script: {fileID: 11500000, guid: 27f07051d39058342b18f00998287e4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetType: DataBindingExample+Nest, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
@@ -542,11 +542,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 348639006}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f86badea279bb4d9b8f2a2e82b7b7c, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b22a2b9b403f34f91a72c146211abe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bindTarget: {fileID: 348639009}
-  template: {fileID: 11400000, guid: c598dfcefa35d4d46830ee28fefec26a, type: 2}
+  template: {fileID: 11400000, guid: 3aa60c1006585e74ea51d3eb420221a2, type: 2}
   parentNode: {fileID: 630540248}
   field: testStr
 --- !u!114 &348639009
@@ -864,11 +864,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 549190468}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f86badea279bb4d9b8f2a2e82b7b7c, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b22a2b9b403f34f91a72c146211abe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bindTarget: {fileID: 549190471}
-  template: {fileID: 11400000, guid: a3767fcaa617fe94ea5e1dd139275845, type: 2}
+  template: {fileID: 11400000, guid: c567db79762f99d42ba81b33b3c512c5, type: 2}
   parentNode: {fileID: 630540248}
   field: testNumber
 --- !u!114 &549190471
@@ -1492,8 +1492,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 459944489}
   m_HandleRect: {fileID: 459944488}
   m_Direction: 2
-  m_Value: 0.99999946
-  m_Size: 0.8119999
+  m_Value: 1
+  m_Size: 0.8120001
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2003,11 +2003,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1074943769}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f86badea279bb4d9b8f2a2e82b7b7c, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b22a2b9b403f34f91a72c146211abe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bindTarget: {fileID: 1074943772}
-  template: {fileID: 11400000, guid: a3767fcaa617fe94ea5e1dd139275845, type: 2}
+  template: {fileID: 11400000, guid: c567db79762f99d42ba81b33b3c512c5, type: 2}
   parentNode: {fileID: 630540248}
   field: testStr
 --- !u!114 &1074943772
@@ -2093,11 +2093,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1156586881}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f86badea279bb4d9b8f2a2e82b7b7c, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b22a2b9b403f34f91a72c146211abe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bindTarget: {fileID: 1156586884}
-  template: {fileID: 11400000, guid: a3767fcaa617fe94ea5e1dd139275845, type: 2}
+  template: {fileID: 11400000, guid: c567db79762f99d42ba81b33b3c512c5, type: 2}
   parentNode: {fileID: 630540250}
   field: testStr
 --- !u!114 &1156586884
@@ -2183,7 +2183,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1271857566}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 912f2853a3e7024498fe7ba5553ea666, type: 3}
+  m_Script: {fileID: 11500000, guid: 04a6c80a09275d546a1f9e620d4d8b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   elementPrefab: {fileID: 280377219}
@@ -2727,11 +2727,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2139375012}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f86badea279bb4d9b8f2a2e82b7b7c, type: 3}
+  m_Script: {fileID: 11500000, guid: 43b22a2b9b403f34f91a72c146211abe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bindTarget: {fileID: 2139375015}
-  template: {fileID: 11400000, guid: a3767fcaa617fe94ea5e1dd139275845, type: 2}
+  template: {fileID: 11400000, guid: c567db79762f99d42ba81b33b3c512c5, type: 2}
   parentNode: {fileID: 630540251}
   field: This
 --- !u!114 &2139375015

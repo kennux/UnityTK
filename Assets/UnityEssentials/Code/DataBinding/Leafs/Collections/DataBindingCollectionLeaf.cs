@@ -89,6 +89,9 @@ namespace UnityEssentials.DataBinding
 
         protected override Type GetBoundType()
         {
+            if (Essentials.UnityIsNull(this.parentNode))
+                return typeof(object);
+
             return this.parentNode.GetFieldType(this.field);
         }
 
