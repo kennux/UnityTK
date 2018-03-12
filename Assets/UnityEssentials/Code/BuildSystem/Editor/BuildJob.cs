@@ -19,6 +19,9 @@ namespace UnityEssentials.BuildSystem
         /// </summary>
         public BuildTask[] tasks;
 
+        public string destination;
+        public bool deleteExistingDestination;
+
         /// <summary>
         /// Executes all tasks
         /// </summary>

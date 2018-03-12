@@ -9,8 +9,8 @@ Our implementation uses a tree-like structure built up in the unity scene graph.
 
 ### Roots
 
-Roots represent the root of any databinding tree built up in the scene graph.
-They are special kinds of nodes which dont have a parent.
+These represent the root of any databinding tree built up in the scene graph.
+They are special kinds of nodes which don't have a parent.
 
 ### Nodes
 
@@ -23,7 +23,7 @@ There are different kinds of leaves:
 
 #### Regular leaves
 
-Those leaves are just binding one node field to a specific field on an object.
+These leaves are just binding one node field to a specific field on an object.
 The most prominent implementation is DataBindingGenericTemplatedLeaf.
 
 #### Invokers
@@ -57,9 +57,9 @@ The generic templated leaf is the most commonly used databinding leaf.
 This leaf is composed of a template, the bind target object for the template and the leaf binding (parentNode / field).
 
 The template is composed of a type and a field you want to bind to.
-For example a template for a unity ui text field would set the type to the UnityEngine.UI.Text component.
+For example a template for a Unity ui text field would set the type to the UnityEngine.UI.Text component.
 The template field would be set to text.
-This template would then bind to the text field of a unity ui text object.
+This template would then bind to the text field of a Unity ui text object.
 
-On a leaf this template then is being assigned together with the template bind target (a unity ui text component).
-Now every object from the parent nodes can be bound to the assigned unity ui text component's text!
+On a leaf this template then is being assigned together with the template bind target (a Unity ui text component).
+Now every object from the parent nodes can be bound to the assigned Unity ui text component's text!

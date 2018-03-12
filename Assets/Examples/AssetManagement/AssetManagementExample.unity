@@ -944,6 +944,7 @@ GameObject:
   - component: {fileID: 1720455132}
   - component: {fileID: 1720455131}
   - component: {fileID: 1720455130}
+  - component: {fileID: 1720455135}
   - component: {fileID: 1720455129}
   - component: {fileID: 1720455134}
   m_Layer: 5
@@ -965,8 +966,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   assets: []
-  path: Assets/Examples/AssetManagement/Bundles
-  bundleName: example
 --- !u!114 &1720455130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1055,6 +1054,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1720455129}
+--- !u!114 &1720455135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1720455128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d39bdc756ba20d418b178fcf3191664, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadPath: Bundles
 --- !u!1 &1910472439
 GameObject:
   m_ObjectHideFlags: 0

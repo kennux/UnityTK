@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Examples/AssetManagement/AssetManagementExample.unity
+    guid: 5e233ebdc5ad1dd429d1bfc20c6a978b
+  - enabled: 1
     path: Assets/Examples/DataBinding/DBSimpleExamples.unity
     guid: f59c110641f9a6741a8d1e7033f7868c
-  - enabled: 0
-    path: Assets/Examples/AssetManagement/AssetManagementExample.unity
-    guid: 9f443ae241914c042a504ece6fc18834

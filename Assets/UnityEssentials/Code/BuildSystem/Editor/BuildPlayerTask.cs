@@ -48,7 +48,7 @@ namespace UnityEssentials.BuildSystem
 
             BuildPipeline.BuildPlayer(new BuildPlayerOptions()
             {
-                assetBundleManifestPath = this.assetBundleManifestPath,
+                assetBundleManifestPath = Path.Combine(parameters.destination, this.assetBundleManifestPath),
                 options = buildOptions,
                 locationPathName = Path.Combine(targetFolder, this.playerName),
                 scenes = this.overrideScenes ? this.overrideScenePaths : EditorBuildSettings.scenes.Where((s) => s.enabled).Select((s) => s.path).ToArray(),

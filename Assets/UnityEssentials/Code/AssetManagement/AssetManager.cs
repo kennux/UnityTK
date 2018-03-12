@@ -42,6 +42,11 @@ namespace UnityEssentials.AssetManagement
         #endregion
 
         /// <summary>
+        /// All assets registered to the manager.
+        /// </summary>
+        private HashSet<IManagedAsset> registeredAssets = new HashSet<IManagedAsset>();
+
+        /// <summary>
         /// Maps an <see cref="IManagedAsset.tags"/> to a list of asset references.
         /// </summary>
         private Dictionary<string, List<IManagedAsset>> assetsMap = new Dictionary<string, List<IManagedAsset>>();
@@ -51,7 +56,36 @@ namespace UnityEssentials.AssetManagement
         /// </summary>
         private Dictionary<AssetBundle, List<IManagedAsset>> assetBundleMap = new Dictionary<AssetBundle, List<IManagedAsset>>();
 
-#region Load / Register logic
+        #region Load / Register logic
+
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// Loads all assets assigned to an asset bundle in the editor and registers it if it has an <see cref="IManagedAsset"/> implementation.
+        /// This can be used to simulate asset bundles in the editor (in use in <see cref="AssetBundleLoader"/>
+        /// </summary>
+        public void EditorLoadAndRegisterAssetsInBundles()
+        {
+            foreach (var bundle in UnityEditor.AssetDatabase.GetAllAssetBundleNames())
+            {
+                foreach (var path in UnityEditor.AssetDatabase.GetAssetPathsFromAssetBundle(bundle))
+                {
+                    var obj = UnityEditor.AssetDatabase.LoadAssetAtPath<Object>(path);
+
+                    // Scriptable object / gameobject registering
+                    if (obj is IManagedAsset)
+                        this.RegisterAsset((IManagedAsset)obj);
+                    else if (obj is GameObject)
+                    {
+                        var ma = (obj as GameObject).GetComponent<IManagedAsset>();
+                        if (!Essentials.UnityIsNull(ma))
+                            this.RegisterAsset(ma);
+                    }
+                }
+            }
+        }
+
+#endif
 
         /// <summary>
         /// Loads the specified asset bundle.
@@ -94,32 +128,43 @@ namespace UnityEssentials.AssetManagement
         /// <summary>
         /// Registers the specified asset identifier to this asset manager.
         /// </summary>
-        public void RegisterAsset(IManagedAsset assetIdentifier)
+        public void RegisterAsset(IManagedAsset asset)
         {
+            if (registeredAssets.Contains(asset))
+                return;
+
             List<IManagedAsset> lst;
-            foreach (var tag in assetIdentifier.tags)
+            foreach (var tag in asset.tags)
             {
                 if (!assetsMap.TryGetValue(tag, out lst))
                 {
                     lst = new List<IManagedAsset>();
                     assetsMap.Add(tag, lst);
                 }
-                lst.Add(assetIdentifier);
+                lst.Add(asset);
             }
+
+            Debug.Log("Registered asset " + asset);
+            registeredAssets.Add(asset);
         }
 
         /// <summary>
         /// Deregisters the specified asset from this asset manager.
         /// Must have previously been registered by either asset bundle loading or <see cref="RegisterAsset(IManagedAsset)"/>
         /// </summary>
-        public void DeregisterAsset(IManagedAsset assetIdentifier)
+        public void DeregisterAsset(IManagedAsset asset)
         {
+            if (!registeredAssets.Contains(asset))
+                return;
+
             List<IManagedAsset> lst;
-            foreach (var tag in assetIdentifier.tags)
+            foreach (var tag in asset.tags)
             {
                 if (assetsMap.TryGetValue(tag, out lst))
-                    lst.Remove(assetIdentifier);
+                    lst.Remove(asset);
             }
+
+            registeredAssets.Remove(asset);
         }
 
         /// <summary>
