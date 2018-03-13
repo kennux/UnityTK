@@ -25,6 +25,9 @@ namespace UnityEssentials.AssetManagement
 
         public T GetAs<T>() where T : Object
         {
+            if (!typeof(Component).IsAssignableFrom(typeof(T)))
+                return null;
+
             return this.GetComponent<T>();
         }
     }

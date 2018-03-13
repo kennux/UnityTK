@@ -26,10 +26,20 @@ IManagedAsset implementation as GameObject component.
 
 Base-class for ScriptableObjects implementing IManagedAsset.
 
-## AssetBundleLoader
+## AssetLoader
+
+Abstract implementation of an asset loader that can be extended to implement custom asset loaders (for example for loading content from a modding api).
+This base class has 2 default implementations:
+
+### AssetBundleLoader
 
 This component should be used to load asset bundle content.
 It supports asset bundle emulation in-editor (by just registering all assets in the `AssetDatabase` assigned to any asset bundle) and can load all asset bundles from a specified path relative to the player binary in runtime.
+
+### ResourcesLoader
+
+This component can be used to load all project resources and register them to the AssetManager.
+Will use unity's `UnityEngine.Resources` API to retrieve data.
 
 # Modding
 
@@ -39,5 +49,8 @@ How modding is implemented is up to the game, the AssetManagement system just ma
 The intended workflow for modding is compiling the game's main code outside of the unitynengine into a DLL referencing unity engine dlls.
 The dll created by this compilation can be loaded into a plain project, assets can be created with the components from your game, and bundles can be exported.
 The exported bundles can be loaded back into the game with all scripting intact!
+
+An alternative approach would be to provide a mod-loader that parses mode content from XML/JSON/etc. and registers it to the AssetManager.
+You are only limited by your imagination :-)
 
 If the game uses the AssetManagement system to query for data mod content will automatically be available in the game.

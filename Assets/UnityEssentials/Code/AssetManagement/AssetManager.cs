@@ -51,80 +51,8 @@ namespace UnityEssentials.AssetManagement
         /// </summary>
         private Dictionary<string, List<IManagedAsset>> assetsMap = new Dictionary<string, List<IManagedAsset>>();
 
-        /// <summary>
-        /// Maps an asset bundle to a list of all assets loaded from it.
-        /// </summary>
-        private Dictionary<AssetBundle, List<IManagedAsset>> assetBundleMap = new Dictionary<AssetBundle, List<IManagedAsset>>();
-
-        #region Load / Register logic
-
-#if UNITY_EDITOR
-
-        /// <summary>
-        /// Loads all assets assigned to an asset bundle in the editor and registers it if it has an <see cref="IManagedAsset"/> implementation.
-        /// This can be used to simulate asset bundles in the editor (in use in <see cref="AssetBundleLoader"/>
-        /// </summary>
-        public void EditorLoadAndRegisterAssetsInBundles()
-        {
-            foreach (var bundle in UnityEditor.AssetDatabase.GetAllAssetBundleNames())
-            {
-                foreach (var path in UnityEditor.AssetDatabase.GetAssetPathsFromAssetBundle(bundle))
-                {
-                    var obj = UnityEditor.AssetDatabase.LoadAssetAtPath<Object>(path);
-
-                    // Scriptable object / gameobject registering
-                    if (obj is IManagedAsset)
-                        this.RegisterAsset((IManagedAsset)obj);
-                    else if (obj is GameObject)
-                    {
-                        var ma = (obj as GameObject).GetComponent<IManagedAsset>();
-                        if (!Essentials.UnityIsNull(ma))
-                            this.RegisterAsset(ma);
-                    }
-                }
-            }
-        }
-
-#endif
-
-        /// <summary>
-        /// Loads the specified asset bundle.
-        /// </summary>
-        public void LoadAssetBundle(AssetBundle bundle)
-        {
-            if (this.assetBundleMap.ContainsKey(bundle))
-                return;
-
-            // Load assets
-            var assets = new List<IManagedAsset>(bundle.LoadAllAssets<ManagedScriptableObject>());
-            var gos = bundle.LoadAllAssets<GameObject>();
-            for (int i = 0; i < gos.Length; i++)
-            {
-                // Get and validate gameobject
-                var go = gos[i];
-                if (Essentials.UnityIsNull(go))
-                {
-                    Debug.LogWarning("Asset bundle contained a gameobject that failed null equality check!");
-                    continue;
-                }
-
-                // Try getting the component
-                var managedAsset = go.GetComponent<IManagedAsset>();
-                if (Essentials.UnityIsNull(managedAsset))
-                    continue;
-
-                assets.Add(managedAsset);
-
-            }
-
-            // Register bundle as loaded
-            this.assetBundleMap.Add(bundle, assets);
-
-            // Register assets
-            for (int i = 0; i < assets.Count; i++)
-                RegisterAsset(assets[i]);
-        }
-
+        #region Asset registration
+        
         /// <summary>
         /// Registers the specified asset identifier to this asset manager.
         /// </summary>
@@ -167,34 +95,11 @@ namespace UnityEssentials.AssetManagement
             registeredAssets.Remove(asset);
         }
 
-        /// <summary>
-        /// Unloads the specified asset bundle.
-        /// 
-        /// This method only <see cref="AssetBundle.Unload(bool)"/>s the bundle!
-        /// If you wish to completely unload it from memory, you need to Destroy the asset bundle via the unity api.
-        /// </summary>
-        public void UnloadAssetBundle(AssetBundle bundle)
-        {
-            List<IManagedAsset> lst;
-            if (!this.assetBundleMap.TryGetValue(bundle, out lst))
-                return;
-
-            // Deregister assets
-            for (int i = 0; i < lst.Count; i++)
-                DeregisterAsset(lst[i]);
-
-            // Remove bundle from loaded bundles
-            this.assetBundleMap.Remove(bundle);
-
-            // Unload the bundle
-            bundle.Unload(true);
-        }
-
         #endregion
         #region Query logic
 
         /// <summary>
-        /// Returns all objects with the specified tag.
+        /// Returns all objects with the specified tag that can be retrieved as the specified type T.
         /// </summary>
         /// <typeparam name="T">The type the objects must have to end up in the result set. Scriptable objects are being checked if they are assignable to the specified type.
         /// GameObjects will be checked whether or not they have a component of the specified type.
