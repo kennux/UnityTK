@@ -10,7 +10,12 @@ public class AssetExampleUI : MonoBehaviour
 
     public void Start()
     {
-        this.assets = AssetManager.instance.GetObjects<AssetExample>("example");
-        this.assets2 = AssetManager.instance.GetObjects<AssetExample2>("example");
+        var query = AssetManagerQueryPool<AssetManagerQuery>.Get();
+        query.AddTagCriteria("example");
+
+        this.assets = AssetManager.instance.Query<AssetExample>(query);
+        this.assets2 = AssetManager.instance.Query<AssetExample2>(query);
+
+        AssetManagerQueryPool<AssetManagerQuery>.Return(query);
     }
 }

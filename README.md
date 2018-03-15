@@ -16,7 +16,7 @@ They are most commonly used in some MVVM-like structure.
 AssetManagement
 ----
 
-Asset bundle based asset management system that can be used to implement DLCs, Modding or just to seperate the clean into several asset bundles.
+Asset bundle based asset management system that can be used to implement DLCs, Modding or just to seperate your assets into several asset bundles.
 It provides an abstract and easy to use api to query for assets previously loaded and registered.
 
 BuildSystem

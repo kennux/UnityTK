@@ -131,6 +131,9 @@ namespace UnityTK
         /// <param name="throwOnDuplicate">Can be enable to throw an <see cref="InvalidOperationException"/> when the object is already in the pool. If this is false, the method will simply return if the object is already in the pool.</param>
         public void Return(T obj, bool throwOnDuplicate = false)
         {
+            if (obj == null)
+                return;
+
             // Contains check
             lock (this.poolLock)
             {

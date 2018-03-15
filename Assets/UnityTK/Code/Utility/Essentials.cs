@@ -20,6 +20,36 @@ namespace UnityTK
         {
             return object.ReferenceEquals(obj, null) || obj.Equals(null);
         }
+        
+        /// <summary>
+        /// Tries getting the value for the specified key from the dictionary.
+        /// If the value is not found, its created via new TValue().
+        /// </summary>
+        public static TValue GetOrCreate<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key) where TValue : new()
+        {
+            TValue val;
+            if (!dict.TryGetValue(key, out val))
+            {
+                val = new TValue();
+                dict.Add(key, val);
+            }
+
+            return val;
+        }
+
+        /// <summary>
+        /// Sets the specified key in the dictionary to the specified value.
+        /// 
+        /// If the key is not existing yet, a new entry is created in the dictionary.
+        /// If it already exists, its being overwritten.
+        /// </summary>
+        public static void Set<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value)
+        {
+            if (dict.ContainsKey(key))
+                dict[key] = value;
+            else
+                dict.Add(key, value);
+        }
 
         private static BinaryFormatter binaryFormatter = new BinaryFormatter();
 

@@ -45,14 +45,10 @@ namespace UnityTK.AssetManagement
         /// All assets registered to the manager.
         /// </summary>
         private HashSet<IManagedAsset> registeredAssets = new HashSet<IManagedAsset>();
-
-        /// <summary>
-        /// Maps an <see cref="IManagedAsset.tags"/> to a list of asset references.
-        /// </summary>
-        private Dictionary<string, List<IManagedAsset>> assetsMap = new Dictionary<string, List<IManagedAsset>>();
+        private List<IManagedAsset> _registeredAssets = new List<IManagedAsset>();
 
         #region Asset registration
-        
+
         /// <summary>
         /// Registers the specified asset identifier to this asset manager.
         /// </summary>
@@ -61,19 +57,9 @@ namespace UnityTK.AssetManagement
             if (registeredAssets.Contains(asset))
                 return;
 
-            List<IManagedAsset> lst;
-            foreach (var tag in asset.tags)
-            {
-                if (!assetsMap.TryGetValue(tag, out lst))
-                {
-                    lst = new List<IManagedAsset>();
-                    assetsMap.Add(tag, lst);
-                }
-                lst.Add(asset);
-            }
-
             Debug.Log("Registered asset " + asset);
             registeredAssets.Add(asset);
+            _registeredAssets.Add(asset);
         }
 
         /// <summary>
@@ -85,48 +71,50 @@ namespace UnityTK.AssetManagement
             if (!registeredAssets.Contains(asset))
                 return;
 
-            List<IManagedAsset> lst;
-            foreach (var tag in asset.tags)
-            {
-                if (assetsMap.TryGetValue(tag, out lst))
-                    lst.Remove(asset);
-            }
-
+            _registeredAssets.Remove(asset);
             registeredAssets.Remove(asset);
         }
 
         #endregion
+
         #region Query logic
 
         /// <summary>
-        /// Returns all objects with the specified tag that can be retrieved as the specified type T.
+        /// Queries the asset manager for assets.
         /// </summary>
         /// <typeparam name="T">The type the objects must have to end up in the result set. Scriptable objects are being checked if they are assignable to the specified type.
         /// GameObjects will be checked whether or not they have a component of the specified type.
         /// If T is GameObject, the IManagedAsset implementation will be casted to Component to retrieve the gameobject.</typeparam>
+        /// <param name="query">The query parameters</param>
         /// <param name="preAlloc">A pre-allocated list that will be used as return list. If not supplied, a list from the <see cref="ListPool{T}"/> is being drawn. This list can also already be containing objects.</param>
+        /// <param name="limit">The limit of how many objects to look for maximum. -1 employs no limit.</param>
         /// <param name="throwCastException">whether or not an <see cref="System.InvalidCastException"/> will be thrown if the type T cannot be retrieved from an asset that has the specified tag.</param>
-        public List<T> GetObjects<T>(string tag, List<T> preAlloc = null, bool throwCastException = false) where T : Object
+        public List<T> Query<T>(IAssetManagerQuery query, List<T> preAlloc = null, int limit = -1, bool throwCastException = false) where T : UnityEngine.Object
         {
             ListPool<T>.GetIfNull(ref preAlloc);
 
-            List<IManagedAsset> lst;
-            if (this.assetsMap.TryGetValue(tag, out lst))
+            int selected = 0;
+            for (int i = 0; i < _registeredAssets.Count; i++)
             {
-                for (int i = 0; i < lst.Count; i++)
-                {
-                    // Read asset and cast
-                    var asset = lst[i];
-                    var casted = asset.GetAs<T>();
+                // Read asset and cast
+                var asset = _registeredAssets[i];
+                if (!query.MatchesCriterias(asset))
+                    continue;
 
-                    // Was casting not successfull?
-                    if (Essentials.UnityIsNull(casted))
-                    {
-                        if (throwCastException)
-                            throw new System.InvalidCastException("Object " + asset.name + " wasnt castable to " + typeof(T));
-                    }
-                    else
-                        preAlloc.Add(casted);
+                var casted = asset.GetAs<T>();
+
+                // Was casting not successfull?
+                if (Essentials.UnityIsNull(casted))
+                {
+                    if (throwCastException)
+                        throw new System.InvalidCastException("Object " + asset.name + " wasnt castable to " + typeof(T));
+                }
+                else
+                {
+                    preAlloc.Add(casted);
+
+                    if (limit != -1 && selected >= limit)
+                        break;
                 }
             }
 
