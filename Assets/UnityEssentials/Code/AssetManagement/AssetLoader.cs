@@ -21,6 +21,10 @@ namespace UnityEssentials.AssetManagement
         /// <param name="assets"></param>
         protected abstract void UnloadAssets(List<IManagedAsset> assets);
 
+        /// <summary>
+        /// Whether or not this asset loader should unload the assets it has loaded when it is destroyed (for example in scene load).
+        /// </summary>
+        public bool unloadOnDestroy = false;
         private List<IManagedAsset> assets;
 
         public virtual void Awake()
@@ -33,6 +37,13 @@ namespace UnityEssentials.AssetManagement
 
         public virtual void OnDestroy()
         {
+            if (!this.unloadOnDestroy)
+                return;
+
+            // Deregister
+            for (int i = 0; i < assets.Count; i++)
+                AssetManager.instance.DeregisterAsset(this.assets[i]);
+
             this.UnloadAssets(this.assets);
         }
     }

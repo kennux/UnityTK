@@ -91,13 +91,15 @@ namespace UnityEssentials.AssetManagement
                 assets.Add(managedAsset);
             }
 
+            bundle.Unload(false);
             Resources.UnloadUnusedAssets();
         }
 
         protected override void UnloadAssets(List<IManagedAsset> assets)
         {
             foreach (var bundle in this.loadedBundles)
-                bundle.Unload(true);
+                if (!Essentials.UnityIsNull(bundle))
+                    bundle.Unload(true);
         }
     }
 }
