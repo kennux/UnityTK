@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials.DataBinding
+namespace UnityTK.DataBinding
 {
     /// <summary>
     /// Databinding tree branch node implementation.

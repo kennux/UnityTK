@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace UnityEssentials.DataBinding.Editor.Test
+namespace UnityTK.DataBinding.Editor.Test
 {
     public class DataBindingLeavesTest
     {

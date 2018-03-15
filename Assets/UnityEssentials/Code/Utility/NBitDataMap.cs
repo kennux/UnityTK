@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     /// <summary>
     /// Implements a bit data storage that can be used to mass-store bits in an efficient way.

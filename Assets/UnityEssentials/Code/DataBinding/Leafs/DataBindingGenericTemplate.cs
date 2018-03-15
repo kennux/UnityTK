@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace UnityEssentials.DataBinding
+namespace UnityTK.DataBinding
 {
     /// <summary>
     /// Generic data binding leaf (<see cref="DataBindingGenericTemplatedLeaf"/>) template asset implementation.
@@ -14,7 +14,7 @@ namespace UnityEssentials.DataBinding
     /// The generic field then only needs this template and its target binding field assigned.
     /// </summary>
     [Serializable]
-    [CreateAssetMenu(menuName = "UnityEssentials/DataBindings/Generic Leaf Template", fileName = "GenericLeafTemplate")]
+    [CreateAssetMenu(menuName = "UnityTK/DataBindings/Generic Leaf Template", fileName = "GenericLeafTemplate")]
     public class DataBindingGenericTemplate : ScriptableObject
     {
         /// <summary>

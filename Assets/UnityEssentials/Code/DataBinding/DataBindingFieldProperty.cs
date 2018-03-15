@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace UnityEssentials.DataBinding
+namespace UnityTK.DataBinding
 {
     /// <summary>
     /// Datastructure that can be used to access a reflected field or property in a generalized way.

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     /// <summary>
     /// Static helper class for handling scene folders.

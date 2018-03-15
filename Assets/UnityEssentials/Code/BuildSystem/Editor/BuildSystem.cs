@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace UnityEssentials.BuildSystem
+namespace UnityTK.BuildSystem
 {
     /// <summary>
     /// Build system unity editor window implementation.
@@ -12,7 +12,7 @@ namespace UnityEssentials.BuildSystem
     {
         #region Singleton
         private static BuildSystem instance;
-        [MenuItem("UnityEssentials/Build System")]
+        [MenuItem("UnityTK/Build System")]
         static void Init()
         {
             if (Essentials.UnityIsNull(instance))

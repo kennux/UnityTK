@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-namespace UnityEssentials.AssetManagement
+namespace UnityTK.AssetManagement
 {
     /// <summary>
     /// Simple asset bundle loader implementation that can be used to load bundles to <see cref="AssetManager.LoadAssetBundle(AssetBundle)"/>.

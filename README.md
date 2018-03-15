@@ -1,5 +1,4 @@
-
-# UnityEssentials
+# UnityTK
 
 This is a library of scripts for Unity Engine Projects.
 It contains several components almost every game project will need and can be used as a base-framework / toolbox for writing games.
@@ -28,4 +27,4 @@ Provides very simple interface and pre-built components to automate building uni
 
 Utility
 -----
-Provides utility for UnityEssentials itself and commonly used methods that are handy when working with unity. 
+Provides utility for UnityTK itself and commonly used methods that are handy when working with unity. 

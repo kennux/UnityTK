@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
-namespace UnityEssentials.DataBinding.Editor
+namespace UnityTK.DataBinding.Editor
 {
     [CustomPropertyDrawer(typeof(DataBindingFieldAttribute))]
     public class DataBindingFieldDrawer : PropertyDrawer

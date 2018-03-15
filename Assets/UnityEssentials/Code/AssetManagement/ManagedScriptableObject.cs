@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials.AssetManagement
+namespace UnityTK.AssetManagement
 {
     /// <summary>
     /// Base class that can be used for implementing manageable scriptable objects.

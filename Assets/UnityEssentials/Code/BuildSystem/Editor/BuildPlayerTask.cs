@@ -5,12 +5,12 @@ using UnityEditor;
 using System.Linq;
 using System.IO;
 
-namespace UnityEssentials.BuildSystem
+namespace UnityTK.BuildSystem
 {
     /// <summary>
     /// Build task that builds a player.
     /// </summary>
-    [CreateAssetMenu(fileName = "Build Player Task", menuName = "UnityEssentials/BuildSystem/Build Player Task")]
+    [CreateAssetMenu(fileName = "Build Player Task", menuName = "UnityTK/BuildSystem/Build Player Task")]
     public class BuildPlayerTask : BuildTask
     {
         [Header("Task")]

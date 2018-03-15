@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace UnityEssentials.BuildSystem
+namespace UnityTK.BuildSystem
 {
     /// <summary>
     /// Custom inspector implementation for <see cref="BuildJob"/>

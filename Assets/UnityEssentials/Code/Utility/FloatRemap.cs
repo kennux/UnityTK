@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     public static class FloatRemap
     {

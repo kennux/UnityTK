@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials.BuildSystem
+namespace UnityTK.BuildSystem
 {
     /// <summary>
     /// Abstract implementation of a build task that can be used on a <see cref="BuildJob"/>.

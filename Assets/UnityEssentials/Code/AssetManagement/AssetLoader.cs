@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials.AssetManagement
+namespace UnityTK.AssetManagement
 {
     /// <summary>
     /// Abstract class that defines and partially implements an interface for the <see cref="AssetManager"/> that is able to load assets.

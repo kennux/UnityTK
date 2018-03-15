@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     /// <summary>
     /// Object pool implementation that can be used to very efficiently pool objects.

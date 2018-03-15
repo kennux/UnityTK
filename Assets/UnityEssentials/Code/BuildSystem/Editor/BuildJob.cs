@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-namespace UnityEssentials.BuildSystem
+namespace UnityTK.BuildSystem
 {
     /// <summary>
     /// Build job implementation.
@@ -11,7 +11,7 @@ namespace UnityEssentials.BuildSystem
     /// 
     /// When the job is being executed by the <see cref="BuildSystem"/>, all tasks are being executed in order.
     /// </summary>
-    [CreateAssetMenu(fileName = "BuildJob", menuName = "UnityEssentials/BuildSystem/Job")]
+    [CreateAssetMenu(fileName = "BuildJob", menuName = "UnityTK/BuildSystem/Job")]
     public class BuildJob : ScriptableObject
     {
         /// <summary>

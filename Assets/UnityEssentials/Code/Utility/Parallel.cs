@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace UnityEssentials
+namespace UnityTK
 {    /// <summary>
      /// Unity Parallelism Helper
      /// </summary>

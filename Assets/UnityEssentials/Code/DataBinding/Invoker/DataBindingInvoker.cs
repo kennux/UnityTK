@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace UnityEssentials.DataBinding
+namespace UnityTK.DataBinding
 {
     /// <summary>
     /// Special databinding component that can be used to invoke a method on a parent node with arbitrary amount of parameters.

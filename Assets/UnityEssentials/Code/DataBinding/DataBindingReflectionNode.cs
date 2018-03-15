@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
-namespace UnityEssentials.DataBinding
+namespace UnityTK.DataBinding
 {
     /// <summary>
     /// Base class for <see cref="DataBindingNode"/>s which bind to an arbitrary object (<see cref="DataBinding.boundObject"/>) and provide its fields and properties via reflections as binding fields.

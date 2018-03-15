@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     /// <summary>
     /// Parent component property attribute that can be used to annotate fields which are being selected from a set of components gathered from the gameobject parents.

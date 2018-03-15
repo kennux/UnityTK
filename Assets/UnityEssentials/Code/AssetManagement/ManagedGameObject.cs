@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials.AssetManagement
+namespace UnityTK.AssetManagement
 {
     /// <summary>
     /// Implements the managed asset interface as monobehaviour component.

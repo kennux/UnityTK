@@ -5,7 +5,7 @@ using System;
 using System.Reflection;
 using System.Text;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     /// <summary>
     /// Static reflection cache class.

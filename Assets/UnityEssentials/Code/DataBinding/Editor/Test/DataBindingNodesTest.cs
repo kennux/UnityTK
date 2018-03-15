@@ -3,7 +3,7 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
 
-namespace UnityEssentials.DataBinding.Editor.Test
+namespace UnityTK.DataBinding.Editor.Test
 {
     public class DataBindingNodesTest
     {

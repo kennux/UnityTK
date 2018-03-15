@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials.AssetManagement
+namespace UnityTK.AssetManagement
 {
     /// <summary>
     /// This interface is used to implement managable assets.

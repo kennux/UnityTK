@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
-namespace UnityEssentials.Editor
+namespace UnityTK.Editor
 {
     /// <summary>
     /// Property drawer implementation for <see cref="ParentComponentAttribute"/>.

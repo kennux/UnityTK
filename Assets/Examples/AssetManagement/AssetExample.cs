@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEssentials.AssetManagement;
+using UnityTK.AssetManagement;
 
-[CreateAssetMenu(fileName = "AssetExample", menuName = "UnityEssentials/Examples/AssetExample")]
+[CreateAssetMenu(fileName = "AssetExample", menuName = "UnityTK/Examples/AssetExample")]
 public class AssetExample : ManagedScriptableObject
 {
     public string testStr;

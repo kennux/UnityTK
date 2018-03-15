@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace UnityEssentials.BuildSystem
+namespace UnityTK.BuildSystem
 {
     /// <summary>
     /// <see cref="BuildTask"/> which will build all asset bundles specified in the project.
     /// </summary>
-    [CreateAssetMenu(fileName = "Build AssetBundles Task", menuName = "UnityEssentials/BuildSystem/Build AssetBundles Task")]
+    [CreateAssetMenu(fileName = "Build AssetBundles Task", menuName = "UnityTK/BuildSystem/Build AssetBundles Task")]
     public class BuildAssetBundlesTask : BuildTask
     {
         [Header("Task")]

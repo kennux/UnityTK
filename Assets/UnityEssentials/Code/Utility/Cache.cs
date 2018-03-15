@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     /// <summary>
     /// Simple cache implementation that can map a cached entry to a specific key.

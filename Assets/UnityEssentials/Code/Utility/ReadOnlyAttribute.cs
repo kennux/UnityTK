@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace UnityEssentials.DataBinding
+namespace UnityTK.DataBinding
 {
     public class ReadOnlyAttribute : PropertyAttribute
     {

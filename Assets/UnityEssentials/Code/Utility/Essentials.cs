@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
-namespace UnityEssentials
+namespace UnityTK
 {
     /// <summary>
     /// Static utility class providing helper methods for several tasks.

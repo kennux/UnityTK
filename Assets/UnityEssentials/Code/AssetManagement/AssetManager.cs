@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnityEssentials.AssetManagement
+namespace UnityTK.AssetManagement
 {
     /// <summary>
     /// Main asset management class.
-    /// Provides high-level api to working with UnityEssentials's asset management system at runtime.
+    /// Provides high-level api to working with UnityTK's asset management system at runtime.
     /// 
     /// This system provides the following functionality:
     /// - Loading and unloading asset bundles at runtime
