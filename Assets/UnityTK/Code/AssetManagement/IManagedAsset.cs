@@ -14,6 +14,15 @@ namespace UnityTK.AssetManagement
     /// </summary>
     public interface IManagedAsset
     {
+        /// <summary>
+        /// An identifier that _must_ be unique.
+        /// Can be used to unambigously identify an asset or in order to overwrite assets.
+        /// </summary>
+        string identifier { get; }
+
+        /// <summary>
+        /// The name this asset has.
+        /// </summary>
         string name { get; }
 
         /// <summary>

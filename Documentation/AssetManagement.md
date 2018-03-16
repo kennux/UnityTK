@@ -29,6 +29,10 @@ Base-class for ScriptableObjects implementing IManagedAsset.
 ## AssetLoader
 
 Abstract implementation of an asset loader that can be extended to implement custom asset loaders (for example for loading content from a modding api).
+The asset loaders will be able to override prefabs, the asset loaders are being ran in the order they are in the scene.
+If an asset is loaded that has an identifier another loaded asset already has, the latest asset loaded with the identifier wins.
+This way asset loaders can override assets loaded from others.
+
 This base class has 2 default implementations:
 
 ### AssetBundleLoader
