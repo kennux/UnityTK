@@ -48,7 +48,7 @@ namespace UnityTK.DataBinding.Editor.Test
             go.SetActive(false);
 
             var element = go.AddComponent<DataBindingCollectionElement>();
-            element.SetElementType(typeof(DataBindingExample.Nest));
+            element.SetElementType(typeof(DataBindingTestExample.Nest));
             
             Text testStrText;
             CreateUITextGenericTemplatedLeaf(element, "testStr", out testStrText);
@@ -86,14 +86,14 @@ namespace UnityTK.DataBinding.Editor.Test
         public void DataBindingInvokerTest()
         {
             // Create root
-            DataBindingExample example;
+            DataBindingTestExample example;
             var root = DataBindingRootsTest.CreateRootWithTest(out example);
             example.testStr = "Teststring";
 
             // Create invoker
-            var parameterizedInvoker = CreateInvoker(root, typeof(DataBindingExample).GetMethod("Test3"));
-            var parameterLessInvoker = CreateInvoker(root, typeof(DataBindingExample).GetMethod("UnitTest"));
-            var returningInvoker = CreateInvoker(root, typeof(DataBindingExample).GetMethod("UnitTest2"));
+            var parameterizedInvoker = CreateInvoker(root, typeof(DataBindingTestExample).GetMethod("Test3"));
+            var parameterLessInvoker = CreateInvoker(root, typeof(DataBindingTestExample).GetMethod("UnitTest"));
+            var returningInvoker = CreateInvoker(root, typeof(DataBindingTestExample).GetMethod("UnitTest2"));
             parameterizedInvoker.SetParameterBinding(0, root, "testStr");
 
             // Expect debug logging from DataBindingExample.Test3
@@ -115,22 +115,22 @@ namespace UnityTK.DataBinding.Editor.Test
         public void DataBindingCollectionLeafTest()
         {
             // Create root
-            DataBindingExample example;
+            DataBindingTestExample example;
             var root = DataBindingRootsTest.CreateRootWithTest(out example);
 
             // Create collection leaf
             var collectionLeaf = CreateCollectionLeaf(root, "nestArray", CreateCollectionElementPrefab());
-            Assert.AreEqual(typeof(List<DataBindingExample.Nest>), collectionLeaf.boundType);
-            Assert.AreEqual(typeof(DataBindingExample.Nest), collectionLeaf.elementPrefab.boundType);
+            Assert.AreEqual(typeof(List<DataBindingTestExample.Nest>), collectionLeaf.boundType);
+            Assert.AreEqual(typeof(DataBindingTestExample.Nest), collectionLeaf.elementPrefab.boundType);
 
             // Set up test data
             example.nestArray.Clear();
-            example.nestArray.Add(new DataBindingExample.Nest()
+            example.nestArray.Add(new DataBindingTestExample.Nest()
             {
                 testNumber = 13371,
                 testStr = "lol"
             });
-            example.nestArray.Add(new DataBindingExample.Nest()
+            example.nestArray.Add(new DataBindingTestExample.Nest()
             {
                 testNumber = 13372,
                 testStr = "lol2"
@@ -162,7 +162,7 @@ namespace UnityTK.DataBinding.Editor.Test
         public void DataBindingGenericTemplatedLeafTest()
         {
             // Create root
-            DataBindingExample example;
+            DataBindingTestExample example;
             var root = DataBindingRootsTest.CreateRootWithTest(out example);
 
             // Create branch

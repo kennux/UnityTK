@@ -8,6 +8,11 @@ namespace UnityTK.AssetManagement.Editor.Test
 {
     public class AssetManagementTests
     {
+        public class AssetExample : ManagedScriptableObject
+        {
+
+        }
+
         private ManagedGameObject CreateManagedGameObject(string[] tags, string identifier, string name)
         {
             GameObject go = new GameObject("ManagedGO");

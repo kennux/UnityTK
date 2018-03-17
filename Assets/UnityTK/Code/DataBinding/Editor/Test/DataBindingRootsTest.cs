@@ -10,10 +10,10 @@ namespace UnityTK.DataBinding.Editor.Test
         /// <summary>
         /// Creates a databinding root binding to an instance of <see cref="DataBindingTest"/>.
         /// </summary>
-        public static DataBindingRoot CreateRootWithTest(out DataBindingExample testBindTarget)
+        public static DataBindingRoot CreateRootWithTest(out DataBindingTestExample testBindTarget)
         {
             var rootGo = new GameObject("Root");
-            testBindTarget = rootGo.AddComponent<DataBindingExample>();
+            testBindTarget = rootGo.AddComponent<DataBindingTestExample>();
             var root = rootGo.AddComponent<DataBindingRoot>();
             root.target = testBindTarget;
             root.Awake();
@@ -25,11 +25,11 @@ namespace UnityTK.DataBinding.Editor.Test
         public void DataBindingRootTest()
         {
             // Create root
-            DataBindingExample example;
+            DataBindingTestExample example;
             var root = CreateRootWithTest(out example);
 
             Assert.AreEqual(example, root.boundObject);
-            Assert.AreEqual(typeof(DataBindingExample), root.boundType);
+            Assert.AreEqual(typeof(DataBindingTestExample), root.boundType);
         }
     }
 }

@@ -27,14 +27,14 @@ namespace UnityTK.DataBinding.Editor.Test
         public void DataBindingBranchTest()
         {
             // Create root
-            DataBindingExample example;
+            DataBindingTestExample example;
             var root = DataBindingRootsTest.CreateRootWithTest(out example);
 
             // Create branch
             var branch = CreateBranch(root, "nest");
 
             Assert.AreEqual(example.nest, branch.boundObject);
-            Assert.AreEqual(typeof(DataBindingExample.Nest), branch.boundType);
+            Assert.AreEqual(typeof(DataBindingTestExample.Nest), branch.boundType);
         }
     }
 }
