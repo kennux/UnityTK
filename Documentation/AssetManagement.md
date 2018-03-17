@@ -50,11 +50,4 @@ Will use unity's `UnityEngine.Resources` API to retrieve data.
 The AssetManagement system itself does not come with any modding abilities at all.
 How modding is implemented is up to the game, the AssetManagement system just makes adding content to the game a lot easier via an abstract and generalized API.
 
-The intended workflow for modding is compiling the game's main code outside of the unitynengine into a DLL referencing unity engine dlls.
-The dll created by this compilation can be loaded into a plain project, assets can be created with the components from your game, and bundles can be exported.
-The exported bundles can be loaded back into the game with all scripting intact!
-
-An alternative approach would be to provide a mod-loader that parses mode content from XML/JSON/etc. and registers it to the AssetManager.
-You are only limited by your imagination :-)
-
 If the game uses the AssetManagement system to query for data mod content will automatically be available in the game.
