@@ -16,7 +16,7 @@ namespace UnityTK
 
 		public static void Register(T obj)
 		{
-            if (!Essentials.UnityIsNull(obj))
+            if (!Essentials.UnityIsNull(instance))
                 throw new InvalidOperationException("Tried registering a singleton that already has an instance set!");
 
 			instance = obj;
