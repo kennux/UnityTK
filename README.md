@@ -19,6 +19,11 @@ AssetManagement
 Asset bundle based asset management system that can be used to implement DLCs, Modding or just to seperate your assets into several asset bundles.
 It provides an abstract and easy to use api to query for assets previously loaded and registered.
 
+BehaviourModel
+----
+
+Provides several pre-built components that can be used to create abstract behaviour models and employ a modular component based architecture.
+
 BuildSystem
 ----
 

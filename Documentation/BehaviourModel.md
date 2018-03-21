@@ -1,0 +1,31 @@
+# BehaviourModel
+
+Provides pre-built components that can be used to create models of object behaviour and implement this behaviour in an abstract way.
+Using this pattern has the advantage of writing every game code modular and abstract.
+The main "Behaviour Model" does not know about any functionality that is being implemented, instead it only knows the functionality it will be providing.
+Components can then bind to activities, events, etc. and provide the actual implementation of the functionality the behaviour model implements.
+
+## Activity
+
+An activity can be started and stopped. A start or stop can fail.
+An example for an activity would be running in a first person shooter.
+When the player presses the run button, the activity is being started and its being stopped when the button is being released.
+
+## AttemptEvent
+
+A specialized event implementation that can be used to attempt something.
+An example use case for this would be firing a weapon, when the user presses the fire button, an attempt on a fire AttemptEvent is made.
+If the weapon can fire, it will fire and if not it will not and let the callee know about it.
+
+## MessageEvent
+
+Simple message event, just a very simple regular event implementation.
+
+## ModifiableValue
+
+Implements a datatype that can be used as a field that is assignable from unity editor and overridable / modifyable via code.
+
+## ModelProperty
+
+Implements a property with getter / setter. This comes with the limitation that the getter can only be set to one method, unlike the other events.
+Setting however can be implemented by multiple set event recievers.
