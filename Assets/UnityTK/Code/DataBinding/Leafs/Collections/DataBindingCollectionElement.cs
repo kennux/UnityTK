@@ -21,7 +21,7 @@ namespace UnityTK.DataBinding
         private object target;
 
         [SerializeField]
-        [ReadOnly]
+        [ReadOnlyInspectorAttribute]
         private string targetType;
 
         /// <summary>

@@ -27,10 +27,10 @@ namespace UnityTK.DataBinding
             /// <summary>
             /// The gameobject of the invoker this parameter is part of.
             /// </summary>
-            [ReadOnly]
+            [ReadOnlyInspectorAttribute]
             public GameObject invokerGo;
 
-            [ReadOnly]
+            [ReadOnlyInspectorAttribute]
             public string type;
 
             [DataBindingField]

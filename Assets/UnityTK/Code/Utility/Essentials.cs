@@ -13,6 +13,17 @@ namespace UnityTK
     public static class Essentials
     {
         /// <summary>
+        /// Returns a random item from the specified list.
+        /// </summary>
+        public static T RandomItem<T>(this List<T> lst)
+        {
+            if (lst.Count == 0)
+                return default(T);
+
+            return lst[UnityEngine.Random.Range(0, lst.Count - 1)];
+        }
+
+        /// <summary>
         /// Helper method that does "unity" null checks.
         /// Since fields which are referencing components which are null arent actually null in unity, this is a specialized null equality check to deal with this nonsense.
         /// </summary>

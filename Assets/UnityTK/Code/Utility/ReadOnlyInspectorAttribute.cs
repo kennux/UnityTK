@@ -8,14 +8,14 @@ using UnityEditor;
 
 namespace UnityTK.DataBinding
 {
-    public class ReadOnlyAttribute : PropertyAttribute
+    public class ReadOnlyInspectorAttribute : PropertyAttribute
     {
 
     }
 
 #if UNITY_EDITOR
-    [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
-    public class ReadOnlyDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(ReadOnlyInspectorAttribute))]
+    public class ReadOnlyInspectorDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property,
                                                 GUIContent label)

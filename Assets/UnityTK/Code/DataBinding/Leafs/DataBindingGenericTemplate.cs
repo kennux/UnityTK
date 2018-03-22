@@ -44,7 +44,7 @@ namespace UnityTK.DataBinding
         /// </summary>
 #pragma warning disable 414
         [SerializeField]
-        [ReadOnly]
+        [ReadOnlyInspectorAttribute]
         private bool _isValid;
 
         [ContextMenu("Validate")]
