@@ -18,7 +18,7 @@ namespace UnityTK.BehaviourModel
         /// <summary>
         /// Returns the mechanic on this model of type t.
         /// </summary>
-        public BehaviourModelMechanic GetMechanic<T>() where T : BehaviourModelMechanic
+        public T GetMechanic<T>() where T : BehaviourModelMechanic
         {
             return (T)GetMechanic(typeof(T));
         }
