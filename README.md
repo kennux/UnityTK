@@ -3,6 +3,14 @@
 This is a library of scripts for Unity Engine Projects.
 It contains several components almost every game project will need and can be used as a base-framework / toolbox for writing games.
 
+# How to use
+
+You can use UnityTK as git submodule:
+`git submodule init`
+`git submodule https://github.com/kennux/UnityTK`
+
+In order to sync the UnityTK submodule code to your unity project the bash script in Utility/update_unitytk.sh can be used.
+
 # Components
 
 DataBindings

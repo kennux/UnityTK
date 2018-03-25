@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityTK.BehaviourModel;
 
-public class BehaviourModelExample : MonoBehaviour
+public class BehaviourModelExampleMechanic : BehaviourModelMechanic
 {
     public ModifiableFloat rotationSpeed = new ModifiableFloat(10);
     public Activity rotate = new Activity();
     public AttemptEvent jump = new AttemptEvent();
     public MessageEvent rotateOnce = new MessageEvent();
     public ModelProperty<Vector3> euler = new ModelProperty<Vector3>();
+
+    protected override void SetupConstraints()
+    {
+        this.rotate.RegisterStartCondition(() => !this.rotate.IsActive());
+    }
 }

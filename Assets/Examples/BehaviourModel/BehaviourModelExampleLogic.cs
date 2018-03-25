@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityTK.BehaviourModel;
 
-public class BehaviourModelExampleLogic : MonoBehaviour
+public class BehaviourModelExampleLogic : BehaviourModelMechanicComponent<BehaviourModelExampleMechanic>
 {
-    public BehaviourModelExample model;
-
     [Header("Debug")]
     [SerializeField]
     private bool isRotating = false;
@@ -17,19 +15,20 @@ public class BehaviourModelExampleLogic : MonoBehaviour
     [SerializeField]
     private float jumpDir = 1;
 
-    public void Awake()
+    protected override void Awake()
     {
-        this.model.euler.SetGetter(() => this.transform.eulerAngles);
-        this.model.rotateOnce.handler += () => { this.transform.Rotate(Vector3.one, 100f); };
+        base.Awake();
+        this.mechanic.euler.SetGetter(() => this.transform.eulerAngles);
+        this.mechanic.rotateOnce.handler += () => { this.transform.Rotate(Vector3.one, 100f); };
 
-        this.model.rotate.RegisterActivityGetter(() => isRotating);
-        this.model.rotate.RegisterStartCondition(() => !isRotating && !isJumping);
-        this.model.rotate.RegisterStopCondition(() => isRotating);
-        this.model.rotate.onStart += () => this.isRotating = true;
-        this.model.rotate.onStop += () => this.isRotating = false;
+        this.mechanic.rotate.RegisterActivityGetter(() => isRotating);
+        this.mechanic.rotate.RegisterStartCondition(() => !isJumping);
+        this.mechanic.rotate.RegisterStopCondition(() => isRotating);
+        this.mechanic.rotate.onStart += () => this.isRotating = true;
+        this.mechanic.rotate.onStop += () => this.isRotating = false;
 
-        this.model.jump.RegisterCondition(() => !this.isRotating && !this.isJumping);
-        this.model.jump.onFire += () =>
+        this.mechanic.jump.RegisterCondition(() => !this.isRotating && !this.isJumping);
+        this.mechanic.jump.onFire += () =>
         {
             this.isJumping = true;
             this.jump = 0;
@@ -40,7 +39,7 @@ public class BehaviourModelExampleLogic : MonoBehaviour
     public void Update()
     {
         if (this.isRotating)
-            this.transform.Rotate(Vector3.one, this.model.rotationSpeed.Get() * Time.deltaTime);
+            this.transform.Rotate(Vector3.one, this.mechanic.rotationSpeed.Get() * Time.deltaTime);
 
         if (this.isJumping)
         {

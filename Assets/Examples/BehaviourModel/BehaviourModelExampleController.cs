@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityTK.BehaviourModel;
 
-public class BehaviourModelExampleController : MonoBehaviour
+public class BehaviourModelExampleController : BehaviourModelMechanicComponent<BehaviourModelExampleMechanic>
 {
-    public BehaviourModelExample model;
-
     private bool speedOverridden = false;
 
     public void Start()
     {
-        this.model.rotationSpeed.AddOverrideEvaluator(this.SpeedOverrideEvaluator, 0);
+        this.mechanic.rotationSpeed.AddOverrideEvaluator(this.SpeedOverrideEvaluator, 0);
     }
 
     public void Update()
@@ -24,25 +22,25 @@ public class BehaviourModelExampleController : MonoBehaviour
         */
         if (Input.GetKey(KeyCode.R))
         {
-            if (!this.model.rotate.IsActive())
-                this.model.rotate.TryStart();
+            if (!this.mechanic.rotate.IsActive())
+                this.mechanic.rotate.TryStart();
         }
-        else if (this.model.rotate.IsActive())
+        else if (this.mechanic.rotate.IsActive())
         {
-            this.model.rotate.TryStop();
+            this.mechanic.rotate.TryStop();
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
-            this.model.jump.Try();
+            this.mechanic.jump.Try();
 
         if (Input.GetKeyDown(KeyCode.I))
             this.speedOverridden = !this.speedOverridden;
 
         if (Input.GetKeyDown(KeyCode.O))
-            this.model.rotateOnce.Fire();
+            this.mechanic.rotateOnce.Fire();
 
         if (Input.GetKeyDown(KeyCode.P))
-            Debug.Log(this.model.euler.Get());
+            Debug.Log(this.mechanic.euler.Get());
     }
 
     private float SpeedOverrideEvaluator(float val)

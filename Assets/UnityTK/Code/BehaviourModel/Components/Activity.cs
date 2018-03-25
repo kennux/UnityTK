@@ -137,11 +137,6 @@ namespace UnityTK.BehaviourModel
 				canStart &= lst[i]();
 			return canStart;
 		}
-
-		public static implicit operator Activity(MessageEvent v)
-		{
-			throw new NotImplementedException();
-		}
 	}
 
 
