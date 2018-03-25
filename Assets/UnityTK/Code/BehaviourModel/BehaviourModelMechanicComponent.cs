@@ -20,14 +20,11 @@ namespace UnityTK.BehaviourModel
         /// Called in order to bind to all handlers of the <see cref="mechanic"/>.
         /// Called from <see cref="Awake"/>
         /// </summary>
-        protected void RegisterHandlers()
-        {
-
-        }
+        protected abstract void BindHandlers();
 
         protected virtual void Awake()
         {
-            this.RegisterHandlers();
+            this.BindHandlers();
         }
     }
 }

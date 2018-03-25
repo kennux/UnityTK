@@ -15,9 +15,8 @@ public class BehaviourModelExampleLogic : BehaviourModelMechanicComponent<Behavi
     [SerializeField]
     private float jumpDir = 1;
 
-    protected override void Awake()
+    protected override void BindHandlers()
     {
-        base.Awake();
         this.mechanic.euler.SetGetter(() => this.transform.eulerAngles);
         this.mechanic.rotateOnce.handler += () => { this.transform.Rotate(Vector3.one, 100f); };
 

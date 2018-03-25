@@ -7,11 +7,6 @@ public class BehaviourModelExampleController : BehaviourModelMechanicComponent<B
 {
     private bool speedOverridden = false;
 
-    public void Start()
-    {
-        this.mechanic.rotationSpeed.AddOverrideEvaluator(this.SpeedOverrideEvaluator, 0);
-    }
-
     public void Update()
     {
         /*
@@ -41,6 +36,11 @@ public class BehaviourModelExampleController : BehaviourModelMechanicComponent<B
 
         if (Input.GetKeyDown(KeyCode.P))
             Debug.Log(this.mechanic.euler.Get());
+    }
+
+    protected override void BindHandlers()
+    {
+        this.mechanic.rotationSpeed.AddOverrideEvaluator(this.SpeedOverrideEvaluator, 0);
     }
 
     private float SpeedOverrideEvaluator(float val)
