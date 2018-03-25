@@ -35,6 +35,35 @@ namespace UnityTK
         }
     }
 
+    public static class QueuePool<T>
+    {
+        public static ObjectPool<Queue<T>> pool = new ObjectPool<Queue<T>>(() => new Queue<T>(), 1000, (queue) => queue.Clear());
+
+        /// <summary>
+        /// <see cref="ObjectPool{T}.GetIfNull(ref T)"/>
+        /// </summary>
+        public static void GetIfNull(ref Queue<T> lst)
+        {
+            pool.GetIfNull(ref lst);
+        }
+
+        /// <summary>
+        /// <see cref="ObjectPool{T}.Get"/>
+        /// </summary>
+        public static Queue<T> Get()
+        {
+            return pool.Get();
+        }
+
+        /// <summary>
+        /// <see cref="ObjectPool{T}.Return(T, bool)"/>
+        /// </summary>
+        public static void Return(Queue<T> lst)
+        {
+            pool.Return(lst);
+        }
+    }
+
     public static class HashSetPool<T>
     {
         public static ObjectPool<HashSet<T>> pool = new ObjectPool<HashSet<T>>(() => new HashSet<T>(), 1000, (lst) => lst.Clear());

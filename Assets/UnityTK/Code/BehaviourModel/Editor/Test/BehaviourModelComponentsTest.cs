@@ -3,11 +3,55 @@ using UnityEditor;
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace UnityTK.BehaviourModel.Editor.Test
 {
     public class BehaviourModelComponentsTest
     {
+        [Test]
+        public void CollectionPropertyTest()
+        {
+            // Prepare
+            List<int> l1 = new List<int>(), l2 = new List<int>();
+            ModelCollectionProperty<int> collectionProperty = new ModelCollectionProperty<int>();
+
+            // Register getters for both lists
+            collectionProperty.RegisterGetter(() => l1);
+            collectionProperty.RegisterGetter(() => l2);
+
+            // Add an item on both lists
+            l1.Add(321);
+            l2.Add(123);
+
+            // Assert sequence equality
+            CollectionAssert.AreEqual(l1.Concat(l2), collectionProperty);
+
+            // Clear lists
+            l1.Clear();
+            l2.Clear();
+
+            // Set handlers
+            collectionProperty.onSetValue += (queue) =>
+            {
+                if (queue.Count > 0)
+                    l1.Add(queue.Dequeue());
+            };
+            collectionProperty.onSetValue += (queue) =>
+            {
+                if (queue.Count > 0)
+                    l2.Add(queue.Dequeue());
+            };
+
+            // Set data
+            collectionProperty.Set(new int[] { 123, 321 });
+
+            // Assert set data
+            Assert.AreEqual(123, l1[0]);
+            Assert.AreEqual(321, l2[0]);
+        }
+
         [Test]
         public void ActivityTest()
         {

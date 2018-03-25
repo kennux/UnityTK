@@ -32,6 +32,12 @@ Implements a datatype that can be used as a field that is assignable from unity 
 Implements a property with getter / setter. This comes with the limitation that the getter can only be set to one method, unlike the other events.
 Setting however can be implemented by multiple set event recievers.
 
+### ModelCollectionProperty
+
+Similar to ModelProperty but provides the ability to concat collections returned from the getters.
+This is useful in situations where you have for example an inventory mechanic property that lists all items but the items are held by multiple logic components (for example multiple bags).
+Setters can consume objects from the set call in order to claim them being set on themselves.
+
 ## Framework
 
 Provides a very simple set of base classes that can be extended to make use of the behaviour model components.
