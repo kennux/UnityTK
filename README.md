@@ -6,8 +6,9 @@ It contains several components almost every game project will need and can be us
 # How to use
 
 You can use UnityTK as git submodule:
-`git submodule init`
-`git submodule https://github.com/kennux/UnityTK`
+
+`git submodule init`  
+`git submodule add https://github.com/kennux/UnityTK`
 
 In order to sync the UnityTK submodule code to your unity project the bash script in Utility/update_unitytk.sh can be used.
 
