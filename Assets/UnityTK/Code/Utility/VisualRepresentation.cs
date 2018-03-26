@@ -127,7 +127,7 @@ namespace UnityTK
                 // Execute all draw calls
                 for (int j = 0; j < node.materials.Length; j++)
                 {
-                    Graphics.DrawMesh(node.mesh, this.transform.localToWorldMatrix * node.matrix, node.materials[j], 8, null, j, new MaterialPropertyBlock(), node.shadowMode, node.recieveShadows, node.probeAnchor, node.lightProbeUsage != LightProbeUsage.Off);
+                    Graphics.DrawMesh(node.mesh, this.transform.localToWorldMatrix * node.matrix, node.materials[j], 8, null, j, null, node.shadowMode, node.recieveShadows, node.probeAnchor, node.lightProbeUsage != LightProbeUsage.Off);
                 }
             }
         }
