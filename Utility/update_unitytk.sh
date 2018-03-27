@@ -4,6 +4,6 @@
 
 rm -Rf Assets/UnityTK
 cd UnityTK
-git pull
+git pull origin master
 cd ..
 cp -Rf UnityTK/Assets/UnityTK Assets/UnityTK
