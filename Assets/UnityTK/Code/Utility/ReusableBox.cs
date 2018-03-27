@@ -82,14 +82,11 @@ namespace UnityTK
             if (ReferenceEquals(obj, null))
                 return false;
 
-            // Can be casted to T && value equals casted to T?
-            var objType = obj.GetType();
-
-            // Perform manual type checks and casting
-            if (typeof(T).IsAssignableFrom(objType))
-                return this.Equals((T)obj);
-            else if (typeof(ReusableBox<T>).IsAssignableFrom(objType))
+            // Depending on type we change how equality is determined
+            if (obj is ReusableBox<T>)
                 return this.Equals((obj as ReusableBox<T>).value);
+            else if (obj is T)
+                return this.Equals((T)obj);
 
             return false;
         }
