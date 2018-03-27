@@ -6,28 +6,28 @@ using UnityEngine.Serialization;
 namespace UnityTK.BehaviourModel
 {
 	[System.Serializable]
-	public class ModifiableFloat : ModifiableValue<float>
+	public class ModelModifiableFloat : ModelModifiableValue<float>
 	{
-		public ModifiableFloat(float val) : base(val) { }
-		public ModifiableFloat() : base() { }
+		public ModelModifiableFloat(float val) : base(val) { }
+		public ModelModifiableFloat() : base() { }
 	}
 	[System.Serializable]
-	public class ModifiableInt : ModifiableValue<int>
+	public class ModelModifiableInt : ModelModifiableValue<int>
 	{
-		public ModifiableInt(int val) : base(val) { }
-		public ModifiableInt() : base() { }
+		public ModelModifiableInt(int val) : base(val) { }
+		public ModelModifiableInt() : base() { }
 	}
 
 	/// <summary>
-	/// Base class for a value that can be modified by code.
+	/// Base class for a field that can be modified by code.
 	/// This can be used on components if you want to provide an easy way to override them.
 	/// 
 	/// They need to be initialized with their base (usually in Awake()).
 	/// Note that this generic class cannot be used if unity serialization is needed.
 	/// For this purpose there are specialized variants of this class without generics available:
 	/// 
-	/// <see cref="ModifiableFloat"/>
-	/// <see cref="ModifiableInt"/>
+	/// <see cref="ModelModifiableFloat"/>
+	/// <see cref="ModelModifiableInt"/>
 	/// 
 	/// This class is unlike the <see cref="ModelProperty{T}"/> meant to be set by the editor instead of being set at runtime.
 	/// If you need a value that can only be obtained by runtime evaluation, you want to use <see cref="ModelProperty{T}"/>.
@@ -36,7 +36,7 @@ namespace UnityTK.BehaviourModel
 	/// When the value is evaluated (get) those evaluators are evaluated in ascending layer order.
 	/// </summary>
 	[System.Serializable]
-	public abstract class ModifiableValue<T>
+	public abstract class ModelModifiableValue<T>
 	{
 		/// <summary>
 		/// Override evaluator entry, essentially a tuple.
@@ -76,12 +76,12 @@ namespace UnityTK.BehaviourModel
 		private List<OverrideEvaluatorEntry> layers = new List<OverrideEvaluatorEntry>();
 		private bool _layerSortDirty = false;
 
-		public ModifiableValue(T baseValue)
+		public ModelModifiableValue(T baseValue)
 		{
 			this.baseValue = baseValue;
 		}
 
-		public ModifiableValue()
+		public ModelModifiableValue()
 		{
 
 		}

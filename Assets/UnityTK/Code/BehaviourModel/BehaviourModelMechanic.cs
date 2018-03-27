@@ -13,7 +13,7 @@ namespace UnityTK.BehaviourModel
     public abstract class BehaviourModelMechanic : BehaviourModelComponent
     {
         /// <summary>
-        /// Can be overridden to setup constraints, for example activity constraints so a fire activity cant be triggered while running (<see cref="Activity.RegisterStartCondition(Activity.Condition)"/>).
+        /// Can be overridden to setup constraints, for example activity constraints so a fire activity cant be triggered while running (<see cref="ModelActivity.RegisterStartCondition(ModelActivity.Condition)"/>).
         /// Called from <see cref="Awake"/>
         /// </summary>
         protected abstract void SetupConstraints();

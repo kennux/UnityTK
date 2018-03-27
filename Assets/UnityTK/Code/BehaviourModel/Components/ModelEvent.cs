@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace UnityTK.BehaviourModel
 {
-	/// <summary>
-	/// Simple message event, essentially a wrapper around a System.Action.
-	/// </summary>
-	public class MessageEvent<T>
+    /// <summary>
+    /// Simple event for behaviour models, essentially a wrapper around a System.Action.
+    /// </summary>
+    public class ModelEvent<T>
 	{
 		public event System.Action<T> handler;
 
@@ -19,9 +19,9 @@ namespace UnityTK.BehaviourModel
 	}
 
 	/// <summary>
-	/// Simple message event, essentially a wrapper around a System.Action.
+	/// Simple event for behaviour models, essentially a wrapper around a System.Action.
 	/// </summary>
-	public class MessageEvent
+	public class ModelEvent
 	{
 		public event System.Action handler;
 

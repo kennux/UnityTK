@@ -8,7 +8,7 @@ namespace UnityTK.BehaviourModel
     /// An attempt event type that can be used to model actions that can be attempted, like reloading a gun or firing a gun.
     /// The attempt event has a list of conditions that must be met in order to fire the event.
     /// </summary>
-    public class AttemptEvent<T>
+    public class ModelAttempt<T>
     {
         public delegate void Handler(T obj);
         public delegate bool Condition(T obj);
@@ -65,7 +65,7 @@ namespace UnityTK.BehaviourModel
     /// An attempt event type that can be used to model actions that can be attempted, like reloading a gun or firing a gun.
     /// The attempt event has a list of conditions that must be met in order to fire the event.
     /// </summary>
-    public class AttemptEvent<T1, T2>
+    public class ModdelAttempt<T1, T2>
     {
         public delegate void Handler(T1 obj1, T2 obj2);
         public delegate bool Condition(T1 obj1, T2 obj2);
@@ -122,7 +122,7 @@ namespace UnityTK.BehaviourModel
 	/// An attempt event type that can be used to model actions that can be attempted, like reloading a gun or firing a gun.
     /// The attempt event has a list of conditions that must be met in order to fire the event.
 	/// </summary>
-	public class AttemptEvent
+	public class ModelAttempt
 	{
         public delegate void Handler();
 		public delegate bool Condition();

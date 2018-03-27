@@ -7,23 +7,23 @@ Components can then bind to activities, events, etc. and provide the actual impl
 
 ## Components
 
-### Activity
+### ModelActivity
 
 An activity can be started and stopped. A start or stop can fail.
 An example for an activity would be running in a first person shooter.
 When the player presses the run button, the activity is being started and its being stopped when the button is being released.
 
-### AttemptEvent
+### ModelAttempt
 
 A specialized event implementation that can be used to attempt something.
 An example use case for this would be firing a weapon, when the user presses the fire button, an attempt on a fire AttemptEvent is made.
 If the weapon can fire, it will fire and if not it will not and let the callee know about it.
 
-### MessageEvent
+### ModelEvent
 
 Simple message event, just a very simple regular event implementation.
 
-### ModifiableValue
+### ModelModifiableValue
 
 Implements a datatype that can be used as a field that is assignable from unity editor and overridable / modifyable via code.
 
@@ -37,6 +37,10 @@ Setting however can be implemented by multiple set event recievers.
 Similar to ModelProperty but provides the ability to concat collections returned from the getters.
 This is useful in situations where you have for example an inventory mechanic property that lists all items but the items are held by multiple logic components (for example multiple bags).
 Setters can consume objects from the set call in order to claim them being set on themselves.
+
+### ModelFunction
+
+Similar to model event, but can only be bound to one handler. Unlike events this supports return values.
 
 ## Framework
 

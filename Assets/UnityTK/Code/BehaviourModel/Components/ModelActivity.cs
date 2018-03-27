@@ -10,7 +10,7 @@ namespace UnityTK.BehaviourModel
     /// An example for an activity would be running in a first person shooter.
     /// When the player presses the run button, the activity is being started and its being stopped when the button is being released.
 	/// </summary>
-	public class Activity
+	public class ModelActivity
 	{
 		public delegate void Callback();
 		public delegate bool Condition();
@@ -145,7 +145,7 @@ namespace UnityTK.BehaviourModel
     /// An example for an activity would be running in a first person shooter.
     /// When the player presses the run button, the activity is being started and its being stopped when the button is being released.
     /// </summary>
-    public class Activity<T> : MonoBehaviour
+    public class ModelActivity<T> : MonoBehaviour
 	{
 		public delegate void Callback(T obj);
 		public delegate void CallbackNoParam();

@@ -11,6 +11,53 @@ namespace UnityTK.BehaviourModel.Editor.Test
     public class BehaviourModelComponentsTest
     {
         [Test]
+        public void ModelFunctionTest()
+        {
+            ModelFunction<int> function = new ModelFunction<int>();
+            function.BindHandler(() => 123);
+
+            Assert.AreEqual(123, function.Invoke());
+
+            LogAssert.Expect(LogType.Error, "Invoked ModelFunction with no function bound!");
+            Assert.AreEqual(default(int), new ModelFunction<int>().Invoke());
+
+            // Test generic versions
+            _ModelFunctionT1Test();
+            _ModelFunctionT1T2Test();
+        }
+
+        private void _ModelFunctionT1Test()
+        {
+            ModelFunction<int, int> function = new ModelFunction<int, int>();
+            function.BindHandler((i) =>
+            {
+                Assert.AreEqual(1337, i);
+                return 123;
+            });
+
+            Assert.AreEqual(123, function.Invoke(1337));
+
+            LogAssert.Expect(LogType.Error, "Invoked ModelFunction with no function bound!");
+            Assert.AreEqual(default(int), new ModelFunction<int, int>().Invoke(1));
+        }
+
+        private void _ModelFunctionT1T2Test()
+        {
+            ModelFunction<int, int, int> function = new ModelFunction<int, int, int>();
+            function.BindHandler((i, j) =>
+            {
+                Assert.AreEqual(1337, i);
+                Assert.AreEqual(1338, j);
+                return 123;
+            });
+
+            Assert.AreEqual(123, function.Invoke(1337, 1338));
+
+            LogAssert.Expect(LogType.Error, "Invoked ModelFunction with no function bound!");
+            Assert.AreEqual(default(int), new ModelFunction<int, int, int>().Invoke(1,2));
+        }
+
+        [Test]
         public void CollectionPropertyTest()
         {
             // Prepare
@@ -53,12 +100,12 @@ namespace UnityTK.BehaviourModel.Editor.Test
         }
 
         [Test]
-        public void ActivityTest()
+        public void ModelActivityTest()
         {
             bool isActive = false, startCondition = false, stopCondition = false;
             bool onJustStart = false, onJustStop = false, onJustFailStart = false, onJustFailStop = false;
 
-            Activity activity = new Activity();
+            ModelActivity activity = new ModelActivity();
             activity.RegisterActivityGetter(() => isActive);
             activity.RegisterStartCondition(() => startCondition);
             activity.RegisterStopCondition(() => stopCondition);
@@ -108,7 +155,7 @@ namespace UnityTK.BehaviourModel.Editor.Test
             bool onJustStart = false, onJustStop = false, onJustFailStart = false, onJustFailStop = false;
             int p = 123;
 
-            Activity<int> activity = new Activity<int>();
+            ModelActivity<int> activity = new ModelActivity<int>();
             activity.RegisterActivityGetter(() => isActive);
             activity.RegisterStartCondition((test) => { Assert.AreEqual(p, test); return startCondition; });
             activity.RegisterStopCondition(() => stopCondition);
@@ -152,18 +199,18 @@ namespace UnityTK.BehaviourModel.Editor.Test
         }
 
         [Test]
-        public void MessageEventTest()
+        public void ModelEventTest()
         {
             int p = 123;
             bool wasCalled = false;
-            MessageEvent msgEvt = new MessageEvent();
+            ModelEvent msgEvt = new ModelEvent();
             msgEvt.handler += () => { wasCalled = true; };
 
             msgEvt.Fire();
             Assert.IsTrue(wasCalled);
             wasCalled = false;
 
-            MessageEvent<int> msgEvtT = new MessageEvent<int>();
+            ModelEvent<int> msgEvtT = new ModelEvent<int>();
             msgEvtT.handler += (test) => { Assert.AreEqual(p, test); wasCalled = true; };
 
             msgEvtT.Fire(p);
@@ -191,9 +238,9 @@ namespace UnityTK.BehaviourModel.Editor.Test
         }
 
         [Test]
-        public void ModifiableValueTest()
+        public void ModelModifiableValueTest()
         {
-            ModifiableInt integer = new ModifiableInt(100);
+            ModelModifiableInt integer = new ModelModifiableInt(100);
 
             Assert.AreEqual(100, integer.Get());
 
@@ -208,10 +255,10 @@ namespace UnityTK.BehaviourModel.Editor.Test
         }
 
         [Test]
-        public void AttemptEventTest()
+        public void ModelAttemptTest()
         {
             bool condition = false, onFireCalled = false, onFailCalled = false;
-            AttemptEvent attempt = new AttemptEvent();
+            ModelAttempt attempt = new ModelAttempt();
             attempt.RegisterCondition(() => condition);
             attempt.onFire += () => { onFireCalled = true; };
             attempt.onFail += () => { onFailCalled = true; };
@@ -229,15 +276,15 @@ namespace UnityTK.BehaviourModel.Editor.Test
             Assert.IsTrue(attempt.Try());
             Assert.IsTrue(onFireCalled);
 
-            _AttemptEventTTest();
-            _AttemptEventT1T2Test();
+            _ModelAttemptTTest();
+            _ModelAttemptT1T2Test();
         }
 
-        private void _AttemptEventTTest()
+        private void _ModelAttemptTTest()
         {
             int p = 123;
             bool condition = false, onFireCalled = false, onFailCalled = false;
-            AttemptEvent<int> attempt = new AttemptEvent<int>();
+            ModelAttempt<int> attempt = new ModelAttempt<int>();
             attempt.RegisterCondition((test) => { Assert.AreEqual(p, test); return condition; });
             attempt.onFire += (test) => { Assert.AreEqual(p, test); onFireCalled = true; };
             attempt.onFail += (test) => { Assert.AreEqual(p, test); onFailCalled = true; };
@@ -256,11 +303,11 @@ namespace UnityTK.BehaviourModel.Editor.Test
             Assert.IsTrue(onFireCalled);
         }
 
-        private void _AttemptEventT1T2Test()
+        private void _ModelAttemptT1T2Test()
         {
             int p = 123, p2 = 1337;
             bool condition = false, onFireCalled = false, onFailCalled = false;
-            AttemptEvent<int, int> attempt = new AttemptEvent<int, int>();
+            ModdelAttempt<int, int> attempt = new ModdelAttempt<int, int>();
             attempt.RegisterCondition((test, test2) => { Assert.AreEqual(p, test); Assert.AreEqual(p2, test2); return condition; });
             attempt.onFire += (test, test2) => { Assert.AreEqual(p, test); Assert.AreEqual(p2, test2); onFireCalled = true; };
             attempt.onFail += (test, test2) => { Assert.AreEqual(p, test); Assert.AreEqual(p2, test2); onFailCalled = true; };

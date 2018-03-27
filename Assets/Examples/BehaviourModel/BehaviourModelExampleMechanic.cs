@@ -5,10 +5,10 @@ using UnityTK.BehaviourModel;
 
 public class BehaviourModelExampleMechanic : BehaviourModelMechanic
 {
-    public ModifiableFloat rotationSpeed = new ModifiableFloat(10);
-    public Activity rotate = new Activity();
-    public AttemptEvent jump = new AttemptEvent();
-    public MessageEvent rotateOnce = new MessageEvent();
+    public ModelModifiableFloat rotationSpeed = new ModelModifiableFloat(10);
+    public ModelActivity rotate = new ModelActivity();
+    public ModelAttempt jump = new ModelAttempt();
+    public ModelEvent rotateOnce = new ModelEvent();
     public ModelProperty<Vector3> euler = new ModelProperty<Vector3>();
 
     protected override void SetupConstraints()
