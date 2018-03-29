@@ -58,7 +58,7 @@ namespace UnityTK.BehaviourModel.Editor.Test
         }
 
         [Test]
-        public void CollectionPropertyTest()
+        public void ModelCollectionPropertyTest()
         {
             // Prepare
             List<int> l1 = new List<int>(), l2 = new List<int>();
@@ -97,6 +97,27 @@ namespace UnityTK.BehaviourModel.Editor.Test
             // Assert set data
             Assert.AreEqual(123, l1[0]);
             Assert.AreEqual(321, l2[0]);
+
+            // Append insertion handlers
+            collectionProperty.RegisterInsertHandler((obj) =>
+            {
+                return false;
+            });
+            collectionProperty.RegisterInsertHandler((obj) =>
+            {
+                if (obj != 456)
+                    return false;
+
+                l2.Add(obj);
+                return true;
+            });
+
+            // Insert
+            Assert.IsTrue(collectionProperty.Insert(456));
+            Assert.IsFalse(collectionProperty.Insert(1234));
+
+            // Assert insertion worked
+            Assert.AreEqual(456, l2[1]);
         }
 
         [Test]
