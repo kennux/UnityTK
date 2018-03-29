@@ -80,44 +80,71 @@ namespace UnityTK.BehaviourModel.Editor.Test
             l2.Clear();
 
             // Set handlers
-            collectionProperty.onSetValue += (queue) =>
+            collectionProperty.RegisterInsertHandler((i) =>
             {
-                if (queue.Count > 0)
-                    l1.Add(queue.Dequeue());
-            };
-            collectionProperty.onSetValue += (queue) =>
+                if (i != 123)
+                    return false;
+
+                l1.Add(i);
+                return true;
+            });
+            collectionProperty.RegisterInsertHandler((i) =>
             {
-                if (queue.Count > 0)
-                    l2.Add(queue.Dequeue());
-            };
+                l2.Add(i);
+                return true;
+            });
 
             // Set data
-            collectionProperty.Set(new int[] { 123, 321 });
+            collectionProperty.Insert(123);
+            collectionProperty.Insert(321);
 
             // Assert set data
             Assert.AreEqual(123, l1[0]);
             Assert.AreEqual(321, l2[0]);
 
-            // Append insertion handlers
-            collectionProperty.RegisterInsertHandler((obj) =>
+            // Append removal handlers
+            collectionProperty.RegisterRemovalHandler((i) =>
             {
+                if (l1.Contains(i))
+                {
+                    l1.Remove(i);
+                    return true;
+                }
+                else if (l2.Contains(i))
+                {
+                    l2.Remove(i);
+                    return true;
+                }
+
                 return false;
             });
-            collectionProperty.RegisterInsertHandler((obj) =>
-            {
-                if (obj != 456)
-                    return false;
 
-                l2.Add(obj);
-                return true;
-            });
+            Assert.IsFalse(collectionProperty.Remove(456));
+            Assert.IsTrue(collectionProperty.Remove(123));
+            Assert.AreEqual(0, l1.Count);
 
-            // Insert
-            Assert.IsTrue(collectionProperty.Insert(456));
-            Assert.IsFalse(collectionProperty.Insert(1234));
+            // Test ICollection methods
+            collectionProperty = new ModelCollectionProperty<int>();
+            l1 = new List<int>();
+            collectionProperty.RegisterGetter(() => l1);
+            collectionProperty.RegisterInsertHandler((i) => { l1.Add(i); return true; });
+            collectionProperty.RegisterRemovalHandler((i) => l1.Remove(i));
 
-            // Assert insertion worked
-            Assert.AreEqual(456, l2[1]);
+            ICollection<int> collection = collectionProperty;
+            collection.Add(123);
+            collection.Add(321);
+
+            Assert.IsTrue(collection.Contains(321));
+            Assert.AreEqual(2, collection.Count);
+            Assert.IsFalse(collection.IsReadOnly);
+            Assert.IsTrue(((ICollection<int>)new ModelCollectionProperty<int>()).IsReadOnly);
+
+            int[] test = new int[2];
+            collection.CopyTo(test, 0);
+            CollectionAssert.AreEqual(collection, test);
+
+            collection.Clear();
+            Assert.AreEqual(0, collection.Count);
         }
 
         [Test]
