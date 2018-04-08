@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -21,6 +22,42 @@ namespace UnityTK
                 return default(T);
 
             return lst[UnityEngine.Random.Range(0, lst.Count - 1)];
+        }
+
+        /// <summary>
+        /// Returns a random item from the specified array.
+        /// </summary>
+        public static T RandomItem<T>(this T[] array)
+        {
+            if (array.Length == 0)
+                return default(T);
+
+            return array[UnityEngine.Random.Range(0, array.Length - 1)];
+        }
+
+        /// <summary>
+        /// Creates an enumerator for a coroutine being called in delay seconds.
+        /// </summary>
+        public static IEnumerator DelayedInvokeRoutine(Action action, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            action();
+        }
+
+        /// <summary>
+        /// Sends the specified message to all gameobjects recursively.
+        /// </summary>
+        public static void SendMessageRecursively(this GameObject gameObject, string methodName, object parameter = null, SendMessageOptions sendMessageOptions = SendMessageOptions.DontRequireReceiver)
+        {
+            foreach (Transform transform in gameObject.transform)
+            {
+                SendMessageRecursively(transform.gameObject, methodName, parameter, sendMessageOptions);
+            }
+
+            if (parameter == null)
+                gameObject.SendMessage(methodName, sendMessageOptions);
+            else
+                gameObject.SendMessage(methodName, parameter, sendMessageOptions);
         }
 
         /// <summary>
