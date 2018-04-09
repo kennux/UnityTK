@@ -36,6 +36,17 @@ namespace UnityTK
         }
 
         /// <summary>
+        /// Combines 2 hash codes (<see cref="object.GetHashCode"/>).
+        /// </summary>
+        /// <param name="h">Hashcode 1</param>
+        /// <param name="h2">Hashcode 2</param>
+        /// <returns>A new hashcode that combines h1 and h2</returns>
+        public static int CombineHashCodes(int h, int h2)
+        {
+            return ((h << 5) + h) ^ h2;
+        }
+
+        /// <summary>
         /// Creates an enumerator for a coroutine being called in delay seconds.
         /// </summary>
         public static IEnumerator DelayedInvokeRoutine(Action action, float delay)
@@ -62,7 +73,7 @@ namespace UnityTK
 
         /// <summary>
         /// Helper method that does "unity" null checks.
-        /// Since fields which are referencing components which are null arent actually null in unity, this is a specialized null equality check to deal with this nonsense.
+        /// Since fields which are referencing components which are null arent actually null in unity, this is a specialized null equality check to deal with this situation.
         /// </summary>
         public static bool UnityIsNull(object obj)
         {
