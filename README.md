@@ -38,7 +38,14 @@ BuildSystem
 
 Provides very simple interface and pre-built components to automate building unity projects.
 
+Audio
+----
+
+The UnityTK audio system provides a very simple and lightweight abstraction layer on top of the unity engine audio system.
+It provides the ability to construct game sound systems using events.
 
 Utility
 -----
-Provides utility for UnityTK itself and commonly used methods that are handy when working with unity. 
+
+Provides utility for UnityTK itself and commonly used methods that are handy when working with unity.
+
