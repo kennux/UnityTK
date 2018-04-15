@@ -251,6 +251,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1710074225}
   - component: {fileID: 1710074224}
+  - component: {fileID: 1710074226}
   m_Layer: 0
   m_Name: _TESTS_
   m_TagString: Untagged
@@ -282,6 +283,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1710074226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1710074223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7b0101bf0b40a849a833ece46ac1b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1789690662
 GameObject:
   m_ObjectHideFlags: 0
