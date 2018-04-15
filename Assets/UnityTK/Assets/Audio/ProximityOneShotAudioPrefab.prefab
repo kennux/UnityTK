@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volume: 0
-  fadeout:
+  proximityFadeout:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 2
