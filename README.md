@@ -12,7 +12,7 @@ You can use UnityTK as git submodule:
 
 In order to sync the UnityTK submodule code to your unity project the bash script in Utility/update_unitytk.sh can be used.
 
-# Components
+# Modules
 
 DataBindings
 -----
