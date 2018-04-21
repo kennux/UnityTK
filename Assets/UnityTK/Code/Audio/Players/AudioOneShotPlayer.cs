@@ -15,7 +15,8 @@ namespace UnityTK.Audio
         public enum PlaybackType
         {
             WORLDSPACE,
-            PROXIMITY
+            PROXIMITY,
+            NONSPATIAL
         }
 
         /// <summary>
@@ -24,25 +25,31 @@ namespace UnityTK.Audio
         public struct Playback
         {
             public PlaybackType type;
-            public AudioSource source;
+            public IUTKAudioSource source;
             public AudioEvent evt;
         }
 
         public static AudioOneShotPlayer instance { get { return UnitySingleton<AudioOneShotPlayer>.Get(); } }
 
         [Header("Prefabs")]
-        public AudioSource worldspacePrefab;
+        public UTKAudioSource worldspacePrefab;
         public ProximityBasedAudio proximityBasedPrefab;
+        public NonSpatialAudioSource nonSpatialPrefab;
 
         /// <summary>
         /// Audio sources used for worldspace playback.
         /// </summary>
-        private ObjectPool<AudioSource> worldspaceAudioSources;
+        private ObjectPool<UTKAudioSource> worldspaceAudioSources;
 
         /// <summary>
         /// Audio sources used for proximity based playback.
         /// </summary>
-        private ObjectPool<AudioSource> proximityAudioSources;
+        private ObjectPool<ProximityBasedAudio> proximityAudioSources;
+
+        /// <summary>
+        /// Audio sources used for non spatial playback.
+        /// </summary>
+        private ObjectPool<NonSpatialAudioSource> nonSpatialAudioSources;
 
         /// <summary>
         /// All currently ongoing playbacks.
@@ -52,55 +59,40 @@ namespace UnityTK.Audio
         public void Awake()
         {
             UnitySingleton<AudioOneShotPlayer>.Register(this);
-            this.worldspaceAudioSources = new ObjectPool<AudioSource>(this.CreateWorldspaceAudioSource, 250, this.ReturnWorldspaceAudioSource);
-            this.proximityAudioSources = new ObjectPool<AudioSource>(this.CreateProximityAudioSource, 250, this.ReturnProximityAudioSource);
+            this.worldspaceAudioSources = new ObjectPool<UTKAudioSource>(() => this.CreateAudioSource<UTKAudioSource>(this.worldspacePrefab, this.ReturnAudioSource), 250, this.ReturnAudioSource);
+            this.proximityAudioSources = new ObjectPool<ProximityBasedAudio>(() => this.CreateAudioSource<ProximityBasedAudio>(this.proximityBasedPrefab, this.ReturnAudioSource), 250, this.ReturnAudioSource);
+            this.nonSpatialAudioSources = new ObjectPool<NonSpatialAudioSource>(() => this.CreateAudioSource<NonSpatialAudioSource>(this.nonSpatialPrefab, this.ReturnAudioSource), 250, this.ReturnAudioSource);
         }
 
-        private void ReturnProximityAudioSource(AudioSource source)
+        /// <summary>
+        /// Generic audio source return method called when audio sources are being returned into the pools.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        private void ReturnAudioSource<T>(T source) where T : UTKAudioSource
         {
+            // Stop playing and reset
             source.Stop();
+            source.ResetConfig();
 
-            source.gameObject.SetActive(false);
-            source.transform.parent = this.transform;
-        }
-
-        private void ReturnWorldspaceAudioSource(AudioSource source)
-        {
-            source.Stop();
-
-            source.spatialBlend = 1;
-            source.panStereo = 0;
-
+            // Setup gameobject
             source.gameObject.SetActive(false);
             source.transform.parent = this.transform;
             source.transform.localPosition = Vector3.zero;
             source.transform.localRotation = Quaternion.identity;
         }
 
-        private AudioSource CreateProximityAudioSource()
+        /// <summary>
+        /// Creates an audio source instance from a prefab and initializes it using the initializer.
+        /// </summary>
+        private T CreateAudioSource<T> (T prefab, System.Action<T> initializer) where T : UTKAudioSource
         {
             // Create
-            GameObject go = Instantiate(this.proximityBasedPrefab.gameObject);
-            AudioSource source = go.GetComponent<AudioSource>();
-            ProximityBasedAudio proximity = go.GetComponent<ProximityBasedAudio>();
+            GameObject go = Instantiate(prefab.gameObject);
+            T source = go.GetComponent<T>();
 
-            // TODO: Proximity stuff
-
-            // Prepare
-            ReturnWorldspaceAudioSource(source);
-
-            return source;
-        }
-
-        private AudioSource CreateWorldspaceAudioSource()
-        {
-            // Create
-            GameObject go = Instantiate(this.worldspacePrefab.gameObject);
-            AudioSource source = go.GetComponent<AudioSource>();
-
-            // Prepare
-            ReturnWorldspaceAudioSource(source);
-
+            // Run initializer
+            initializer(source);
             return source;
         }
 
@@ -119,18 +111,53 @@ namespace UnityTK.Audio
             {
                 var playback = this.playbacks[stopped[i]];
                 this.playbacks.RemoveAt(stopped[i] - i);
-
-                ObjectPool<AudioSource> pool = null;
+                
                 switch (playback.type)
                 {
-                    case PlaybackType.PROXIMITY: pool = this.proximityAudioSources; break;
-                    case PlaybackType.WORLDSPACE: pool = this.worldspaceAudioSources; break;
+                    case PlaybackType.PROXIMITY: this.proximityAudioSources.Return(playback.source as ProximityBasedAudio); break;
+                    case PlaybackType.WORLDSPACE: this.worldspaceAudioSources.Return(playback.source as UTKAudioSource); break;
+                    case PlaybackType.NONSPATIAL: this.nonSpatialAudioSources.Return(playback.source as NonSpatialAudioSource); break;
                 }
-
-                pool.Return(playback.source);
             }
 
             ListPool<int>.Return(stopped);
+        }
+
+        /// <summary>
+        /// Generic implementation for playing a specific event.
+        /// 
+        /// <see cref="PlayNonSpatial(AudioEvent)"/>
+        /// <see cref="PlayProximity(AudioEvent, GameObject)"/>
+        /// <see cref="PlayWorldspace(AudioEvent, GameObject)"/>
+        /// </summary>
+        /// <typeparam name="T">The audio source type.</typeparam>
+        /// <param name="evt">The event to play</param>
+        /// <param name="source">The source on where to play it.</param>
+        /// <returns>The created playback of the event.</returns>
+        private Playback Play<T>(AudioEvent evt, T source, PlaybackType type) where T : IUTKAudioSource
+        {
+            evt.Play(source);
+
+            var playback = new Playback()
+            {
+                evt = evt,
+                source = source,
+                type = type
+            };
+            this.playbacks.Add(playback);
+            return playback;
+        }
+
+        /// <summary>
+        /// Plays the specified event once on a <see cref="NonSpatialAudioSource"/>.
+        /// </summary>
+        /// <param name="evt">The event to play</param>
+        public Playback PlayNonSpatial(AudioEvent evt)
+        {
+            var source = this.nonSpatialAudioSources.Get();
+            source.gameObject.SetActive(true);
+            Playback playback = Play(evt, source, PlaybackType.NONSPATIAL);
+            return playback;
         }
 
         /// <summary>
@@ -146,21 +173,13 @@ namespace UnityTK.Audio
         /// <param name="player">The object which is playing the event.</param>
         public Playback PlayProximity(AudioEvent evt, GameObject player)
         {
-            var source = this.worldspaceAudioSources.Get();
+            var source = this.proximityAudioSources.Get();
+            source.gameObject.SetActive(true);
+            Playback playback = Play(evt, source, PlaybackType.PROXIMITY);
 
-            source.transform.parent = this.transform;
+            source.transform.parent = player.transform;
             source.transform.localPosition = Vector3.zero;
             source.transform.localRotation = Quaternion.identity;
-            source.gameObject.SetActive(true);
-            evt.Play(source);
-
-            var playback = new Playback()
-            {
-                evt = evt,
-                source = source,
-                type = PlaybackType.PROXIMITY
-            };
-            this.playbacks.Add(playback);
             return playback;
         }
 
@@ -177,20 +196,12 @@ namespace UnityTK.Audio
         public Playback PlayWorldspace(AudioEvent evt, GameObject player)
         {
             var source = this.worldspaceAudioSources.Get();
+            source.gameObject.SetActive(true);
+            Playback playback = Play(evt, source, PlaybackType.WORLDSPACE);
 
-            source.transform.parent = this.transform;
+            source.transform.parent = player.transform;
             source.transform.localPosition = Vector3.zero;
             source.transform.localRotation = Quaternion.identity;
-            source.gameObject.SetActive(true);
-            evt.Play(source);
-
-            var playback = new Playback()
-            {
-                evt = evt,
-                source = source,
-                type = PlaybackType.WORLDSPACE
-            };
-            this.playbacks.Add(playback);
             return playback;
         }
     }

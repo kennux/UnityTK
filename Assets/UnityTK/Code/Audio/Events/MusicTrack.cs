@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace UnityTK.Audio
 {
+    /// <summary>
+    /// Audio event implementation specifically built for music playback with <see cref="MusicPlayer"/>.
+    /// </summary>
     [CreateAssetMenu(fileName = "MusicTrack", menuName = "UnityTK/Audio/Music Track")]
     public class MusicTrack : AudioEvent
     {
@@ -25,10 +28,9 @@ namespace UnityTK.Audio
         /// <summary>
         /// Plays <see cref="clip"/>
         /// </summary>
-        public override void Play(AudioSource audioSource)
+        public override void Play(IUTKAudioSource source, bool loop = false)
         {
-            audioSource.clip = this.clip;
-            audioSource.Play();
+            source.Play(this.clip, loop);
         }
     }
 }

@@ -14,11 +14,11 @@ namespace UnityTK.Audio.Editor
     public class AudioEventEditor : UnityEditor.Editor
     {
 
-        [SerializeField] private AudioSource _previewer;
+        [SerializeField] private NonSpatialAudioSource _previewer;
 
         public void OnEnable()
         {
-            _previewer = EditorUtility.CreateGameObjectWithHideFlags("Audio preview", HideFlags.HideAndDontSave, typeof(AudioSource)).GetComponent<AudioSource>();
+            _previewer = EditorUtility.CreateGameObjectWithHideFlags("Audio preview", HideFlags.HideAndDontSave, typeof(NonSpatialAudioSource)).GetComponent<NonSpatialAudioSource>();
         }
 
         public void OnDisable()

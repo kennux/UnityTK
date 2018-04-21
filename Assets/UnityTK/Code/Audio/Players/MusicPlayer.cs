@@ -18,7 +18,7 @@ namespace UnityTK.Audio
         /// <summary>
         /// The audio source for playback.
         /// </summary>
-        public AudioSource audioSource;
+        public NonSpatialAudioSource audioSource;
 
         /// <summary>
         /// The audio source for playback of the next track (for fading).
@@ -97,7 +97,7 @@ namespace UnityTK.Audio
         private void OnValidate()
         {
             if (Essentials.UnityIsNull(this.audioSource))
-                this.audioSource = this.GetComponent<AudioSource>();
+                this.audioSource = this.GetComponent<NonSpatialAudioSource>();
         }
 
         private void Awake()

@@ -10,11 +10,31 @@ This abstract layer is used to very easily tweak sound behaviour with scriptable
 
 ### SimpleAudioEvent
 
-Audio event implementation which simply plays an AudioClip on an AudioSource.
+Audio event implementation which simply plays an AudioClip on an arbitrary UnityTK audio source implementation.
+It is designed for spatial audio playback, but can also be used for non-spatial playback.
 
 ### MusicTrack
 
-Specialized audio event to be used for music playback.
+Specialized audio event to be used for music playback with the MusicPlayer.
+
+## UnityTK AudioSource
+
+The audio system is built upon an audio source abstraction layer on top of the unity audio system.
+This layer gives UnityTK the ability to implement arbitrary audio playback behaviour.
+
+### UTKAudioSource
+
+Simple wrapper on top of AudioSource, can be used for "regular" audio sources.
+Will always use 3d spatial blending for playback!
+
+### ProximityBasedAudioSource
+
+An audio source that can be used to play back sounds with 2d spatial blending.
+The audio volume and stereo panning will be calculated by the audio source's proximity to the screen center.
+
+### NonSpatialAudioSource
+
+A special audio source that will never take any spatial data into account and instead plays back sounds at a constant sound level.
 
 ## Player
 
@@ -39,11 +59,6 @@ Proximity player / manager behaviour needed in the scene in order to use Proximi
 Configuration can be tweaked to change how proximity is calculated.
 
 ## Utility
-
-### ProximityBasedAudio
-
-Provides audio simulation for objects which should be simulated in camera space.
-Controls the audio source volume and stereo panning cased on the object's camera space position.
 
 ### AudioOneShotOnClick
 

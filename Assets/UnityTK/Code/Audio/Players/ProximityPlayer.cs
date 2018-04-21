@@ -38,6 +38,9 @@ namespace UnityTK.Audio
         public float GetProximity(Transform transform, out float panStereo)
         {
             RectTransform rTransform = (transform as RectTransform);
+            if (ReferenceEquals(rTransform, null))
+                rTransform = (transform.parent as RectTransform); // For some (scripting) cases, the transforms are being assigned a rect transform child even tho they are not rect transforms themselves! Here we catch this
+
             Vector3 v = default(Vector3);
             if (ReferenceEquals(rTransform, null))
             {

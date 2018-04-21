@@ -51,3 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8700d110cf04884693742b7a0c53f83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldspacePrefab: {fileID: 114997330570205282, guid: 2bc68259a711e6e4da82f35319c8e0c3,
+    type: 2}
+  proximityBasedPrefab: {fileID: 114481420314663022, guid: b9a133323d047074381d874faadb26eb,
+    type: 2}
+  nonSpatialPrefab: {fileID: 114810032085445992, guid: ebc25eaceaae5914c9a7efe5a85a337b,
+    type: 2}

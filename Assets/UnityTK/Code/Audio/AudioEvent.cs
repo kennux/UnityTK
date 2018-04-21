@@ -19,6 +19,7 @@ namespace UnityTK.Audio
         /// Plays the event on the specified audio source.
         /// </summary>
         /// <param name="audioSource">The audio source to play the event on.</param>
-        public abstract void Play(AudioSource audioSource);
+        /// <param name="loop">Whether or not starting to play this sound in a loop, if it is being looped it will play until you call <see cref="IUTKAudioSource.Stop"/> on your audio source!</param>
+        public abstract void Play(IUTKAudioSource audioSource, bool loop = false);
     }
 }

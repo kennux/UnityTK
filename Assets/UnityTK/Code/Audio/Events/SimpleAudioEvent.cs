@@ -28,14 +28,34 @@ namespace UnityTK.Audio
         public AudioClip clip;
 
         /// <summary>
+        /// Roll off minimum distance.
+        /// </summary>
+        public float minDistance;
+
+        /// <summary>
+        /// Roll off maximum distance.
+        /// </summary>
+        public float maxDistance;
+
+        /// <summary>
+        /// The rolloff mode for the audio event.
+        /// Custom rolloff can _not_ be set at runtime and thus is not a field of this event class.
+        /// 
+        /// Custom rolloff must be preconfigured in the editor on the audio source directly :/
+        /// </summary>
+        public AudioRolloffMode rolloffMode;
+
+        /// <summary>
         /// Plays <see cref="clip"/>
         /// </summary>
-        public override void Play(AudioSource audioSource)
+        public override void Play(IUTKAudioSource audioSource, bool loop = false)
         {
             audioSource.volume = this.volume.GetRandomInRange();
             audioSource.pitch = this.pitch.GetRandomInRange();
-            audioSource.clip = this.clip;
-            audioSource.Play();
+            audioSource.minDistance = this.minDistance;
+            audioSource.maxDistance = this.maxDistance;
+            audioSource.rolloffMode = this.rolloffMode;
+            audioSource.Play(this.clip, loop);
         }
     }
 }

@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4937067990569606}
   - component: {fileID: 82376610645042402}
+  - component: {fileID: 114997330570205282}
   m_Layer: 0
   m_Name: WorldspaceOneShotAudioPrefab
   m_TagString: Untagged
@@ -120,3 +121,14 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &114997330570205282
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1552956091064738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea3226aed84a9034bb59fee32d80f142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

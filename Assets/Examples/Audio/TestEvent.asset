@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Name: TestEvent
   m_EditorClassIdentifier: 
   identifier: TestEvent
-  tags: []
+  tags:
+  - sound
   volume:
     minValue: 0.7981497
     maxValue: 1
@@ -20,3 +21,6 @@ MonoBehaviour:
     minValue: 0.8570227
     maxValue: 1.243902
   clip: {fileID: 8300000, guid: 87a67c5fc26218746baa8bb00e1a8ead, type: 3}
+  minDistance: 0
+  maxDistance: 25
+  rolloffMode: 1
