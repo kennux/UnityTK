@@ -18,7 +18,7 @@ namespace UnityTK.DataBinding
         /// <summary>
         /// The bind target object for the template.
         /// </summary>
-        public Component bindTarget;
+        public UnityEngine.Object bindTarget;
 
         /// <summary>
         /// The template this leaf is using to bind.

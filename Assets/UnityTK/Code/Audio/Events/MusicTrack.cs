@@ -15,7 +15,6 @@ namespace UnityTK.Audio
         public string interpret;
 
         [Header("Fading")]
-        public float fadeoutTime;
         public float fadeInTime;
         public AnimationCurve fadeCurve;
 

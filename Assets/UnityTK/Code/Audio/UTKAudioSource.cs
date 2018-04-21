@@ -51,6 +51,12 @@ namespace UnityTK.Audio
             set { this.underlying.maxDistance = value; }
         }
 
+        public virtual float time
+        {
+            get { return this.underlying.time; }
+            set { this.underlying.time = value; }
+        }
+
         public virtual AudioRolloffMode rolloffMode
         {
             get { return this.underlying.rolloffMode; }

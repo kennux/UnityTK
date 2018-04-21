@@ -11,6 +11,7 @@ namespace UnityTK.Audio
     {
         float volume { get; set; }
         float pitch { get; set; }
+        float time { get; set; }
         AudioClip clip { get; }
         bool isPlaying { get; }
 

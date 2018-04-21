@@ -4,19 +4,62 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
 
-public class EventTests {
+namespace UnityTK.Audio.Editor.Test
+{
+    public class EventTests
+    {
+        [Test]
+        public void TestSimpleAudioEvent()
+        {
+            // Arrange
+            UTKAudioMock aSource = new UTKAudioMock();
+            SimpleAudioEvent evt = ScriptableObject.CreateInstance<SimpleAudioEvent>();
+            evt.volume = new RangedFloat(.5f, .75f);
+            evt.maxDistance = 2;
+            evt.minDistance = 1;
+            evt.pitch = new RangedFloat(.5f, .75f);
+            evt.rolloffMode = AudioRolloffMode.Linear;
+            AudioClip testClip = AudioClip.Create("test", 100, 4, 2, false);
 
-	[Test]
-	public void EventTestsSimplePasses() {
-		// Use the Assert class to test conditions.
-	}
+            bool playWasCalled = false;
+            bool playWasLooped = false;
+            AudioClip playedAudioClip = null;
+            aSource.onPlay += (clip, loop) =>
+            {
+                playWasCalled = true;
+                playWasLooped = loop;
+                playedAudioClip = clip;
+            };
 
-	// A UnityTest behaves like a coroutine in PlayMode
-	// and allows you to yield null to skip a frame in EditMode
-	[UnityTest]
-	public IEnumerator EventTestsWithEnumeratorPasses() {
-		// Use the Assert class to test conditions.
-		// yield to skip a frame
-		yield return null;
-	}
+            // Act
+            evt.Play(aSource, false);
+
+            // Assert
+            Assert.IsTrue(aSource.volume >= evt.volume.minValue && aSource.volume <= evt.volume.maxValue);
+            Assert.IsTrue(aSource.pitch >= evt.pitch.minValue && aSource.pitch <= evt.pitch.maxValue);
+            Assert.AreEqual(evt.minDistance, aSource.minDistance);
+            Assert.AreEqual(evt.maxDistance, aSource.maxDistance);
+            Assert.AreEqual(evt.rolloffMode, aSource.rolloffMode);
+            Assert.IsTrue(playWasCalled);
+            Assert.IsFalse(playWasLooped);
+            Assert.AreEqual(evt.clip, playedAudioClip);
+
+            // Clean up
+            playWasCalled = playWasLooped = false;
+            playedAudioClip = null;
+
+            // Act again (looped this time)
+            evt.Play(aSource, true);
+
+            // Assert
+            Assert.IsTrue(aSource.volume >= evt.volume.minValue && aSource.volume <= evt.volume.maxValue);
+            Assert.IsTrue(aSource.pitch >= evt.pitch.minValue && aSource.pitch <= evt.pitch.maxValue);
+            Assert.AreEqual(evt.minDistance, aSource.minDistance);
+            Assert.AreEqual(evt.maxDistance, aSource.maxDistance);
+            Assert.AreEqual(evt.rolloffMode, aSource.rolloffMode);
+            Assert.IsTrue(playWasCalled);
+            Assert.IsTrue(playWasLooped);
+            Assert.AreEqual(evt.clip, playedAudioClip);
+        }
+    }
 }

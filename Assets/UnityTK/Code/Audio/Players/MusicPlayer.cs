@@ -23,7 +23,7 @@ namespace UnityTK.Audio
         /// <summary>
         /// The audio source for playback of the next track (for fading).
         /// </summary>
-        public AudioSource audioSourceNext;
+        public NonSpatialAudioSource audioSourceNext;
 
         /// <summary>
         /// The tracks to be played back.
@@ -106,15 +106,15 @@ namespace UnityTK.Audio
                 this.Play();
         }
 
+        private Coroutine coroutine;
+
         /// <summary>
         /// Starts playing music on this player.
         /// </summary>
         public void Play()
         {
             this._isPlaying = true;
-
-            this.nextPlayed = GetNextTrackIndex();
-            this.PlayNextTrack();
+            this.coroutine = StartCoroutine(this.Routine());
         }
 
         /// <summary>
@@ -125,6 +125,7 @@ namespace UnityTK.Audio
             if (this._isPlaying)
             {
                 this.audioSource.Stop();
+                StopCoroutine(this.coroutine);
                 this._isPlaying = false;
             }
         }
@@ -147,36 +148,60 @@ namespace UnityTK.Audio
             return nextIndex;
         }
 
-        /// <summary>
-        /// Called in order to play the next track.
-        /// </summary>
-        private void PlayNextTrack()
+        private IEnumerator Routine()
         {
-            this.currentlyPlayed = this.nextPlayed;
+            // Init
+            this.currentlyPlayed = GetNextTrackIndex();
             this.nextPlayed = GetNextTrackIndex();
+            this.currentTrack.Play(this.audioSource);
 
-            // Select track
-            var track = this.tracks[this.currentlyPlayed];
-
-            // Fire event
             if (!ReferenceEquals(this.onTrackPlay, null))
-                this.onTrackPlay(track);
+                this.onTrackPlay(this.currentTrack);
 
-            // Stop and play
-            this.audioSource.Stop();
-            track.Play(this.audioSource);
-        }
-
-        public void Update()
-        {
-            if (!this._isPlaying)
-                return;
-
-            if (!this.audioSource.isPlaying)
-                PlayNextTrack();
-            else
+            while (true)
             {
-                // TODO: Fading
+                // Fade in
+                while (this.audioSource.time < this.currentTrack.fadeInTime)
+                {
+                    this.audioSource.volume = Mathf.Lerp(0, 1, this.currentTrack.fadeCurve.Evaluate(Mathf.Clamp01(this.audioSource.time / this.currentTrack.fadeInTime)));
+
+                    // Wait one frame
+                    yield return null;
+                }
+                this.audioSource.volume = 1;
+
+                // Wait for playback
+                float startBlend = this.currentTrack.clip.length - this.nextTrack.fadeInTime;
+                while (this.audioSource.time < startBlend)
+                {
+                    // Wait one frame and measure time
+                    yield return null;
+                }
+
+                // Blend
+                this.nextTrack.Play(this.audioSourceNext);
+
+                if (!ReferenceEquals(this.onTrackPlay, null))
+                    this.onTrackPlay(this.nextTrack);
+
+                while (this.audioSource.time < this.currentTrack.clip.length)
+                {
+                    float currentTrackLeft = this.currentTrack.clip.length - this.audioSource.time;
+                    this.audioSource.volume = Mathf.Lerp(0, 1, this.currentTrack.fadeCurve.Evaluate(Mathf.Clamp01(currentTrackLeft / this.nextTrack.fadeInTime)));
+                    this.audioSourceNext.volume = Mathf.Lerp(1, 0, this.nextTrack.fadeCurve.Evaluate(Mathf.Clamp01(currentTrackLeft / this.nextTrack.fadeInTime)));
+
+                    // Wait one frame
+                    yield return null;
+                }
+
+                // Swap sources
+                var @as = this.audioSource;
+                this.audioSource = this.audioSourceNext;
+                this.audioSourceNext = @as;
+                @as.Stop();
+
+                this.currentlyPlayed = this.nextPlayed;
+                this.nextPlayed = GetNextTrackIndex();
             }
         }
     }
