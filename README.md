@@ -44,6 +44,11 @@ Audio
 The UnityTK audio system provides a very simple and lightweight abstraction layer on top of the unity engine audio system.
 It provides the ability to construct game sound systems using events.
 
+Benchmarking
+----
+
+Simplistic (micro-)benchmarking system you can use the quickly author benchmarks and execute them in the unity editor.
+
 Utility
 -----
 

@@ -297,6 +297,9 @@ namespace UnityTK
         /// <param name="element">The element to remove.</param>
         public void RemoveElement(LinkedListElement<T> element)
         {
+            if (ReferenceEquals(element, null))
+                throw new ArgumentException("Element to remove cannot be null!");
+
             // Update entry points
             if (ReferenceEquals(element, this._first))
                 this._first = this._first.next;
