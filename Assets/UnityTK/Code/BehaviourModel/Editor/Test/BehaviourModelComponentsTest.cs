@@ -355,7 +355,7 @@ namespace UnityTK.BehaviourModel.Editor.Test
         {
             int p = 123, p2 = 1337;
             bool condition = false, onFireCalled = false, onFailCalled = false;
-            ModdelAttempt<int, int> attempt = new ModdelAttempt<int, int>();
+            ModelAttempt<int, int> attempt = new ModelAttempt<int, int>();
             attempt.RegisterCondition((test, test2) => { Assert.AreEqual(p, test); Assert.AreEqual(p2, test2); return condition; });
             attempt.onFire += (test, test2) => { Assert.AreEqual(p, test); Assert.AreEqual(p2, test2); onFireCalled = true; };
             attempt.onFail += (test, test2) => { Assert.AreEqual(p, test); Assert.AreEqual(p2, test2); onFailCalled = true; };
