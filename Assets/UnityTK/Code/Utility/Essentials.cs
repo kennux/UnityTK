@@ -21,7 +21,7 @@ namespace UnityTK
             if (lst.Count == 0)
                 return default(T);
 
-            return lst[UnityEngine.Random.Range(0, lst.Count - 1)];
+            return lst[UnityEngine.Random.Range(0, lst.Count)];
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace UnityTK
             if (array.Length == 0)
                 return default(T);
 
-            return array[UnityEngine.Random.Range(0, array.Length - 1)];
+            return array[UnityEngine.Random.Range(0, array.Length)];
         }
 
         /// <summary>
