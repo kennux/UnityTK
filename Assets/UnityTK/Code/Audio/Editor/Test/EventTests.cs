@@ -19,7 +19,7 @@ namespace UnityTK.Audio.Editor.Test
             evt.minDistance = 1;
             evt.pitch = new RangedFloat(.5f, .75f);
             evt.rolloffMode = AudioRolloffMode.Linear;
-            AudioClip testClip = AudioClip.Create("test", 100, 4, 2, false);
+            AudioClip testClip = AudioClip.Create("test", 100, 4, 1000, false);
 
             bool playWasCalled = false;
             bool playWasLooped = false;
