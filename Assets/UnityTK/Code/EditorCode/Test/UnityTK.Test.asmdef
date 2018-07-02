@@ -1,5 +1,5 @@
 {
-    "name": "UnityTK.Tests",
+    "name": "UnityTK.Test",
     "references": [
         "UnityTK"
     ],
