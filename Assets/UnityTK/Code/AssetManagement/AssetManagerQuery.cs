@@ -157,6 +157,13 @@ namespace UnityTK.AssetManagement
                     return false;
             }
 
+            // Look for type
+            foreach (var t in this.types)
+            {
+                if (ReferenceEquals(asset, null) || !t.IsAssignableFrom(asset.GetType()))
+                    return false;
+            }
+
             return true;
         }
     }
