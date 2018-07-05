@@ -110,6 +110,7 @@ namespace UnityTK.AssetManagement
         public void AddTypeCriteria(Type type)
         {
             HashSetPool<Type>.GetIfNull(ref this.types);
+            this.types.Add(type);
         }
 
         /// <summary>

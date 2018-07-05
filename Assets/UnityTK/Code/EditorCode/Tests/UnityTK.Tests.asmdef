@@ -1,12 +1,14 @@
 {
-    "name": "UnityTK.Test",
+    "name": "UnityTK.Tests",
     "references": [
         "UnityTK"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false
 }

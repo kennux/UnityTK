@@ -13,6 +13,11 @@ namespace UnityTK.AssetManagement.Editor.Test
 
         }
 
+        public class AssetExample2 : ManagedScriptableObject
+        {
+
+        }
+
         private ManagedGameObject CreateManagedGameObject(string[] tags, string identifier, string name)
         {
             GameObject go = new GameObject("ManagedGO");
@@ -25,9 +30,9 @@ namespace UnityTK.AssetManagement.Editor.Test
             return mgo;
         }
 
-        private AssetExample CreateManagedScriptableObject(string[] tags, string identifier, string name)
+        private T CreateManagedScriptableObject<T>(string[] tags, string identifier, string name) where T : ManagedScriptableObject
         {
-            AssetExample ex = ScriptableObject.CreateInstance<AssetExample>();
+            T ex = ScriptableObject.CreateInstance<T>();
             ex.tags = tags;
             ex.identifier = identifier;
             ex.name = name;
@@ -39,7 +44,7 @@ namespace UnityTK.AssetManagement.Editor.Test
         public void AssetManagementTestRegister()
         {
             var a1 = CreateManagedGameObject(new string[] { "test" }, "asset1", "1");
-            var a2 = CreateManagedScriptableObject(new string[] { "test2" }, "asset2", "2");
+            var a2 = CreateManagedScriptableObject<AssetExample>(new string[] { "test2" }, "asset2", "2");
 
             AssetManager.instance.RegisterAsset(a1);
             AssetManager.instance.RegisterAsset(a2);
@@ -94,12 +99,14 @@ namespace UnityTK.AssetManagement.Editor.Test
         public void AssetManagementTestQuery()
         {
             var a1 = CreateManagedGameObject(new string[] { "test" }, "asset1", "1");
-            var a2 = CreateManagedScriptableObject(new string[] { "test2" }, "asset2", "2");
-            var a3 = CreateManagedScriptableObject(new string[] { "test3", "test4" }, "asset3", "3");
+            var a2 = CreateManagedScriptableObject<AssetExample>(new string[] { "test2" }, "asset2", "2");
+            var a3 = CreateManagedScriptableObject<AssetExample>(new string[] { "test3", "test4" }, "asset3", "3");
+            var a4 = CreateManagedScriptableObject<AssetExample2>(new string[] { "test5", "test6" }, "asset4", "4");
 
             AssetManager.instance.RegisterAsset(a1);
             AssetManager.instance.RegisterAsset(a2);
             AssetManager.instance.RegisterAsset(a3);
+            AssetManager.instance.RegisterAsset(a4);
 
             // Tags query
             var query = AssetManagerQueryPool<AssetManagerQuery>.Get();
@@ -145,6 +152,13 @@ namespace UnityTK.AssetManagement.Editor.Test
             Assert.AreSame(oRes[0], a3);
             Assert.AreEqual(1, oRes.Count);
             AssetManagerQueryPool<AssetManagerQuery>.Return(query);
+
+            // Type query
+            query = AssetManagerQuery.GetPooledTypeQuery(typeof(AssetExample2));
+            var tRes = AssetManager.instance.Query<UnityEngine.Object>(query);
+
+            Assert.AreEqual(1, tRes.Count);
+            Assert.AreSame(tRes[0], a4);
 
             // Deregister
             AssetManager.instance.DeregisterAsset(a1);
