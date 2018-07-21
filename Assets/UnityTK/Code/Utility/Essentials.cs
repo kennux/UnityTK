@@ -126,6 +126,26 @@ namespace UnityTK
         }
 
         /// <summary>
+        /// Quick&dirty sorting method used to avoid .Net sorting methods (which of course allocate memory in most cases >_>) at runtime.
+        /// </summary>
+        /// <param name="list">The list to sort.</param>
+        public static void InsertionSort(List<int> list)
+        {
+            for (int i = 0; i < list.Count - 1; i++)
+            {
+                for (int j = i + 1; j > 0; j--)
+                {
+                    if (list[j - 1] > list[j])
+                    {
+                        int temp = list[j - 1];
+                        list[j - 1] = list[j];
+                        list[j] = temp;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Calculates direction vector (unnormalized) from me to other.
         /// </summary>
         /// <returns>The to.</returns>
