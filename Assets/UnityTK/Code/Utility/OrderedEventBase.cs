@@ -38,11 +38,21 @@ namespace UnityTK
         }
 
         /// <summary>
-        /// Registers the specified handler with the specified order on this event.
+        /// Binds the specified handler with the specified order on this event.
         /// </summary>
-        public void Register(T handler, int order)
+        public void Bind(T handler, int order)
         {
             GetHandlers(order).Add(handler);
+        }
+
+        /// <summary>
+        /// Unbinds the specified handler from this event.
+        /// </summary>
+        /// <param name="handler">The handler to unbind.</param>
+        public void Unbind(T handler)
+        {
+            foreach (var lst in this.handlers.Values)
+                lst.Remove(handler);
         }
 
         /// <summary>
