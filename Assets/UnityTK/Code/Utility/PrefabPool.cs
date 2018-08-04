@@ -17,6 +17,7 @@ namespace UnityTK
         /// <summary>
         /// Datastructure for storing prefab warmup configurations.
         /// </summary>
+		[System.Serializable]
         public struct WarmupConfig
         {
             /// <summary>
