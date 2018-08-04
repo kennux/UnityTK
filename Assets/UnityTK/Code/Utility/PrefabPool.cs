@@ -117,6 +117,19 @@ namespace UnityTK
         }
 
         /// <summary>
+        /// <see cref="GetInstance(GameObject)"/>, but initializes transform.
+        /// </summary>
+        /// 
+        public GameObject GetInstance(GameObject prefab, Vector3 position = default(Vector3), Quaternion rotation = default(Quaternion))
+        {
+            var instance = GetInstance(prefab);
+            instance.transform.position = position;
+            instance.transform.rotation = rotation;
+            instance.transform.parent = null;
+            return instance;
+        }
+
+        /// <summary>
         /// Returns the specified object that was previously drawn from the pool.
         /// </summary>
         /// <param name="instance">Instance to return.</param>
@@ -126,6 +139,7 @@ namespace UnityTK
             if (!this.instanceLookup.TryGetValue(instance, out prefab))
                 throw new System.InvalidOperationException("Cannot return object to pool that was not drawn from pool");
 
+            instance.transform.parent = this.transform;
             instance.SetActive(false);
             GetPrefabPool(prefab).Push(instance);
         }

@@ -29,6 +29,8 @@ namespace UnityTK.Test
             Assert.AreNotSame(instance1, instance2);
             Assert.IsTrue(instance1.activeSelf);
             Assert.IsTrue(instance2.activeSelf);
+            Assert.AreSame(instance1.transform.parent, null);
+            Assert.AreSame(instance2.transform.parent, null);
 
             // Return
             PrefabPool.instance.Return(instance1);
@@ -37,13 +39,19 @@ namespace UnityTK.Test
             // Assert
             Assert.IsFalse(instance1.activeSelf);
             Assert.IsFalse(instance2.activeSelf);
+            Assert.AreSame(instance1.transform.parent, pool.transform);
+            Assert.AreSame(instance2.transform.parent, pool.transform);
 
             // Draw again
-            var instance3 = PrefabPool.instance.GetInstance(prefab);
+            var quat = Quaternion.LookRotation(Vector3.up);
+            var pos = Vector3.one;
+            var instance3 = PrefabPool.instance.GetInstance(prefab, pos, quat);
             var instance4 = PrefabPool.instance.GetInstance(prefab);
 
             Assert.AreSame(instance3, instance2);
             Assert.AreSame(instance4, instance1);
+            Assert.AreEqual(pos, instance3.transform.position);
+            Assert.AreEqual(quat, instance3.transform.rotation);
         }
     }
 }
