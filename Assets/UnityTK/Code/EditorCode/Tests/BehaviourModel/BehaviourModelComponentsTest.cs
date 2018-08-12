@@ -249,7 +249,7 @@ namespace UnityTK.BehaviourModel.Editor.Test
         [Test]
         public void ModelEventTest()
         {
-            int p = 123;
+            int p = 123, p2 =456;
             bool wasCalled = false;
             ModelEvent msgEvt = new ModelEvent();
             msgEvt.handler += () => { wasCalled = true; };
@@ -262,6 +262,13 @@ namespace UnityTK.BehaviourModel.Editor.Test
             msgEvtT.handler += (test) => { Assert.AreEqual(p, test); wasCalled = true; };
 
             msgEvtT.Fire(p);
+            Assert.IsTrue(wasCalled);
+            wasCalled = false;
+
+            ModelEvent<int, int> msgEvtT2 = new ModelEvent<int, int>();
+            msgEvtT2.handler += (test, test2) => { Assert.AreEqual(p, test); Assert.AreEqual(p2, test2); wasCalled = true; };
+
+            msgEvtT2.Fire(p, p2);
             Assert.IsTrue(wasCalled);
         }
 
