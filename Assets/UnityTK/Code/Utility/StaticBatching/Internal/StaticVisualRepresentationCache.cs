@@ -13,11 +13,6 @@ namespace UnityTK
     internal struct StaticVisualRepresentationCache : IDisposable
     {
         /// <summary>
-        /// The material to render this representation.
-        /// </summary>
-        public Material material;
-
-        /// <summary>
         /// Vertex positions of the mesh
         /// </summary>
         public NativeArray<Vector3> vertices;
@@ -42,9 +37,8 @@ namespace UnityTK
         /// </summary>
         public NativeArray<int> indices;
 
-        public StaticVisualRepresentationCache(Material material, Mesh mesh)
+        public StaticVisualRepresentationCache(Mesh mesh)
         {
-            this.material = material;
             this.vertices = new NativeArray<Vector3>(mesh.vertices, Allocator.Persistent);
             this.normals = new NativeArray<Vector3>(mesh.normals, Allocator.Persistent);
             this.tangents = new NativeArray<Vector4>(mesh.tangents, Allocator.Persistent);

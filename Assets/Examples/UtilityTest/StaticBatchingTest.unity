@@ -170,7 +170,7 @@ MonoBehaviour:
   prefab: {fileID: 1320461556826504, guid: 85a503f534ab7a546adaa70f949eb60a, type: 2}
   staticPrefab: {fileID: 1465446491866592, guid: dd0de166d9ceb3d4f98d9057c64ca90c,
     type: 2}
-  test: 1
+  test: 2
   x: 100
   y: 100
 --- !u!1 &1726930438

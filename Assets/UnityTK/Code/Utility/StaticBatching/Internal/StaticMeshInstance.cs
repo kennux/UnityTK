@@ -13,6 +13,11 @@ namespace UnityTK
     internal struct StaticMeshInstance
     {
         /// <summary>
+        /// The mesh object reference.
+        /// </summary>
+        public Mesh mesh;
+
+        /// <summary>
         /// The owner of this mesh instance.
         /// </summary>
         public object owner;
@@ -26,10 +31,5 @@ namespace UnityTK
         /// The group key of the instance.
         /// </summary>
         public StaticBatchingGroupKey groupKey;
-
-        /// <summary>
-        /// The visual representation of the mesh instance.
-        /// </summary>
-        public GameObject visualRepresentation;
     }
 }

@@ -99,6 +99,11 @@ namespace UnityTK
         /// </summary>
         public List<int> indices;
 
+        /// <summary>
+        /// The internal job index.
+        /// </summary>
+        public uint jobId;
+
         public void Flush(Mesh m)
         {
             m.SetVertices(this.vertices);
