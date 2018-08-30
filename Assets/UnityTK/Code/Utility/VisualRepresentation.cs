@@ -20,25 +20,7 @@ namespace UnityTK
         /// The gameobject that is being used to render the representation.
         /// </summary>
         [Header("Configuration")]
-        [SerializeField]
-        private GameObject visualRepresentation;
-        
-        /// <summary>
-        /// Returns <see cref="visualRepresentation"/>-
-        /// </summary>
-        public GameObject GetVisualRepresentation()
-        {
-            return this.visualRepresentation;
-        }
-
-        /// <summary>
-        /// Sets a visual representation and generates the rendering cache.
-        /// After this was called the specified gameobject will be rendered as visual representation;
-        /// </summary>
-        public void SetRepresentation(GameObject visualRepresentation)
-        {
-            this.visualRepresentation = visualRepresentation;
-        }
+        public GameObject visualRepresentation;
 
         #region Render cache
 
