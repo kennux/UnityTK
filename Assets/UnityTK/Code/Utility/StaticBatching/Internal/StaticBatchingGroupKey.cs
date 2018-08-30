@@ -34,7 +34,7 @@ namespace UnityTK
 
         public override int GetHashCode()
         {
-            return Essentials.CombineHashCodes(this.material.GetHashCode(), this.layer.GetHashCode());
+            return Essentials.CombineHashCodes(this.chunk.GetHashCode(), Essentials.CombineHashCodes(this.material.GetHashCode(), this.layer.GetHashCode()));
         }
 
         public bool Equals(StaticBatchingGroupKey other)
