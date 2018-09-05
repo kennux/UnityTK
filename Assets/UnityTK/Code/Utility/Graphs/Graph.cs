@@ -26,13 +26,7 @@ namespace UnityTK
         /// <summary>
         /// Connections dictionary
         /// </summary>
-        private Dictionary<TIndex, List<ConnectionData>> connections = new Dictionary<TIndex, List<ConnectionData>>();
-
-        private struct ConnectionData
-        {
-            public TNode node;
-            public TConnectionData data;
-        }
+        private Dictionary<TIndex, List<ConnectedGraphNode<TNode, TConnectionData>>> connections = new Dictionary<TIndex, List<ConnectedGraphNode<TNode, TConnectionData>>>();
 
         public void Add(TIndex index, TNode node)
         {
@@ -54,11 +48,11 @@ namespace UnityTK
                 this.nodes.Remove(index);
                 this.nodesReverse.Remove(node);
 
-                List<ConnectionData> lst;
+                List<ConnectedGraphNode<TNode, TConnectionData>> lst;
                 if (this.connections.TryGetValue(index, out lst))
                 {
                     this.connections.Remove(index);
-                    ListPool<ConnectionData>.Return(lst);
+                    ListPool<ConnectedGraphNode<TNode, TConnectionData>>.Return(lst);
                 }
             }
         }
@@ -67,7 +61,7 @@ namespace UnityTK
         /// Finds a connection index in the specified list of connection datas.
         /// </summary>
         /// <returns>Index in connection data, -1 if not found</returns>
-        private int FindConnectionIndex(List<ConnectionData> connectionData, TNode node, out ConnectionData data)
+        private int FindConnectionIndex(List<ConnectedGraphNode<TNode, TConnectionData>> connectionData, TNode node, out ConnectedGraphNode<TNode, TConnectionData> data)
         {
             var cmp = EqualityComparer<TNode>.Default;
 
@@ -81,24 +75,24 @@ namespace UnityTK
                 }
             }
 
-            data = default(ConnectionData);
+            data = default(ConnectedGraphNode<TNode, TConnectionData>);
             return -1;
         }
 
         /// <summary>
         /// Returns the connections from node to any other nodes.
         /// </summary>
-        private List<ConnectionData> GetConnections(TNode node, bool createIfNotExisting = true)
+        private List<ConnectedGraphNode<TNode, TConnectionData>> GetConnections(TNode node, bool createIfNotExisting = true)
         {
             // Look up index
             TIndex index;
             if (!this.nodesReverse.TryGetValue(node, out index))
                 return null;
 
-            List<ConnectionData> cons;
+            List<ConnectedGraphNode<TNode, TConnectionData>> cons;
             if (!this.connections.TryGetValue(index, out cons) && createIfNotExisting)
             {
-                cons = ListPool<ConnectionData>.Get();
+                cons = ListPool<ConnectedGraphNode<TNode, TConnectionData>>.Get();
                 this.connections.Add(index, cons);
             }
 
@@ -111,11 +105,11 @@ namespace UnityTK
             var cons = GetConnections(from);
 
             // Check for connection
-            ConnectionData cData;
+            ConnectedGraphNode<TNode, TConnectionData> cData;
             var conId = FindConnectionIndex(cons, to, out cData);
             
             if (conId == -1)
-                cons.Add(new ConnectionData()
+                cons.Add(new ConnectedGraphNode<TNode, TConnectionData>()
                 {
                     data = connectionData,
                     node = to
@@ -134,7 +128,7 @@ namespace UnityTK
             var cons = GetConnections(from);
 
             // Check for connection
-            ConnectionData cData;
+            ConnectedGraphNode<TNode, TConnectionData> cData;
             var conId = FindConnectionIndex(cons, to, out cData);
 
             if (conId != -1)
@@ -152,7 +146,7 @@ namespace UnityTK
         public bool TryGetConnection(TNode from, TNode to, out TConnectionData connectionData)
         {
             // Look up
-            List<ConnectionData> cons = GetConnections(from, false);
+            List<ConnectedGraphNode<TNode, TConnectionData>> cons = GetConnections(from, false);
             if (ReferenceEquals(cons, null))
             {
                 connectionData = default(TConnectionData);
@@ -160,7 +154,7 @@ namespace UnityTK
             }
 
             // Check for connection
-            ConnectionData cData;
+            ConnectedGraphNode<TNode, TConnectionData> cData;
             var conId = FindConnectionIndex(cons, to, out cData);
 
             if (conId == -1)
@@ -188,6 +182,22 @@ namespace UnityTK
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public List<ConnectedGraphNode<TNode, TConnectionData>>.Enumerator GetConnectedNodes(TIndex nodeIndex)
+        {
+            // Get connections data list
+            List<ConnectedGraphNode<TNode, TConnectionData>> lst;
+            if (this.connections.TryGetValue(nodeIndex, out lst))
+                return lst.GetEnumerator();
+
+            // :(
+            return default(List<ConnectedGraphNode<TNode, TConnectionData>>.Enumerator);
+        }
+        
+        IEnumerator<ConnectedGraphNode<TNode, TConnectionData>> IGraph<TIndex, TNode, TConnectionData>.GetConnectedNodes(TIndex nodeIndex)
+        {
+            return GetConnectedNodes(nodeIndex);
         }
     }
 }

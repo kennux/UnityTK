@@ -58,6 +58,13 @@ namespace UnityTK
         bool TryGetConnection(TNode from, TNode to, out TConnectionData connectionData);
 
         /// <summary>
+        /// Retrieves all connected nodes for the specified node.
+        /// </summary>
+        /// <param name="nodeIndex">The node index to look connections up for</param>
+        /// <returns>An enumerable for iterating over all connected nodes.</returns>
+        IEnumerator<ConnectedGraphNode<TNode, TConnectionData>> GetConnectedNodes(TIndex nodeIndex);
+
+        /// <summary>
         /// Removes the node for the specified index from this graph.
         /// </summary>
         /// <param name="index">The index of the node to be removed.</param>

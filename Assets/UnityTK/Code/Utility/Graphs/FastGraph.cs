@@ -37,15 +37,8 @@ namespace UnityTK
 
         /// <summary>
         /// Connections from node to nodes.
-        /// This array is laid out linearly where the index maps to the index of the node in <see cref="nodes"/> multiplied by <see cref="maxConnections"/>
         /// </summary>
-        private TNode[] connections;
-
-        /// <summary>
-        /// Analogous array to <see cref="connections"/>.
-        /// Contains the data of the connections.
-        /// </summary>
-        private TConnectionData[] connectionDatas;
+        private ConnectedGraphNode<TNode, TConnectionData>[] connections;
 
         /// <summary>
         /// Maximum amount of connections per node.
@@ -101,8 +94,7 @@ namespace UnityTK
                 this.nodes = new TNode[nodeCount];
                 this.indices = new TIndex[nodeCount];
                 this.nodeConnectionCounter = new int[nodeCount];
-                this.connections = new TNode[nodeCount * maxConnectionsPerNode];
-                this.connectionDatas = new TConnectionData[nodeCount * maxConnectionsPerNode];
+                this.connections = new ConnectedGraphNode<TNode, TConnectionData>[nodeCount * maxConnectionsPerNode];
 
                 this.indexMap.Clear();
                 this.nodeMap.Clear();
@@ -114,7 +106,6 @@ namespace UnityTK
                 System.Array.Resize(ref this.indices, nodeCount);
                 System.Array.Resize(ref this.nodeConnectionCounter, nodeCount);
                 System.Array.Resize(ref this.connections, nodeCount * maxConnectionsPerNode);
-                System.Array.Resize(ref this.connectionDatas, nodeCount * maxConnectionsPerNode);
             }
         }
 
@@ -158,7 +149,7 @@ namespace UnityTK
 
             for (int i = indexBase; i < cIdxEnd; i++)
             {
-                if (cmp.Equals(this.connections[i], to))
+                if (cmp.Equals(this.connections[i].node, to))
                 {
                     return i;
                 }
@@ -188,7 +179,6 @@ namespace UnityTK
             this.indices[idx] = index;
             this.nodeConnectionCounter[idx] = 0;
             System.Array.Clear(this.connections, this.GetConnectionIndexBase(idx), this.maxConnections);
-            System.Array.Clear(this.connectionDatas, this.GetConnectionIndexBase(idx), this.maxConnections);
             this.indexMap.Add(index, idx);
             this.nodeMap.Add(node, idx);
         }
@@ -213,7 +203,6 @@ namespace UnityTK
                 this.indices[idx] = default(TIndex);
                 this.nodeConnectionCounter[idx] = 0;
                 System.Array.Clear(this.connections, this.GetConnectionIndexBase(idx), this.maxConnections);
-                System.Array.Clear(this.connectionDatas, this.GetConnectionIndexBase(idx), this.maxConnections);
 
                 this.freeIndices.Enqueue(idx);
             }
@@ -234,8 +223,7 @@ namespace UnityTK
             if (c != -1)
             {
                 // Update existing
-                this.connections[c] = to;
-                this.connectionDatas[c] = connectionData;
+                this.connections[c] = new ConnectedGraphNode<TNode, TConnectionData>(to, connectionData);
                 return;
             }
 
@@ -246,8 +234,7 @@ namespace UnityTK
 
             // Calculate connection index and write connection data
             int cIdx = idxBase + cPtr;
-            this.connections[cIdx] = this.nodes[idxTo];
-            this.connectionDatas[cIdx] = connectionData;
+            this.connections[cIdx] = new ConnectedGraphNode<TNode, TConnectionData>(this.nodes[idxTo], connectionData);
             this.nodeConnectionCounter[idxFrom] = cPtr + 1;
         }
 
@@ -268,7 +255,6 @@ namespace UnityTK
             for (int i = cIdx; i < idxEnd; i++)
             {
                 this.connections[i] = this.connections[i + 1];
-                this.connectionDatas[i] = this.connectionDatas[i + 1];
             }
 
             this.nodeConnectionCounter[idxFrom]--;
@@ -292,10 +278,12 @@ namespace UnityTK
             }
             else
             {
-                connectionData = this.connectionDatas[cIdx];
+                connectionData = this.connections[cIdx].data;
                 return true;
             }
         }
+
+        #region Enumerations
 
         public ArrayEnumerator<TNode> GetEnumerator()
         {
@@ -311,5 +299,67 @@ namespace UnityTK
         {
             return GetEnumerator();
         }
+
+        /// <summary>
+        /// Enumerator structure for <see cref="GetConnectedNodes(TIndex)"/>.
+        /// </summary>
+        public struct ConnectedNodesEnumerator : IEnumerator<ConnectedGraphNode<TNode, TConnectionData>>
+        {
+
+            public ConnectedGraphNode<TNode, TConnectionData> Current
+            {
+                get
+                {
+                    return this.connections[this.ptr];
+                }
+            }
+
+            object IEnumerator.Current => Current;
+
+            private int ptr;
+            private int start;
+            private int end;
+            private ConnectedGraphNode<TNode, TConnectionData>[] connections;
+
+            public ConnectedNodesEnumerator(int ptr, int start, int end, ConnectedGraphNode<TNode, TConnectionData>[] connections)
+            {
+                this.ptr = ptr;
+                this.start = start;
+                this.end = end;
+                this.connections = connections;
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                this.ptr++;
+
+                return this.ptr < this.end;
+            }
+
+            public void Reset()
+            {
+                this.ptr = start;
+            }
+        }
+
+        public ConnectedNodesEnumerator GetConnectedNodes(TIndex nodeIndex)
+        {
+            int idx = this.indexMap[nodeIndex];
+            int start = GetConnectionIndexBase(idx);
+            int end = start + this.nodeConnectionCounter[idx];
+
+            return new ConnectedNodesEnumerator(start, start, end, this.connections);
+        }
+
+        IEnumerator<ConnectedGraphNode<TNode, TConnectionData>> IGraph<TIndex, TNode, TConnectionData>.GetConnectedNodes(TIndex nodeIndex)
+        {
+            return GetConnectedNodes(nodeIndex);
+        }
+
+        #endregion
     }
 }

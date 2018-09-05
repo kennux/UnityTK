@@ -12,7 +12,7 @@ namespace UnityTK.Test
 {
     public class GraphTest
     {
-        public class TestNode
+        public class TestNode : IComparable<TestNode>, IComparable
         {
             public readonly int index;
             public readonly int value;
@@ -22,15 +22,45 @@ namespace UnityTK.Test
                 this.index = index;
                 this.value = value;
             }
+
+            public int CompareTo(TestNode other)
+            {
+                return this.value.CompareTo(other.value);
+            }
+
+            public int CompareTo(object obj)
+            {
+                return this.value.CompareTo(((TestNode)obj).value);
+            }
+
+            public override int GetHashCode()
+            {
+                return Essentials.CombineHashCodes(this.index.GetHashCode(), this.value.GetHashCode());
+            }
         }
 
-        public struct TestConnectionData
+        public struct TestConnectionData : IComparable<TestConnectionData>, IComparable
         {
             public float cost;
+
+            public int CompareTo(TestConnectionData other)
+            {
+                return cost.CompareTo(other);
+            }
+
+            public int CompareTo(object obj)
+            {
+                return cost.CompareTo(obj);
+            }
 
             public override string ToString()
             {
                 return this.cost.ToString();
+            }
+
+            public override int GetHashCode()
+            {
+                return this.cost.GetHashCode();
             }
         }
 
@@ -39,6 +69,11 @@ namespace UnityTK.Test
             public TNode from;
             public TNode to;
             public TConnectionData data;
+
+            public override int GetHashCode()
+            {
+                return Essentials.CombineHashCodes(Essentials.CombineHashCodes(from.GetHashCode(), to.GetHashCode()), data.GetHashCode());
+            }
         }
 
         public static void TestGraph<TIndex, TNode, TConnectionData, TGraph>(TGraph graph, Func<int, TNode> nodeConstructor, Func<int, TIndex> indexConstructor, Func<TConnectionData> connectionDataConstructor, Func<TNode, TIndex> indexGetter) where TGraph : IGraph<TIndex, TNode, TConnectionData>, IEnumerable<TNode> where TNode : TestNode
@@ -87,6 +122,54 @@ namespace UnityTK.Test
                 Assert.IsTrue(graph.IsConnected(connection.from, connection.to));
                 Assert.IsTrue(graph.TryGetConnection(connection.from, connection.to, out connectionData));
                 Assert.AreEqual(connection.data, connectionData);
+            }
+
+            // Test connection enumerations
+            List<DebugConnectionData<TNode, TConnectionData>> _connections = new List<DebugConnectionData<TNode, TConnectionData>>();
+            int ctr = 0;
+            foreach (var node in nodes)
+            {
+                var cons = graph.GetConnectedNodes(indexConstructor(node.index));
+                while (cons.MoveNext())
+                {
+                    _connections.Add(new DebugConnectionData<TNode, TConnectionData>()
+                    {
+                        data = cons.Current.data,
+                        from = node,
+                        to = cons.Current.node
+                    });
+                }
+
+                ctr++;
+            }
+
+            // Prehash
+            List<int> hashes = new List<int>();
+            for (int i = 0; i < connections.Count; i++)
+                hashes.Add(connections[i].GetHashCode());
+
+            // Compare connections created vs GetConnectedNodes enumerator
+            foreach (var con in _connections)
+            {
+                int hash = con.GetHashCode();
+
+                bool found = false;
+                
+                for (int i = 0; i < connections.Count; i++)
+                {
+                    if (hash == hashes[i])
+                    {
+                        // Fetch element
+                        var c = connections[i];
+                        if (Comparer<TConnectionData>.Equals(con.data, c.data) && Comparer<TNode>.Equals(con.from, c.from) && Comparer<TConnectionData>.Equals(con.to, c.to))
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                Assert.IsTrue(found);
             }
 
             // Test connection override
