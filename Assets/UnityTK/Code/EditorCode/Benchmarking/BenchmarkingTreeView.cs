@@ -21,10 +21,11 @@ namespace UnityTK.Benchmarking.Editor
             /// </summary>
             public string time;
 
-            public MyTreeViewItem(int id, int depth, string displayName, List<TreeViewItem> children, string time) : base(id, depth, displayName)
+            public MyTreeViewItem(int id, int depth, string displayName, List<TreeViewItem> children, string time, TreeViewItem parent) : base(id, depth, displayName)
             {
                 this.time = time;
                 this.children = children;
+                this.parent = parent;
             }
         }
 
@@ -182,22 +183,23 @@ namespace UnityTK.Benchmarking.Editor
         /// <param name="items">The list where the created tree view items (of type <see cref="MyTreeViewItem"/>) will be added to.</param>
         /// <param name="id">Reference to the current tree view item index counter. The counter will be incremented for every item added to items.</param>
         /// <param name="depth">The start depth of the tree view items. This will be incremented every time this method is called recursively.</param>
-        private void BuildTreeViewItems(List<BenchmarkResultLabel> labels, List<TreeViewItem> items, ref int id, int depth = 1)
+        private void BuildTreeViewItems(List<BenchmarkResultLabel> labels, List<TreeViewItem> items, ref int id, TreeViewItem parent, int depth = 1)
         {
-            var children = new List<TreeViewItem>();
-
             for (int j = 0; j < labels.Count; j++)
             {
+                var children = new List<TreeViewItem>();
+
                 // Construct label and increment id counter
                 var label = labels[j];
-                items.Add(new MyTreeViewItem(id, depth, label.label, children, label.time.ToString("0.00")));
+                var item = new MyTreeViewItem(id, depth, label.label, children, label.time.ToString("0.00"), parent);
+                items.Add(item);
                 id++;
 
                 // Construct children if there are children
                 if (label.children.Count > 0)
                 {
                     // Recursion
-                    BuildTreeViewItems(label.children, children, ref id, depth + 1);
+                    BuildTreeViewItems(label.children, children, ref id, item, depth + 1);
                 }
             }
         }
@@ -242,6 +244,7 @@ namespace UnityTK.Benchmarking.Editor
             // Build tree view
             var root = new TreeViewItem { id = 0, depth = -1, displayName = "Root" };
             int id = 1;
+            List<TreeViewItem> rootChildren = new List<TreeViewItem>();
             Dictionary<TreeViewItem, List<TreeViewItem>> items = new Dictionary<TreeViewItem, List<TreeViewItem>>();
 
             for (int i = 0; i < _benchmarks.Count; i++)
@@ -249,23 +252,27 @@ namespace UnityTK.Benchmarking.Editor
                 // Build mapping and increment id counter
                 var benchmark = benchmarks[i];
                 treeViewItemIdBenchmarkMappings.Add(id, i);
-                int rootId = id++;
+
+                // Build item
+                var children = new List<TreeViewItem>();
+                var item = new MyTreeViewItem(id++, 0, benchmark.script.name, children, "", root);
 
                 // Build children
-                var children = new List<TreeViewItem>();
                 if (!ReferenceEquals(benchmark.result, null))
                 {
                     var labels = benchmark.result.GetLabels();
-                    BuildTreeViewItems(labels, children, ref id);
+                    BuildTreeViewItems(labels, children, ref id, item);
                 }
 
-                items.Add(new MyTreeViewItem (rootId, 0, benchmark.script.name, children, ""), children);
+                items.Add(item, children);
+                rootChildren.Add(item);
             }
 
+            root.children = rootChildren;
             // Set parents and children
-            SetupParentsAndChildrenFromDepths(root, items.Keys.ToList());
-            foreach (var kvp in items)
-                SetupParentsAndChildrenFromDepths(kvp.Key, kvp.Value);
+            // SetupParentsAndChildrenFromDepths(root, items.Keys.ToList());
+            /*foreach (var kvp in items)
+                SetupParentsAndChildrenFromDepths(kvp.Key, kvp.Value);*/
 
             return root;
         }

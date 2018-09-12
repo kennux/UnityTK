@@ -74,7 +74,9 @@ namespace UnityTK.Benchmarking.Editor
                 scriptTypes.Add(item.script.GetClass());
             }
 
+            System.GC.Collect();
             BenchmarkRunner.RunBenchmark(scriptTypes, results);
+            System.GC.Collect();
 
             for (int i = 0; i < items.Count; i++)
             {
