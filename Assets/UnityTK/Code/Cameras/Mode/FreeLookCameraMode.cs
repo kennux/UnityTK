@@ -7,18 +7,18 @@ using UnityEngine;
 
 namespace UnityTK.Cameras
 {
-    public class CameraModeFreeLookController : ACameraModeController
+    public class FreeLookCameraMode : CameraMode 
     {
         public float sensitivity = 10;
 
-        public override void UpdateController(Vector3 movementAxis, Vector2 lookAxis, ref CameraModeData cameraModeData)
+        public override void UpdateMode(Camera camera)
         {
-            var rot = cameraModeData.localRotation;
+            var rot = camera.transform.localRotation;
 
             float newRotationX = rot.eulerAngles.x - lookAxis.y * sensitivity;
             float newRotationY = rot.eulerAngles.y + lookAxis.x * sensitivity;
 
-            cameraModeData.localRotation = Quaternion.Euler(newRotationX, newRotationY, rot.eulerAngles.z);
+            camera.transform.localRotation = Quaternion.Euler(newRotationX, newRotationY, rot.eulerAngles.z);
         }
     }
 }

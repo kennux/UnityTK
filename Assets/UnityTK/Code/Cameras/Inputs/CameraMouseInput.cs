@@ -9,7 +9,7 @@ namespace UnityTK.Cameras
     /// <summary>
     /// Camera input implementation for a mouse.
     /// </summary>
-    public class CameraMouseInput : ACameraInput
+    public class CameraMouseInput : CameraInput
     {
         public override Vector3 GetMovementAxis()
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UnityTK.Cameras
 {
-    public abstract class ACameraInput : UTKCameraComponent, ICameraInput
+    public abstract class CameraInput : UTKCameraComponent
     {
         public abstract Vector2 GetLookAxis();
         public abstract Vector3 GetMovementAxis();

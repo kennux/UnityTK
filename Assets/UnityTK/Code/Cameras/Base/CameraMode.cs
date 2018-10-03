@@ -1,61 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace UnityTK.Cameras
 {
-    public class CameraMode : UTKCameraComponent
+    public abstract class CameraMode : UTKCameraComponent
     {
-        public CameraModeData cameraModeData
+        protected Vector3 movementAxis;
+        protected Vector2 lookAxis;
+
+        public abstract void UpdateMode(Camera camera);
+
+        public virtual void UpdateInput(Dictionary<CameraInput, Vector3> movementAxis, Dictionary<CameraInput, Vector2> lookAxis)
         {
-            get { return this._cameraModeData; }
-        }
+            Vector3 mA = Vector3.zero;
+            Vector2 lA = Vector2.zero;
 
-        protected CameraModeData _cameraModeData;
+            foreach (var v in movementAxis.Values)
+                mA += v;
 
-        /// <summary>
-        /// All input processors of this camera mode.
-        /// </summary>
-        protected List<ICameraModeInputProcessor> inputProcessors = new List<ICameraModeInputProcessor>();
+            foreach (var v in lookAxis.Values)
+                lA += v;
 
-        /// <summary>
-        /// All controllers of this camera mode.
-        /// </summary>
-        protected List<ICameraModeController> controllers = new List<ICameraModeController>();
-
-        private void Awake()
-        {
-            this.GetComponentsInChildren<ICameraModeInputProcessor>(inputProcessors);
-            this.GetComponentsInChildren<ICameraModeController>(controllers);
-        }
-
-        public CameraModeData UpdateMode(List<Vector3> movementAxis, List<Vector2> lookAxis)
-        {
-            Vector3 _movementAxis = Vector3.zero;
-            Vector2 _lookAxis = Vector2.zero;
-
-            // Collect processed input
-            foreach (var processor in this.inputProcessors)
-            {
-                processor.UpdateInput(movementAxis, lookAxis);
-                _movementAxis += processor.EvaluteMovementAxis();
-                _lookAxis += processor.EvaluteLookAxis();
-            }
-
-            // Update controllers
-            foreach (var controller in this.controllers)
-            {
-                controller.UpdateController(_movementAxis, _lookAxis, ref this._cameraModeData);
-            }
-
-            return this._cameraModeData;
-        }
-
-        public void Setup()
-        {
-            this._cameraModeData = new CameraModeData();
+            this.movementAxis = mA;
+            this.lookAxis = lA;
         }
     }
 }
