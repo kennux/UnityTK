@@ -572,7 +572,6 @@ GameObject:
   - component: {fileID: 943882556}
   - component: {fileID: 943882555}
   - component: {fileID: 943882559}
-  - component: {fileID: 943882558}
   - component: {fileID: 943882560}
   m_Layer: 0
   m_Name: Camera
@@ -642,17 +641,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &943882558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 943882554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa81bb6ead4fbef438c0e666eb742926, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &943882559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1445,6 +1433,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1794725396}
   - component: {fileID: 1794725398}
+  - component: {fileID: 1794725397}
   m_Layer: 0
   m_Name: FreeLookStaticMode
   m_TagString: Untagged
@@ -1465,6 +1454,17 @@ Transform:
   m_Father: {fileID: 943882557}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1794725397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1794725395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa81bb6ead4fbef438c0e666eb742926, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1794725398
 MonoBehaviour:
   m_ObjectHideFlags: 0

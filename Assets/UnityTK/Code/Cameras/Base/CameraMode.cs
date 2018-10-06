@@ -7,26 +7,19 @@ using UnityEngine;
 
 namespace UnityTK.Cameras
 {
+    /// <summary>
+    /// Abstract base class for implementing a camera mode.
+    /// Camera modes contain the logic for camera behaviour of <see cref="UTKCamera"/>.
+    /// 
+    /// This is only a base class, for implementing new camera modes <see cref="CameraModeBase{TInputData}"/>
+    /// </summary>
     public abstract class CameraMode : UTKCameraComponent
     {
-        protected Vector3 movementAxis;
-        protected Vector2 lookAxis;
-
+        /// <summary>
+        /// Called in order to updaate the camera mode.
+        /// Should be called every frame.
+        /// </summary>
+        /// <param name="camera">The camera to run the update on.</param>
         public abstract void UpdateMode(Camera camera);
-
-        public virtual void UpdateInput(Dictionary<CameraInput, Vector3> movementAxis, Dictionary<CameraInput, Vector2> lookAxis)
-        {
-            Vector3 mA = Vector3.zero;
-            Vector2 lA = Vector2.zero;
-
-            foreach (var v in movementAxis.Values)
-                mA += v;
-
-            foreach (var v in lookAxis.Values)
-                lA += v;
-
-            this.movementAxis = mA;
-            this.lookAxis = lA;
-        }
     }
 }

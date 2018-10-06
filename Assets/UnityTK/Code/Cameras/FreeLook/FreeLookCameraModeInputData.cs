@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace UnityTK.Cameras
 {
-    public abstract class CameraInput : UTKCameraComponent
+    public struct FreeLookCameraModeInputData
     {
-        public abstract Vector2 GetLookAxis();
-        public abstract Vector3 GetMovementAxis();
+        public Vector2 lookAxis;
     }
 }

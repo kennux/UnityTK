@@ -17,6 +17,9 @@ namespace UnityTK.Cameras
         [Header("Start Parameters")]
         public CameraMode currentMode;
 
+        /// <summary>
+        /// The underlying camera wrapped by this UTKCamera.
+        /// </summary>
         public new Camera camera
         {
             get { return this._camera.Get(this); }
@@ -32,15 +35,6 @@ namespace UnityTK.Cameras
         }
         private List<CameraMode> _modes = new List<CameraMode>();
 
-        /// <summary>
-        /// All input implementations this camera has available.
-        /// </summary>
-        public ReadOnlyList<CameraInput> inputs
-        {
-            get { return this._inputs; }
-        }
-        private List<CameraInput> _inputs = new List<CameraInput>();
-
         #region Unity Messages
 
         /// <summary>
@@ -52,18 +46,11 @@ namespace UnityTK.Cameras
         {
             // Read components
             this.GetComponentsInChildren<CameraMode>(this._modes);
-            this.GetComponentsInChildren<CameraInput>(this._inputs);
 
             // Validity
             if (this._modes.Count == 0)
             {
                 Debug.LogError("UnityTK Camera without modes! Disabling camera!", this);
-                this.enabled = false;
-                return;
-            }
-            if (this._inputs.Count == 0)
-            {
-                Debug.LogError("UnityTK Camera without inputs! Disabling camera!", this);
                 this.enabled = false;
                 return;
             }
@@ -80,22 +67,8 @@ namespace UnityTK.Cameras
         /// </summary>
         private void Update()
         {
-            Dictionary<CameraInput, Vector3> movementAxis = DictionaryPool<CameraInput, Vector3>.Get();
-            Dictionary<CameraInput, Vector2> lookAxis = DictionaryPool<CameraInput, Vector2>.Get();
-
-            // Collect input
-            foreach (var input in this._inputs)
-            {
-                movementAxis.Add(input, input.GetMovementAxis());
-                lookAxis.Add(input, input.GetLookAxis());
-            }
-
             // Update mode
-            this.currentMode.UpdateInput(movementAxis, lookAxis);
             this.currentMode.UpdateMode(this.camera);
-
-            DictionaryPool<CameraInput, Vector3>.Return(movementAxis);
-            DictionaryPool<CameraInput, Vector2>.Return(lookAxis);
         }
 
         #endregion
