@@ -36,8 +36,13 @@ namespace UnityTK.Cameras
         /// </summary>
         protected TInputData inputData;
 
-        public virtual void Awake()
+        /// <summary>
+        /// Sets up <see cref="_inputs"/>
+        /// </summary>
+        protected override void Awake()
         {
+            base.Awake();
+
             this.GetComponentsInChildren<CameraModeInput<TInputData>>(this._inputs);
             if (this._inputs.Count == 0)
             {
@@ -47,17 +52,17 @@ namespace UnityTK.Cameras
             }
         }
 
-        public override void UpdateMode(Camera camera)
+        public override void UpdateMode(ref CameraState cameraState)
         {
             _UpdateInput();
-            _UpdateMode(camera);
+            _UpdateMode(ref cameraState);
         }
 
         /// <summary>
         /// Updates the camera mode, called after <see cref="_UpdateInput"/>
         /// </summary>
-        /// <param name="camera">The camera to run the update on.</param>
-        protected abstract void _UpdateMode(Camera camera);
+        /// <param name="camera">The camera state update.</param>
+        protected abstract void _UpdateMode(ref CameraState cameraState);
 
         /// <summary>
         /// Called right before <see cref="_UpdateMode(Camera)"/> in order to update camera input.

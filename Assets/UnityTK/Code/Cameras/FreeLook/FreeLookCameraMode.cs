@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace UnityTK.Cameras
 {
+    /// <summary>
+    /// Camera mode implementation for a free look camera.
+    /// </summary>
     public class FreeLookCameraMode : CameraModeBase<FreeLookCameraModeInputData>
     {
         /// <summary>
@@ -43,18 +46,18 @@ namespace UnityTK.Cameras
             return fli;
         }
 
-        protected override void _UpdateMode(Camera camera)
+        protected override void _UpdateMode(ref CameraState cameraState)
         {
-            var euler = camera.transform.localEulerAngles;
+            var euler = cameraState.transform.localEulerAngles;
             pitch = euler.x = Mathf.Clamp((pitch - this.inputData.lookAxis.y), this.minRotation, this.maxRotation);
-            camera.transform.localEulerAngles = euler;
+            cameraState.transform.localEulerAngles = euler;
 
             // Rotation
-            euler = camera.transform.localEulerAngles;
+            euler = cameraState.transform.localEulerAngles;
             euler.y += this.inputData.lookAxis.x;
             euler.y = euler.y < -360 ? euler.y + 360 : euler.y;
             euler.y = euler.y > 360 ? euler.y - 360 : euler.y;
-            camera.transform.localEulerAngles = euler;
+            cameraState.transform.localEulerAngles = euler;
         }
     }
 }

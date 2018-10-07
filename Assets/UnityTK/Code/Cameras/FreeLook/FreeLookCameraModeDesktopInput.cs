@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace UnityTK.Cameras
 {
     /// <summary>
-    /// Camera input implementation for a mouse.
+    /// <see cref="FreeLookCameraMode"/> implementation for desktop devices (mouse input).
     /// </summary>
     public class FreeLookCameraModeDesktopInput : FreeLookCameraModeInput
     {

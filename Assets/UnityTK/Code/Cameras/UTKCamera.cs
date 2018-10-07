@@ -18,6 +18,11 @@ namespace UnityTK.Cameras
         public CameraMode currentMode;
 
         /// <summary>
+        /// The current state of the camera.
+        /// </summary>
+        protected CameraState cameraState;
+
+        /// <summary>
         /// The underlying camera wrapped by this UTKCamera.
         /// </summary>
         public new Camera camera
@@ -46,6 +51,7 @@ namespace UnityTK.Cameras
         {
             // Read components
             this.GetComponentsInChildren<CameraMode>(this._modes);
+            this.cameraState = new CameraState(this.camera);
 
             // Validity
             if (this._modes.Count == 0)
@@ -68,7 +74,22 @@ namespace UnityTK.Cameras
         private void Update()
         {
             // Update mode
-            this.currentMode.UpdateMode(this.camera);
+            this.currentMode.UpdateMode(ref this.cameraState);
+
+            // PP & Apply
+            this.currentMode.PostProcessState(this.cameraState).Apply(this.camera);
+        }
+
+        #endregion
+
+        #region Features
+
+        /// <summary>
+        /// <see cref="CameraMode.TryGetCameraModeFeature{T}"/> for the <see cref="currentMode"/>.
+        /// </summary>
+        public T TryGetCameraModeFeature<T>() where T : class, ICameraModeFeature
+        {
+            return this.currentMode.TryGetCameraModeFeature<T>();
         }
 
         #endregion
