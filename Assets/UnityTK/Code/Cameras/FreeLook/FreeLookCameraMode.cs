@@ -9,7 +9,28 @@ namespace UnityTK.Cameras
 {
     public class FreeLookCameraMode : CameraModeBase<FreeLookCameraModeInputData>
     {
+        /// <summary>
+        /// The minimum rotation of the camera (euler x-angle).
+        /// This controls the limits of looking up/down.
+        /// </summary>
+        [Header("Settings")]
+        public float minRotation = -45;
+
+        /// <summary>
+        /// The maximum rotation of the camera (euler x-angle).
+        /// This controls the limits of looking up/down.
+        /// </summary>
+        public float maxRotation = 45;
+
+        /// <summary>
+        /// The camera look sensitivity
+        /// </summary>
         public float sensitivity = 10;
+
+        /// <summary>
+        /// Internal camera pitch value (euler x-angle).
+        /// </summary>
+        private float pitch;
 
         protected override FreeLookCameraModeInputData MergeInputData(Dictionary<CameraModeInput<FreeLookCameraModeInputData>, FreeLookCameraModeInputData> data)
         {
@@ -24,12 +45,16 @@ namespace UnityTK.Cameras
 
         protected override void _UpdateMode(Camera camera)
         {
-            var rot = camera.transform.localRotation;
+            var euler = camera.transform.localEulerAngles;
+            pitch = euler.x = Mathf.Clamp((pitch - this.inputData.lookAxis.y), this.minRotation, this.maxRotation);
+            camera.transform.localEulerAngles = euler;
 
-            float newRotationX = rot.eulerAngles.x - this.inputData.lookAxis.y * sensitivity;
-            float newRotationY = rot.eulerAngles.y + this.inputData.lookAxis.x * sensitivity;
-
-            camera.transform.localRotation = Quaternion.Euler(newRotationX, newRotationY, rot.eulerAngles.z);
+            // Rotation
+            euler = camera.transform.localEulerAngles;
+            euler.y += this.inputData.lookAxis.x;
+            euler.y = euler.y < -360 ? euler.y + 360 : euler.y;
+            euler.y = euler.y > 360 ? euler.y - 360 : euler.y;
+            camera.transform.localEulerAngles = euler;
         }
     }
 }
