@@ -27,16 +27,21 @@ BehaviourModel
 
 Provides several pre-built components that can be used to create abstract behaviour models and employ a modular component based architecture.
 
-BuildSystem
-----
-
-Provides very simple interface and pre-built components to automate building unity projects.
-
 Audio
 ----
 
 The UnityTK audio system provides a very simple and lightweight abstraction layer on top of the unity engine audio system.
 It provides the ability to construct game sound systems using events.
+
+Cameras
+----
+
+The UnityTK camera system provides an abstract interface to generic camera mode implementations.
+
+BuildSystem
+----
+
+Provides very simple interface and pre-built components to automate building unity projects.
 
 Benchmarking
 ----
