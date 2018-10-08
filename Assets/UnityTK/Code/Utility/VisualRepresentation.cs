@@ -24,6 +24,46 @@ namespace UnityTK
 
         #region Render cache
 
+        /// <summary>
+        /// Creates a rendering cache for the specified visual representation.
+        /// </summary>
+        /// <param name="preAlloc">Pre-allocated list for the result.</param>
+        /// <returns>preAlloc if set. If not a new list is created. The returned list contains the render cache info.</returns>
+        public static List<RenderNode> CreateRenderCache(GameObject visualRepresentation,  List<RenderNode> preAlloc = null)
+        {
+            ListPool<RenderNode>.GetIfNull(ref preAlloc);
+
+            // Retrieve all mesh renderers
+            List<MeshRenderer> renderers = ListPool<MeshRenderer>.Get();
+            visualRepresentation.GetComponentsInChildren(renderers);
+
+            // Construct render nodes
+            for (int i = 0; i < renderers.Count; i++)
+            {
+                // Grad renderer and filter
+                var renderer = renderers[i];
+                var filter = renderer.GetComponent<MeshFilter>();
+
+                if (Essentials.UnityIsNull(filter))
+                    continue;
+                
+                // Write render node
+                preAlloc.Add(new RenderNode()
+                {
+                    matrix = visualRepresentation.transform.worldToLocalMatrix * renderer.transform.localToWorldMatrix,
+                    materials = renderer.sharedMaterials,
+                    mesh = filter.sharedMesh,
+                    shadowMode = renderer.shadowCastingMode,
+                    probeAnchor = renderer.probeAnchor,
+                    recieveShadows = renderer.receiveShadows,
+                    lightProbeUsage = renderer.lightProbeUsage
+                });
+            }
+            ListPool<MeshRenderer>.Return(renderers);
+
+            return preAlloc;
+        }
+
         private void OnValidate()
         {
             if (Essentials.UnityIsNull(this.visualRepresentation))
@@ -33,7 +73,7 @@ namespace UnityTK
                 this.UpdateRenderCache();
         }
 
-        private struct RenderNode
+        public struct RenderNode
         {
             public Matrix4x4 matrix;
             public Mesh mesh;
@@ -57,35 +97,8 @@ namespace UnityTK
         {
             if (this.renderNodes.Count > 0)
                 this.renderNodes.Clear();
-
-            // Retrieve all mesh renderers
-            List<MeshRenderer> renderers = ListPool<MeshRenderer>.Get();
-            this.visualRepresentation.GetComponentsInChildren(renderers);
-
-            // Construct render nodes
-            for (int i = 0; i < renderers.Count; i++)
-            {
-                // Grad renderer and filter
-                var renderer = renderers[i];
-                var filter = renderer.GetComponent<MeshFilter>();
-
-                if (Essentials.UnityIsNull(filter))
-                    continue;
-                
-                // Write render node
-                this.renderNodes.Add(new RenderNode()
-                {
-                    matrix = this.visualRepresentation.transform.worldToLocalMatrix * renderer.transform.localToWorldMatrix,
-                    materials = renderer.sharedMaterials,
-                    mesh = filter.sharedMesh,
-                    shadowMode = renderer.shadowCastingMode,
-                    probeAnchor = renderer.probeAnchor,
-                    recieveShadows = renderer.receiveShadows,
-                    lightProbeUsage = renderer.lightProbeUsage
-                });
-            }
-            ListPool<MeshRenderer>.Return(renderers);
-
+            
+            CreateRenderCache(this.visualRepresentation, this.renderNodes);
             this._visualRepresentation = this.visualRepresentation;
         }
 
