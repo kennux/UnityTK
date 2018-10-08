@@ -465,11 +465,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bounds:
-    m_Center: {x: 0, y: 30, z: 0}
+    m_Center: {x: 0, y: 20, z: 0}
     m_Extent: {x: 50, y: 20, z: 50}
+  minYZoomLevel: 20
+  maxYZoomLevel: 40
   eulerAngles: {x: 90, y: 0, z: 0}
   movementSensitivity: 100
-  zoomSensitivity: 15
+  zoomSensitivity: 25
+  zoomLevelNormalized: 0
+  planeMin: {x: 0, y: 0}
+  planeMax: {x: 0, y: 0}
+  planeCoords: {x: 0, y: 0}
 --- !u!114 &440365951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -711,6 +717,7 @@ Transform:
   m_Children:
   - {fileID: 1794725396}
   - {fileID: 440365948}
+  - {fileID: 1565482169}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -741,6 +748,7 @@ MonoBehaviour:
   modes:
   - {fileID: 1794725398}
   - {fileID: 440365950}
+  - {fileID: 1565482166}
   shakeMagnitude: 100
 --- !u!1 &945475645
 GameObject:
@@ -1407,6 +1415,84 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1485141313}
   m_CullTransparentMesh: 0
+--- !u!1 &1565482165
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1565482169}
+  - component: {fileID: 1565482166}
+  - component: {fileID: 1565482168}
+  - component: {fileID: 1565482167}
+  m_Layer: 0
+  m_Name: IsometricMode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1565482166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1565482165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e590a6852aa6fa0459e54888be47a1e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bounds:
+    m_Center: {x: 0, y: 20, z: 20}
+    m_Extent: {x: 75, y: 20, z: 75}
+  minYZoomLevel: 20
+  maxYZoomLevel: 40
+  eulerAngles: {x: 30, y: 0, z: 0}
+  movementSensitivity: 100
+  zoomSensitivity: 25
+  zoomLevelNormalized: 0
+  planeMin: {x: 0, y: 0}
+  planeMax: {x: 0, y: 0}
+  planeCoords: {x: 0, y: 0}
+--- !u!114 &1565482167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1565482165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 251b313bd95e9264ab963ba78a4b3a45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damping: {x: 0.9, y: 0.9, z: 0.9}
+  stiffness: {x: 10, y: 10, z: 10}
+--- !u!114 &1565482168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1565482165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ba74e374d9a845409556323b4689ae8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1565482169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1565482165}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 943882557}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1647243345
 GameObject:
   m_ObjectHideFlags: 0

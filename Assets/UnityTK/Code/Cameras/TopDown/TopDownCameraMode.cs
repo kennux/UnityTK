@@ -12,6 +12,22 @@ namespace UnityTK.Cameras
     /// </summary>
     public class TopDownCameraMode : CameraModeBase<TopDownCameraModeInputData>
     {
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            this.minYZoomLevel = Mathf.Clamp(this.minYZoomLevel, this.bounds.min.y, this.bounds.max.y);
+            this.maxYZoomLevel = Mathf.Clamp(this.maxYZoomLevel, this.bounds.min.y, this.bounds.max.y);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(this.bounds.center, this.bounds.size);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(new Vector3(this.bounds.center.x, this.minYZoomLevel, this.bounds.center.z), new Vector3(this.bounds.size.x, 0.05f, this.bounds.size.z));
+            Gizmos.DrawWireCube(new Vector3(this.bounds.center.x, this.maxYZoomLevel, this.bounds.center.z), new Vector3(this.bounds.size.x, 0.05f, this.bounds.size.z));
+        }
+#endif
         /// <summary>
         /// The bounding box of the world to be viewed with this camera.
         /// This controls the camera plane used for movement.
@@ -21,20 +37,14 @@ namespace UnityTK.Cameras
         public Bounds bounds;
 
         /// <summary>
-        /// Y-axis min of <see cref="bounds"/>
+        /// Y-axis min for camera when fully zoomed in.
         /// </summary>
-        public float minYLevel
-        {
-            get { return this.bounds.min.y; }
-        }
+        public float minYZoomLevel;
 
         /// <summary>
-        /// Y-axis max of <see cref="bounds"/>
+        /// Y-axis max for camera when fully zoomed out.
         /// </summary>
-        public float maxYLevel
-        {
-            get { return this.bounds.max.y; }
-        }
+        public float maxYZoomLevel;
 
         /// <summary>
         /// Euler angles to be always set to the camera.
@@ -49,31 +59,36 @@ namespace UnityTK.Cameras
         /// <summary>
         /// The zoom sensitivity (multiplicator)
         /// </summary>
-        public float zoomSensitivity= 15f;
+        public float zoomSensitivity = 25f;
 
         /// <summary>
         /// The zoom level in worldspace (y-axis).
         /// </summary>
         protected float zoomLevel
         {
-            get { return this.minYLevel + (this.maxYLevel * this.zoomLevelNormalized); }
+            get { return this.minYZoomLevel + (this.maxYZoomLevel * this.zoomLevelNormalized); }
         }
-
+        
+        [Header("Debug")]
+        [SerializeField]
         /// <summary>
-        /// The normalized zoomlevel, normalized between <see cref="minYLevel"/>, <see cref="maxYLevel"/>
+        /// The normalized zoomlevel, normalized between <see cref="minYZoomLevel"/>, <see cref="maxYZoomLevel"/>
         /// </summary>
         protected float zoomLevelNormalized;
-
+        
+        [SerializeField]
         /// <summary>
         /// The min vector of the 2d plane used for movement.
         /// </summary>
         protected Vector2 planeMin;
-
+        
+        [SerializeField]
         /// <summary>
         /// The mmax vector of the 2d plane used for movement.
         /// </summary>
         protected Vector2 planeMax;
-
+        
+        [SerializeField]
         /// <summary>
         /// The camera position on a plane defined by <see cref="planeMin"/> and <see cref="planeMax"/>
         /// </summary>
@@ -89,12 +104,6 @@ namespace UnityTK.Cameras
             }
 
             return id;
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(this.bounds.center, this.bounds.size);
         }
 
         /// <summary>
@@ -118,7 +127,7 @@ namespace UnityTK.Cameras
 
             // Try to get plane coords and clamp them
             this.planeCoords = new Vector2(camera.transform.position.x, camera.transform.position.z);
-            this.zoomLevelNormalized = camera.transform.position.y.Remap(this.minYLevel, this.maxYLevel, 0, 1);
+            this.zoomLevelNormalized = camera.transform.position.y.Remap(this.minYZoomLevel, this.maxYZoomLevel, 0, 1);
             ClampState();
         }
 
@@ -129,6 +138,7 @@ namespace UnityTK.Cameras
         /// </summary>
         private void ClampState()
         {
+            // TODO: Plane coords camer AABB check for bounds
             this.planeCoords.x = Mathf.Clamp(this.planeCoords.x, planeMin.x, planeMax.x);
             this.planeCoords.y = Mathf.Clamp(this.planeCoords.y, planeMin.y, planeMax.y);
             this.zoomLevelNormalized = Mathf.Clamp01(this.zoomLevelNormalized);
@@ -142,8 +152,20 @@ namespace UnityTK.Cameras
             ClampState();
 
             // Visual update
-            cameraState.transform.position = new Vector3(this.planeCoords.x, this.zoomLevel, this.planeCoords.y);
-            cameraState.transform.rotation = Quaternion.Euler(this.eulerAngles);
+            // Calculate position determination ray
+            Vector3 rayOrigin = new Vector3(this.planeCoords.x, this.bounds.min.y, this.planeCoords.y);
+            Quaternion rotation = Quaternion.Euler(this.eulerAngles);
+            Ray ray = new Ray(rayOrigin, rotation * -Vector3.forward); // Create ray from ground towards camera position
+
+            // Cast position determination ray against target plane
+            float d;
+            if (new Plane(Vector3.up, new Vector3(this.planeCoords.x, this.zoomLevel, this.planeCoords.y)).Raycast(ray, out d))
+            {
+                var p = ray.GetPoint(d);
+                cameraState.transform.position = p;
+            }
+
+            cameraState.transform.rotation = rotation;
         }
     }
 }
