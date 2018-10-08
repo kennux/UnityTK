@@ -49,12 +49,12 @@ namespace UnityTK.Cameras
         protected override void _UpdateMode(ref CameraState cameraState)
         {
             var euler = cameraState.transform.localEulerAngles;
-            pitch = euler.x = Mathf.Clamp((pitch - this.inputData.lookAxis.y), this.minRotation, this.maxRotation);
+            pitch = euler.x = Mathf.Clamp((pitch - this.inputData.lookAxis.y * this.sensitivity * Time.deltaTime), this.minRotation, this.maxRotation);
             cameraState.transform.localEulerAngles = euler;
 
             // Rotation
             euler = cameraState.transform.localEulerAngles;
-            euler.y += this.inputData.lookAxis.x;
+            euler.y += this.inputData.lookAxis.x * this.sensitivity * Time.deltaTime;
             euler.y = euler.y < -360 ? euler.y + 360 : euler.y;
             euler.y = euler.y > 360 ? euler.y - 360 : euler.y;
             cameraState.transform.localEulerAngles = euler;

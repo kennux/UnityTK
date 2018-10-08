@@ -11,17 +11,17 @@ namespace UnityTK.Cameras
     /// Camera mode feature implementation (<see cref="ICameraModeShakeFeature"/>).
     /// <see cref="FreeLookCameraMode"/>
     /// </summary>
-    public class FreeLookCameraModeShakeFeature : CameraModeFeatureBase, ICameraModeShakeFeature
+    public class CameraModeShakeFeature : CameraModeFeatureBase, ICameraModeShakeFeature
     {
         /// <summary>
         /// The spring damping.
         /// </summary>
-        public Vector3 damping;
+        public Vector3 damping = new Vector3(.9f,.9f,.9f);
 
         /// <summary>
         /// The spring stiffness.
         /// </summary>
-        public Vector3 stiffness;
+        public Vector3 stiffness = new Vector3(10, 10, 10);
 
         /// <summary>
         /// The spring instance.

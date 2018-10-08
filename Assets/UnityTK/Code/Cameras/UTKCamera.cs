@@ -111,6 +111,7 @@ namespace UnityTK.Cameras
 
             this.currentMode = mode;
             this.currentMode.gameObject.SetActive(true);
+            this.currentMode.OnPrepare(this.cameraState);
         }
 
         #endregion

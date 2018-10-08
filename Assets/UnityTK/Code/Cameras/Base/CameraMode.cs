@@ -46,6 +46,16 @@ namespace UnityTK.Cameras
         }
 
         /// <summary>
+        /// Called when this camera mode is being activated.
+        /// This is called after OnEnable.
+        /// </summary>
+        /// <param name="cameraState">The current camera state.</param>
+        public virtual void OnPrepare(CameraState cameraState)
+        {
+
+        }
+
+        /// <summary>
         /// Called in order to updaate the camera mode.
         /// Should be called every frame.
         /// </summary>
