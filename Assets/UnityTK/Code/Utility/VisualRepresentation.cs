@@ -90,6 +90,18 @@ namespace UnityTK
         private List<RenderNode> renderNodes = new List<RenderNode>();
 
         /// <summary>
+        /// Updates if needed and then returns the internal render cache.
+        /// This render cache should only be read from, tho it can also be manipulated but will be rebuilt if <see cref="visualRepresentation"/> reference changes.
+        /// </summary>
+        public List<RenderNode> GetInternalRenderCache()
+        {
+            if (!object.ReferenceEquals(this.visualRepresentation, this._visualRepresentation))
+                this.UpdateRenderCache();
+
+            return this.renderNodes;
+        }
+
+        /// <summary>
         /// Updates the rendering cache of this visual representation.
         /// </summary>
         [ContextMenu("Update render cache")]
@@ -104,6 +116,99 @@ namespace UnityTK
 
         #endregion
 
+        #region Material overrides
+
+        /// <summary>
+        /// Material overrides currently set to this vis rep.
+        /// Key = Material to replace
+        /// Value = Material to replace it with
+        /// </summary>
+        private Dictionary<Material, Material> materialOverrides;
+
+        /// <summary>
+        /// Material overrides currently set to this vis rep.
+        /// Key = Mesh which gets its material overridden
+        /// Value = Material to replace it with
+        /// </summary>
+        private Dictionary<Mesh, Material> meshMaterialOverrides;
+
+        /// <summary>
+        /// Overrides a material in this visual representation.
+        /// <seealso cref="ClearMaterialOverrides"/>
+        /// </summary>
+        /// <param name="toOverride">The material to override.</param>
+        /// <param name="replacement">The material to override it with.</param>
+        public void OverrideMaterial(Material toOverride, Material replacement)
+        {
+            if (ReferenceEquals(this.materialOverrides, null))
+                this.materialOverrides = DictionaryPool<Material, Material>.Get();
+
+            this.materialOverrides.Add(toOverride, replacement);
+        }
+
+        /// <summary>
+        /// Overrides a material in this visual representation by its mesh.
+        /// This will cause the specified mesh to be always rendered with the specified material until the override is cleared.
+        /// </summary>
+        /// <param name="toOverride">The material to override.</param>
+        /// <param name="replacement">The material to override it with.</param>
+        public void OverrideMaterial(Mesh mesh, Material replacement)
+        {
+            if (ReferenceEquals(this.meshMaterialOverrides, null))
+                this.meshMaterialOverrides = DictionaryPool<Mesh, Material>.Get();
+
+            this.meshMaterialOverrides.Add(mesh, replacement);
+        }
+
+        /// <summary>
+        /// Clears all previously submitted material replacements (<see cref="OverrideMaterial(Material, Material)"/>).
+        /// </summary>
+        public void ClearMaterialOverrides()
+        {
+            // Return replacement mats dict
+            DestroyMatOverrides();
+        }
+
+        /// <summary>
+        /// Clears all previously submitted material replacements (<see cref="OverrideMaterial(Mesh, Material)"/>).
+        /// </summary>
+        public void ClearMeshMaterialOverrides()
+        {
+            // Return replacement mats dict
+            DestroyMeshOverrides();
+        }
+
+        /// <summary>
+        /// Destroys <see cref="materialOverrides"/> by returning it to the dictionary pool.
+        /// </summary>
+        private void DestroyMatOverrides()
+        {
+            if (!ReferenceEquals(this.materialOverrides, null))
+                DictionaryPool<Material, Material>.Return(this.materialOverrides);
+            this.materialOverrides = null;
+        }
+        
+        /// <summary>
+        /// Destroys <see cref="meshMaterialOverrides"/> by returning it to the dictionary pool.
+        /// </summary>
+        private void DestroyMeshOverrides()
+        {
+            if (!ReferenceEquals(this.meshMaterialOverrides, null))
+                DictionaryPool<Mesh, Material>.Return(this.meshMaterialOverrides);
+            this.meshMaterialOverrides = null;
+        }
+
+        /// <summary>
+        /// Frees up <see cref="materialOverrides"/>
+        /// </summary>
+        private void OnDestroy()
+        {
+            DestroyMatOverrides();
+            DestroyMeshOverrides();
+        }
+
+        #endregion
+
         #region Rendering
 
         public void Update()
@@ -111,18 +216,27 @@ namespace UnityTK
             if (Essentials.UnityIsNull(this.visualRepresentation))
                 return;
 
-            if (!object.ReferenceEquals(this.visualRepresentation, this._visualRepresentation))
-                this.UpdateRenderCache();
-
+            var renderCache = GetInternalRenderCache();
+            bool hasMaterialReplacements = !ReferenceEquals(this.materialOverrides, null);
+            bool hasMeshMaterialReplacements = !ReferenceEquals(this.meshMaterialOverrides, null);
             // Render nodes
-            for (int i = 0; i < this.renderNodes.Count; i++)
+            for (int i = 0; i < renderCache.Count; i++)
             {
-                var node = this.renderNodes[i];
+                var node = renderCache[i];
 
                 // Execute all draw calls
                 for (int j = 0; j < node.materials.Length; j++)
                 {
-                    Graphics.DrawMesh(node.mesh, this.transform.localToWorldMatrix * node.matrix, node.materials[j], 8, null, j, null, node.shadowMode, node.recieveShadows, node.probeAnchor, node.lightProbeUsage != LightProbeUsage.Off);
+                    // Material replacement
+                    Material material = node.materials[j], replacementMat = null;
+                    if (hasMaterialReplacements && this.materialOverrides.TryGetValue(material, out replacementMat))
+                        material = replacementMat;
+
+                    // Mesh material replacement
+                    if (hasMeshMaterialReplacements && this.meshMaterialOverrides.TryGetValue(node.mesh, out replacementMat))
+                        material = replacementMat;
+
+                    Graphics.DrawMesh(node.mesh, this.transform.localToWorldMatrix * node.matrix, material, 8, null, j, null, node.shadowMode, node.recieveShadows, node.probeAnchor, node.lightProbeUsage != LightProbeUsage.Off);
                 }
             }
         }
