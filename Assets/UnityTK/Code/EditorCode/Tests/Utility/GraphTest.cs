@@ -124,6 +124,33 @@ namespace UnityTK.Test
                 Assert.AreEqual(connection.data, connectionData);
             }
 
+            // Test clear
+            graph.Clear();
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                graph.Add(indexConstructor(i), nodes[i]);
+            }
+
+            foreach (var connection in connections)
+            {
+                graph.Connect(connection.from, connection.to, connection.data);
+            }
+
+            // Test getter
+            for (int i = 0; i < 100; i++)
+            {
+                Assert.AreSame(nodes[i], graph.Get(indexConstructor(i)));
+            }
+
+            // Test connections
+            foreach (var connection in connections)
+            {
+                TConnectionData connectionData;
+                Assert.IsTrue(graph.IsConnected(connection.from, connection.to));
+                Assert.IsTrue(graph.TryGetConnection(connection.from, connection.to, out connectionData));
+                Assert.AreEqual(connection.data, connectionData);
+            }
+
             // Test connection enumerations
             List<DebugConnectionData<TNode, TConnectionData>> _connections = new List<DebugConnectionData<TNode, TConnectionData>>();
             int ctr = 0;

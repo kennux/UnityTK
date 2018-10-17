@@ -169,6 +169,13 @@ namespace UnityTK
             }
         }
 
+        public void Clear()
+        {
+            this.nodes.Clear();
+            this.nodesReverse.Clear();
+            this.connections.Clear();
+        }
+
         public Dictionary<TIndex, TNode>.ValueCollection.Enumerator GetEnumerator()
         {
             return this.nodes.Values.GetEnumerator();

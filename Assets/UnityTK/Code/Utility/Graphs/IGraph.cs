@@ -69,5 +69,10 @@ namespace UnityTK
         /// </summary>
         /// <param name="index">The index of the node to be removed.</param>
         void Remove(TIndex index);
+
+        /// <summary>
+        /// Clears the graph by destroying all data stored in it.
+        /// </summary>
+        void Clear();
     }
 }

@@ -98,6 +98,7 @@ namespace UnityTK
 
                 this.indexMap.Clear();
                 this.nodeMap.Clear();
+                this.nodePtr = 0;
             }
             else
             {
@@ -281,6 +282,11 @@ namespace UnityTK
                 connectionData = this.connections[cIdx].data;
                 return true;
             }
+        }
+
+        public void Clear()
+        {
+            Resize(this.nodes.Length, this.maxConnections, true);
         }
 
         #region Enumerations
