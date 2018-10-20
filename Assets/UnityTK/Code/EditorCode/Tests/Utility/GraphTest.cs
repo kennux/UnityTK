@@ -87,6 +87,10 @@ namespace UnityTK.Test
                 graph.Add(indexConstructor(i), node);
             }
 
+			// Previous bug: Test if node with no connections casues exception
+			var enumerator = graph.GetConnectedNodes(indexConstructor(0));
+			enumerator.MoveNext();
+
             // Connect them at random
             List<DebugConnectionData<TNode, TConnectionData>> connections = new List<DebugConnectionData<TNode, TConnectionData>>();
             foreach (var node in nodes)

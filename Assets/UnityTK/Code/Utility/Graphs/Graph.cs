@@ -28,6 +28,8 @@ namespace UnityTK
         /// </summary>
         private Dictionary<TIndex, List<ConnectedGraphNode<TNode, TConnectionData>>> connections = new Dictionary<TIndex, List<ConnectedGraphNode<TNode, TConnectionData>>>();
 
+		private readonly List<ConnectedGraphNode<TNode, TConnectionData>> emptyConnectionsList = new List<ConnectedGraphNode<TNode, TConnectionData>>();
+
         public void Add(TIndex index, TNode node)
         {
             this.nodes.Add(index, node);
@@ -199,7 +201,7 @@ namespace UnityTK
                 return lst.GetEnumerator();
 
             // :(
-            return default(List<ConnectedGraphNode<TNode, TConnectionData>>.Enumerator);
+            return emptyConnectionsList.GetEnumerator();
         }
         
         IEnumerator<ConnectedGraphNode<TNode, TConnectionData>> IGraph<TIndex, TNode, TConnectionData>.GetConnectedNodes(TIndex nodeIndex)
