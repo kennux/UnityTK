@@ -36,6 +36,7 @@ namespace UnityTK
             // Retrieve all mesh renderers
             List<MeshRenderer> renderers = ListPool<MeshRenderer>.Get();
             visualRepresentation.GetComponentsInChildren(renderers);
+			var wtl = visualRepresentation.transform.worldToLocalMatrix;
 
             // Construct render nodes
             for (int i = 0; i < renderers.Count; i++)
@@ -46,11 +47,15 @@ namespace UnityTK
 
                 if (Essentials.UnityIsNull(filter))
                     continue;
-                
-                // Write render node
+
+				// Calculate TRS matrix for rendering
+				var trs = wtl * renderer.transform.localToWorldMatrix;
+				trs = Matrix4x4.TRS(trs.MultiplyPoint3x4(Vector3.zero), trs.rotation, renderer.transform.lossyScale);
+
+				// Write render node
                 preAlloc.Add(new RenderNode()
                 {
-                    matrix = visualRepresentation.transform.worldToLocalMatrix * renderer.transform.localToWorldMatrix,
+                    matrix = trs,
                     materials = renderer.sharedMaterials,
                     mesh = filter.sharedMesh,
                     shadowMode = renderer.shadowCastingMode,
