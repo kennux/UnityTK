@@ -4,22 +4,24 @@ using System.Linq;
 using UnityEngine;
 using System.Threading.Tasks;
 using UnityTK.Prototypes;
+using UnityTK.Examples.Prototypes;
 
 public class PrototypesTest : MonoBehaviour
 {
 	public TextAsset xml;
+	public TestPrototype[] loadedPrototypes;
 
 	public void Start()
 	{
 		List<ParsingError> parsingErrors = new List<ParsingError>();
-		var objs = Prototypes.Parse(this.xml.text, new PrototypeParseParameters()
+		this.loadedPrototypes = Prototypes.Parse(this.xml.text, new PrototypeParseParameters()
 		{
 			standardNamespace = "UnityTK.Examples.Prototypes"
-		}, ref parsingErrors);
+		}, ref parsingErrors).Cast<TestPrototype>().ToArray();
 
 		if (parsingErrors.Count == 0)
 		{
-			Debug.Log("Parsed successfully " + objs.Count + " objects!");
+			Debug.Log("Parsed successfully " + loadedPrototypes.Length+ " objects!");
 		}
 		else
 		{

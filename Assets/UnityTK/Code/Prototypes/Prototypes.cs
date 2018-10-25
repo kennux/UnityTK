@@ -8,6 +8,11 @@ using System.Linq;
 
 namespace UnityTK.Prototypes
 {
+	/// <summary>
+	/// The main API for UnityTK prototypes.
+	/// 
+	/// It provides parser methods to parse prototypes from XML.
+	/// </summary>
 	public static class Prototypes
 	{
 		public const string PrototypeContainerXMLName = "PrototypeContainer";
@@ -16,7 +21,15 @@ namespace UnityTK.Prototypes
 		public const string PrototypeElementXMLName = "Prototype";
 		public const string PrototypeAttributeInherits = "Inherits";
 		public const string PrototypeAttributeName = "Name";
+		public const string PrototypeAttributeClass = "Class";
 
+		/// <summary>
+		/// Parses the specified XML content and returns all prototypes which could be parsed.
+		/// </summary>
+		/// <param name="xmlContent">The xml content to use for parsing-</param>
+		/// <param name="parameters">The parameters for the parser.</param>
+		/// <param name="errors">A list where parsing errors will be written to.</param>
+		/// <returns></returns>
 		public static List<IPrototype> Parse(string xmlContent, PrototypeParseParameters parameters, ref List<ParsingError> errors)
 		{
 			PrototypesCaches.LazyInit();
@@ -44,7 +57,7 @@ namespace UnityTK.Prototypes
 
 			return _Parse(data, ref parameters, ref errors);
 		}
-
+		
 		private static List<SerializedData> _PreParse(string xmlContent, string filename, ref PrototypeParseParameters parameters, ref List<ParsingError> errors, List<SerializedData> preAlloc = null)
 		{
 			ListPool<SerializedData>.GetIfNull(ref preAlloc);
@@ -71,7 +84,7 @@ namespace UnityTK.Prototypes
 				return preAlloc;
 			}
 
-			var type = ResolveType(typeAttribute.Value, ref parameters);
+			var type = LookupSerializableTypeCache(typeAttribute.Value, ref parameters);
 			if (ReferenceEquals(type, null))
 			{
 				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element type " + typeAttribute.Value + " unknown! Skipping file!"));
@@ -95,16 +108,8 @@ namespace UnityTK.Prototypes
 					return preAlloc;
 				}
 
-				XAttribute nameAttrib = nodeElement.Attribute(PrototypeAttributeName);
-				if (ReferenceEquals(nameAttrib, null)) // Require name attrib
-				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (nodeElement as IXmlLineInfo).LineNumber, "Element has no name! Elements must have a '" + PrototypeAttributeName + "' attribute! Skipping element!"));
-					continue;
-				}
-
 				// Prepare
-				var data = new SerializedData();
-				data.PrepareParse(type, nodeElement, filename);
+				var data = new SerializedData(type, nodeElement, filename);
 				preAlloc.Add(data);
 			}
 			
@@ -121,17 +126,45 @@ namespace UnityTK.Prototypes
 			// Key = type which is inheriting from something, Value = the type its inheriting from
 			Dictionary<SerializedData, List<SerializedData>> inheritingFrom = new Dictionary<SerializedData, List<SerializedData>>();
 			Dictionary<SerializedData, object> instances = new Dictionary<SerializedData, object>();
-			List<SerializedData> removeData = new List<SerializedData>();
+			Dictionary<string, SerializedData> nameMapping = new Dictionary<string, SerializedData>();
+			List<SerializedData> invalid = new List<SerializedData>();
+
+			// Pre-parse names, create instances and apply name
+			foreach (var d in data)
+			{
+				var attribName = d.element.Attribute(PrototypeAttributeName);
+				if (ReferenceEquals(attribName, null))
+				{
+					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.element as IXmlLineInfo).LineNumber, "Prototype without name! Skipping prototype!"));
+					invalid.Add(d);
+					continue;
+				}
+				
+				nameMapping.Add(attribName.Value, d);
+
+				var obj = d.targetType.Create();
+				instances.Add(d, obj);
+				
+				(obj as IPrototype).name = attribName.Value;
+				preAlloc.Add(obj as IPrototype);
+			}
+			
+			// Remove invalidated entries
+			foreach (var d in invalid)
+				data.Remove(d);
+
+			invalid.Clear();
 			foreach (var d in data)
 			{
 				if (!string.IsNullOrEmpty(d.inherits))
 				{
-					SerializedData inheritedData = LookupData(data, d.inherits);
+					SerializedData inheritedData = nameMapping[d.inherits];
 
 					if (ReferenceEquals(inheritedData, null))
 					{
 						// TODO: Line number
-						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, -1, "Prototype '" + d.name + "' is inheriting from unknown prototype '" + d.inherits + "'! Skipping prototype!"));
+						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, -1, "Prototype is inheriting from unknown prototype '" + d.inherits + "'! Skipping prototype!"));
+						invalid.Add(d);
 						continue;
 					}
 					else
@@ -141,8 +174,13 @@ namespace UnityTK.Prototypes
 				}
 			}
 
+			PrototypeParserState state = new PrototypeParserState()
+			{
+				parameters = parameters
+			};
+
 			// Remove invalidated entries
-			foreach (var d in removeData)
+			foreach (var d in invalid)
 				data.Remove(d);
 
 			// Step 1 - sort by inheritance
@@ -155,41 +193,30 @@ namespace UnityTK.Prototypes
 
 			// Step 3 - Preloads the fields and creates sub-data objects
 			foreach (var d in sorted)
-				d.PreLoadFields(errors);
+				d.LoadFields(errors, state);
 
-			// Step 4 - create prototypes
+			// Step 4 - run sorting algorithm for reference resolve
+			sorted = data.TSort((sd) => sd.GetReferencedPrototypes().Select((r) => nameMapping[r]), true).ToList();
 			foreach (var d in sorted)
-				instances.Add(d, d.Create());
+				d.ResolveReferenceFieldsAndSubData(preAlloc, errors);
 
-			// Step 5 - run sorting algorithm for reference resolve
-			sorted = data.TSort((sd) => sd.GetReferencedPrototypes().Select((r) => LookupData(data, r)), true).ToList();
+			// Step 5 - Final data apply
 			foreach (var d in sorted)
-				d.ResolveReferenceFieldsAndSubData(instances[d], preAlloc, errors);
+			{
+				// Apply inherited data first
+				if (!string.IsNullOrEmpty(d.inherits))
+					nameMapping[d.inherits].ApplyTo(instances[d], errors);
 
-			// Step 6 - Final data apply
-			foreach (var d in sorted)
-				d.Apply(instances[d], errors);
-
-			foreach (var i in instances)
-				preAlloc.Add(i.Value as IPrototype);
+				// Apply data over inherited
+				d.ApplyTo(instances[d], errors);
+			}
 
 			return preAlloc;
 		}
 
-		private static SerializedData LookupData(List<SerializedData> data, string lookupName)
+		private static SerializableTypeCache LookupSerializableTypeCache(string name, ref PrototypeParseParameters parameters)
 		{
-			foreach (var d in data)
-			{
-				if (string.Equals(d.name, lookupName))
-					return d;
-			}
-
-			return null;
-		}
-
-		private static SerializableTypeCache ResolveType(string name, ref PrototypeParseParameters parameters)
-		{
-			return PrototypesCaches.LookupTypeCache(name, parameters.standardNamespace);
+			return PrototypesCaches.LookupSerializableTypeCache(name, parameters.standardNamespace);
 		}
 	}
 }

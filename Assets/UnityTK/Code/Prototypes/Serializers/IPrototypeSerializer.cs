@@ -6,8 +6,18 @@ using System.Reflection;
 
 namespace UnityTK.Prototypes
 {
+	/// <summary>
+	/// Interface to be used for prototype serializers.
+	/// 
+	/// These serializers are used by <see cref="Prototypes"/> in order to serialize field data.
+	/// </summary>
 	public interface IPrototypeSerializer
 	{
-		object Deserialize(string value);
+		/// <summary>
+		/// Whether or not this serializer can be used for the specified type.
+		/// </summary>
+		bool CanBeUsedFor(Type type);
+
+		object Deserialize(string value, PrototypeParserState state);
 	}
 }

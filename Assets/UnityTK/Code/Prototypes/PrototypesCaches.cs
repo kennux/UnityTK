@@ -9,19 +9,21 @@ namespace UnityTK.Prototypes
 {
 	internal static class PrototypesCaches
 	{
-		private static Dictionary<Type, IPrototypeSerializer> serializers = new Dictionary<Type, IPrototypeSerializer>();
+		private static List<IPrototypeSerializer> serializers = new List<IPrototypeSerializer>();
 		private static Dictionary<Type, SerializableTypeCache> typeCache = new Dictionary<Type, SerializableTypeCache>();
 		private static bool wasInitialized = false;
 
-		public static IPrototypeSerializer GetSerializerFor(Type type)
+		public static IPrototypeSerializer GetBestSerializerFor(Type type)
 		{
-			IPrototypeSerializer serializer;
-			if (!serializers.TryGetValue(type, out serializer))
-				return null;
-			return serializer;
+			foreach (var instance in serializers)
+			{
+				if (instance.CanBeUsedFor(type))
+					return instance;
+			}
+			return null;
 		}
 
-		public static SerializableTypeCache GetTypeCacheFor(Type type)
+		public static SerializableTypeCache GetSerializableTypeCacheFor(Type type)
 		{
 			SerializableTypeCache cache;
 			if (!typeCache.TryGetValue(type, out cache))
@@ -29,7 +31,7 @@ namespace UnityTK.Prototypes
 			return cache;
 		}
 
-		public static SerializableTypeCache LookupTypeCache(string writtenName, string preferredNamespace)
+		public static SerializableTypeCache LookupSerializableTypeCache(string writtenName, string preferredNamespace)
 		{
 			List<SerializableTypeCache> tmp = ListPool<SerializableTypeCache>.Get();
 
@@ -65,7 +67,7 @@ namespace UnityTK.Prototypes
 			{
 				foreach (var type in asm.GetTypes())
 				{
-					if (typeof(IPrototype).IsAssignableFrom(type))
+					if (typeof(IPrototype).IsAssignableFrom(type) || type.GetCustomAttributes(true).Any((a) => a.GetType() == typeof(PrototypesTypeSerializableAttribute)))
 					{
 						SerializableTypeCache cache = new SerializableTypeCache();
 						cache.Build(type);
@@ -73,14 +75,7 @@ namespace UnityTK.Prototypes
 					}
 					else if (!type.IsAbstract && !type.IsInterface && typeof(IPrototypeSerializer).IsAssignableFrom(type))
 					{
-						var attrib = type.GetCustomAttributes(false).Where((a) => (a is PrototypesTypeSerializerAttribute)).FirstOrDefault();
-						if (ReferenceEquals(attrib, null))
-							Debug.LogError("Value type serializer for UnityTK prototypes without " + nameof(PrototypesTypeSerializerAttribute) + " detected! Class: " + type.Name);
-						else
-						{
-							var attribCasted = attrib as PrototypesTypeSerializerAttribute;
-							serializers.Add(attribCasted.valueType, Activator.CreateInstance(type) as IPrototypeSerializer);
-						}
+						serializers.Add(Activator.CreateInstance(type) as IPrototypeSerializer);
 					}
 				}
 			}

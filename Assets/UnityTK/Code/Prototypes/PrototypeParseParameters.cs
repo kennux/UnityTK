@@ -11,6 +11,9 @@ namespace UnityTK.Prototypes
 	/// </summary>
 	public struct PrototypeParseParameters
 	{
+		/// <summary>
+		/// The standard namespace in which to look for Type references.
+		/// </summary>
 		public string standardNamespace;
 	}
 }

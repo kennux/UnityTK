@@ -7,13 +7,35 @@ using UnityTK.Prototypes;
 
 namespace UnityTK.Examples.Prototypes
 {
+	[System.Serializable]
 	public class TestPrototype : IPrototype
 	{
+		[PrototypesTypeSerializableAttribute]
+		[System.Serializable]
+		public struct TestStruct
+		{
+			public int test;
+		}
+		
+		[PrototypesTypeSerializableAttribute]
+		public class TestBase
+		{
+			public string baseStr;
+		}
+		
+		[PrototypesTypeSerializableAttribute]
+		public class SpecializedClass : TestBase
+		{
+			public int lul;
+		}
+
 		public string name;
 		public float someRate;
 		public int someInt;
 		public TestPrototype someOtherPrototype = null;
 		public Type type = null;
+		public TestStruct _struct;
+		public TestBase testBase;
 
 		string IPrototype.name
 		{
@@ -26,11 +48,6 @@ namespace UnityTK.Examples.Prototypes
 			{
 				name = value;
 			}
-		}
-
-		public void PostLoad()
-		{
-
 		}
 	}
 }

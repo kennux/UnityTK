@@ -16,7 +16,7 @@ namespace UnityTK.Prototypes
 			public FieldInfo fieldInfo;
 			public SerializableTypeCache serializableTypeCache
 			{
-				get { return PrototypesCaches.GetTypeCacheFor(this.fieldInfo.FieldType); }
+				get { return PrototypesCaches.GetSerializableTypeCacheFor(this.fieldInfo.FieldType); }
 			}
 			public bool isPrototype
 			{
@@ -28,10 +28,16 @@ namespace UnityTK.Prototypes
 				this.fieldInfo = fieldInfo;
 			}
 		}
+
 		public Type type
 		{
 			get;
 			private set;
+		}
+
+		public object Create()
+		{
+			return Activator.CreateInstance(this.type);
 		}
 
 		public void Build(Type type)
