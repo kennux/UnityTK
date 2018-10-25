@@ -1,0 +1,17 @@
+<PrototypeContainer Type="TestPrototype">
+	<Prototype Name="Test1">
+		<someRate>1.5</someRate>
+		<someInt>1337</someInt>
+		<type>TestPrototype</type>
+	</Prototype>
+	<Prototype Name="Test2">
+		<someRate>1.5</someRate>
+		<someInt>1</someInt>
+		<type>TestPrototype</type>
+		<someOtherPrototype>Test1</someOtherPrototype>
+	</Prototype>
+	<Prototype Name="Test3" Inherits="Test1">
+		<someInt>1338</someInt>
+		<someOtherPrototype>Test2</someOtherPrototype>
+	</Prototype>
+</PrototypeContainer>
