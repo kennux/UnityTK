@@ -7,6 +7,11 @@ using UnityTK.Prototypes;
 
 namespace UnityTK.Examples.Prototypes
 {
+	public class TestPrototypeSpec : TestPrototype
+	{
+		public int testField;
+	}
+
 	[System.Serializable]
 	public class TestPrototype : IPrototype
 	{

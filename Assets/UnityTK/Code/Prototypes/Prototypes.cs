@@ -94,6 +94,8 @@ namespace UnityTK.Prototypes
 			// Iterate over nodes
 			foreach (var node in xElement.Nodes())
 			{
+				var elementType = type;
+
 				// Validity checks
 				if (!(node is XElement)) // Malformed XML
 				{
@@ -108,8 +110,19 @@ namespace UnityTK.Prototypes
 					return preAlloc;
 				}
 
+				var elementTypeAttribute = nodeElement.Attribute(PrototypeContainerAttributeType);
+				if (!ReferenceEquals(elementTypeAttribute, null))
+				{
+					elementType = LookupSerializableTypeCache(elementTypeAttribute.Value, ref parameters);
+					if (ReferenceEquals(elementType, null))
+					{
+						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (nodeElement as IXmlLineInfo).LineNumber, "Element type " + elementTypeAttribute.Value + " unknown! Skipping file!"));
+						return preAlloc;
+					}
+				}
+
 				// Prepare
-				var data = new SerializedData(type, nodeElement, filename);
+				var data = new SerializedData(elementType, nodeElement, filename);
 				preAlloc.Add(data);
 			}
 			

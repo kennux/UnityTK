@@ -1,5 +1,6 @@
 <PrototypeContainer Type="TestPrototype">
-	<Prototype Name="Test2">
+	<Prototype Name="Test2" Type="TestPrototypeSpec">
+		<testField>100</testField>
 		<someRate>1.5</someRate>
 		<someInt>1</someInt>
 		<type>TestPrototype</type>
