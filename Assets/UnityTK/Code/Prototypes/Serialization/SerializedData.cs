@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace UnityTK.Prototypes
 {
-	internal class SerializedData
+	class SerializedData
 	{
 		public string inherits;
 		
@@ -66,7 +66,7 @@ namespace UnityTK.Prototypes
 		/// The entry may be of type string for nodes without sub-nodes (ex. <test>123</test> -> field name = test - field value = 123).
 		/// The entry also may be an xml node used to create sub data.
 		/// </summary>
-		public void ParseFields(List<ParsingError> errors)
+		public void ParseFields(List<ParsingError> errors, PrototypeParserState state)
 		{
 			foreach (var node in element.Nodes())
 			{
@@ -94,29 +94,36 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		public void LoadFields(List<ParsingError> errors, PrototypeParserState state)
 		{
-			Dictionary<string, object> updates = DictionaryPool<string, object>.Get();
-			List<string> removeFields = ListPool<string>.Get();
-
-			try
+			Dictionary<string, object> updates = new Dictionary<string, object>();
+			List<string> removeFields = new List<string>();
+			
+			// First, resolve elements left in the fields dictionary
+			foreach (var field in fields)
 			{
-				// First, resolve elements left in the fields dictionary
-				foreach (var field in fields)
+				// Field unknown?
+				if (!targetType.HasField(field.Key))
 				{
-					// Field unknown?
-					if (!targetType.HasField(field.Key))
+					// TODO: Line number
+					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Unknown field " + field.Key + "! Skipping field!"));
+					removeFields.Add(field.Key);
+					continue;
+				}
+
+				var fieldData = targetType.GetFieldData(field.Key);
+				var element = field.Value;
+				if (element is XElement)
+				{
+					var xElement = element as XElement;
+
+					// Is this field a collection?
+					if (SerializedCollectionData.IsCollection(fieldData.fieldInfo.FieldType))
 					{
-						// TODO: Line number
-						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Unknown field " + field.Key + "! Skipping field!"));
-						removeFields.Add(field.Key);
-						continue;
+						var col = new SerializedCollectionData(fieldData.fieldInfo.FieldType, xElement, this.filename);
+						col.ParseAndLoadData(errors, state);
+						updates.Add(field.Key, col);
 					}
-
-					var fieldData = targetType.GetFieldData(field.Key);
-					var element = field.Value;
-					if (element is XElement)
+					else // Not a collection, but a sub-data element
 					{
-						var xElement = element as XElement;
-
 						// Determine which type to serialize
 						var serializableTypeCache = fieldData.serializableTypeCache;
 						string typeName = fieldData.fieldInfo.Name;
@@ -134,64 +141,59 @@ namespace UnityTK.Prototypes
 						if (ReferenceEquals(serializableTypeCache, null))
 						{
 							// TODO: Line number
-							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Field with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypesTypeSerializableAttribute) +" attribute? Skipping field!"));
+							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Field with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypesTypeSerializableAttribute) + " attribute? Skipping field!"));
 							removeFields.Add(field.Key);
 							continue;
 						}
 
 						// Resolve field name type
 						var d = new SerializedData(serializableTypeCache, element as XElement, this.filename);
-						d.ParseFields(errors);
+						d.ParseFields(errors, state);
 						d.LoadFields(errors, state);
 						subInstances.Add(d, d.targetType.Create());
 						updates.Add(field.Key, d);
 					}
-					else if (element is string)
+				}
+				else if (element is string)
+				{
+					if (fieldData.isPrototype)
 					{
-						if (fieldData.isPrototype)
+						// This is a reference!
+						updates.Add(field.Key, new PrototypeReference()
 						{
-							// This is a reference!
-							updates.Add(field.Key, new PrototypeReference()
-							{
-								name = element as string
-							});
-						}
-						else
+							name = element as string
+						});
+					}
+					else
+					{
+						try
 						{
-							try
+							var serializer = PrototypesCaches.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
+							if (ReferenceEquals(serializer, null))
 							{
-								var serializer = PrototypesCaches.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
-								if (ReferenceEquals(serializer, null))
-								{
-									errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer for field " + field.Key + " on type " + targetType.type + " (" + fieldData.fieldInfo.FieldType + ") could not be found! Skipping field!"));
-									removeFields.Add(field.Key);
-									continue;
-								}
-
-								updates.Add(field.Key, serializer.Deserialize(field.Value as string, state));
-							}
-							catch (Exception ex)
-							{
-								errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer threw exception on field " + field.Key + " on type " + targetType.type + ":\n\n" + ex.ToString() + "\n\nSkipping field!"));
+								errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer for field " + field.Key + " on type " + targetType.type + " (" + fieldData.fieldInfo.FieldType + ") could not be found! Skipping field!"));
 								removeFields.Add(field.Key);
+								continue;
 							}
+
+							updates.Add(field.Key, serializer.Deserialize(field.Value as string, state));
+						}
+						catch (Exception ex)
+						{
+							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer threw exception on field " + field.Key + " on type " + targetType.type + ":\n\n" + ex.ToString() + "\n\nSkipping field!"));
+							removeFields.Add(field.Key);
 						}
 					}
 				}
-
-				// Write updates
-				foreach (var update in updates)
-					this.fields[update.Key] = update.Value;
-
-				// Remove fields
-				foreach (var field in removeFields)
-					this.fields.Remove(field);
 			}
-			finally
-			{
-				DictionaryPool<string, object>.Return(updates);
-				ListPool<string>.Return(removeFields);
-			}
+
+			// Write updates
+			foreach (var update in updates)
+				this.fields[update.Key] = update.Value;
+
+			// Remove fields
+			foreach (var field in removeFields)
+				this.fields.Remove(field);
 		}
 
 		/// <summary>
@@ -200,7 +202,7 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		/// <param name="prototypes">Prototypes to use for remapping</param>
 		/// <param name="errors"></param>
-		public void ResolveReferenceFieldsAndSubData(List<IPrototype> prototypes, List<ParsingError> errors)
+		public void ResolveReferenceFieldsAndSubData(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
 		{
 			Dictionary<string, object> updates = DictionaryPool<string, object>.Get();
 
@@ -217,9 +219,15 @@ namespace UnityTK.Prototypes
 					var sub = field.Value as SerializedData;
 					if (!ReferenceEquals(sub, null))
 					{
-						sub.ResolveReferenceFieldsAndSubData(prototypes, errors);
-						sub.ApplyTo(subInstances[sub], errors);
+						sub.ResolveReferenceFieldsAndSubData(prototypes, errors, state);
+						sub.ApplyTo(subInstances[sub], errors, state);
 						updates.Add(field.Key, subInstances[sub]);
+					}
+
+					var col = field.Value as SerializedCollectionData;
+					if (!ReferenceEquals(col, null))
+					{
+						updates.Add(field.Key, col.GetCollectionResolveReferenceFieldsAndSubData(prototypes, errors, state));
 					}
 				}
 				
@@ -236,7 +244,7 @@ namespace UnityTK.Prototypes
 		/// <summary>
 		/// Applies the data stored in this serialized data to the specified object using reflection.
 		/// </summary>
-		public void ApplyTo(object obj, List<ParsingError> errors)
+		public void ApplyTo(object obj, List<ParsingError> errors, PrototypeParserState state)
 		{
 			foreach (var field in fields)
 			{

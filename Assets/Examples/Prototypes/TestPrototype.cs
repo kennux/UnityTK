@@ -36,6 +36,10 @@ namespace UnityTK.Examples.Prototypes
 		public Type type = null;
 		public TestStruct _struct;
 		public TestBase testBase;
+		
+		public TestBase[] array;
+		public List<TestBase> list;
+		public HashSet<TestBase> hashSet;
 
 		string IPrototype.name
 		{

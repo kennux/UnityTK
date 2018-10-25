@@ -20,5 +20,32 @@
 			<baseStr>it works :O</baseStr>
 			<lul>2</lul>
 		</testBase>
+		<array>
+			<li>
+				<baseStr>it really works :O</baseStr>
+			</li>
+			<li Class="SpecializedClass">
+				<baseStr>it really works :O</baseStr>
+				<lul>3</lul>
+			</li>
+		</array>
+		<list>
+			<li>
+				<baseStr>it really works :O</baseStr>
+			</li>
+			<li Class="SpecializedClass">
+				<baseStr>it really works :O</baseStr>
+				<lul>3</lul>
+			</li>
+		</list>
+		<hashSet>
+			<li>
+				<baseStr>hashsets also work :O</baseStr>
+			</li>
+			<li Class="SpecializedClass">
+				<baseStr>hashsets also work :O</baseStr>
+				<lul>3</lul>
+			</li>
+		</hashSet>
 	</Prototype>
 </PrototypeContainer>

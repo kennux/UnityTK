@@ -189,7 +189,7 @@ namespace UnityTK.Prototypes
 			
 			// Step 2 - parse fields
 			foreach (var d in sorted)
-				d.ParseFields(errors);
+				d.ParseFields(errors, state);
 
 			// Step 3 - Preloads the fields and creates sub-data objects
 			foreach (var d in sorted)
@@ -198,17 +198,17 @@ namespace UnityTK.Prototypes
 			// Step 4 - run sorting algorithm for reference resolve
 			sorted = data.TSort((sd) => sd.GetReferencedPrototypes().Select((r) => nameMapping[r]), true).ToList();
 			foreach (var d in sorted)
-				d.ResolveReferenceFieldsAndSubData(preAlloc, errors);
+				d.ResolveReferenceFieldsAndSubData(preAlloc, errors, state);
 
 			// Step 5 - Final data apply
 			foreach (var d in sorted)
 			{
 				// Apply inherited data first
 				if (!string.IsNullOrEmpty(d.inherits))
-					nameMapping[d.inherits].ApplyTo(instances[d], errors);
+					nameMapping[d.inherits].ApplyTo(instances[d], errors, state);
 
 				// Apply data over inherited
-				d.ApplyTo(instances[d], errors);
+				d.ApplyTo(instances[d], errors, state);
 			}
 
 			return preAlloc;
