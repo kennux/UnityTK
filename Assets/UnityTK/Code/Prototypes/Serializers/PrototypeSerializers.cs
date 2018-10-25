@@ -13,7 +13,7 @@ namespace UnityTK.Prototypes
 			return ReferenceEquals(type, typeof(T));
 		}
 
-		public object Deserialize(string value, PrototypeParserState state)
+		public object Deserialize(Type type, string value, PrototypeParserState state)
 		{
 			return _Deserialize(value, state);
 		}
@@ -21,7 +21,7 @@ namespace UnityTK.Prototypes
 		protected abstract T _Deserialize(string value, PrototypeParserState state);
 	}
 	
-	public class PrototypeFloatSerializer : PrototypeSerializer<float>
+	public class PrototypeSerializer_Float : PrototypeSerializer<float>
 	{
 		protected override float _Deserialize(string value, PrototypeParserState state)
 		{
@@ -29,7 +29,7 @@ namespace UnityTK.Prototypes
 		}
 	}
 	
-	public class PrototypeIntSerializer : PrototypeSerializer<int>
+	public class PrototypeSerializer_Int : PrototypeSerializer<int>
 	{
 		protected override int _Deserialize(string value, PrototypeParserState state)
 		{
@@ -37,7 +37,7 @@ namespace UnityTK.Prototypes
 		}
 	}
 	
-	public class PrototypeStringSerializer : PrototypeSerializer<string>
+	public class PrototypeSerializer_String : PrototypeSerializer<string>
 	{
 		protected override string _Deserialize(string value, PrototypeParserState state)
 		{
@@ -45,10 +45,48 @@ namespace UnityTK.Prototypes
 		}
 	}
 	
-	public class PrototypeTypeSerializer : PrototypeSerializer<Type>
+	public class PrototypeSerializer_Double : PrototypeSerializer<double>
+	{
+		protected override double _Deserialize(string value, PrototypeParserState state)
+		{
+			return double.Parse(value);
+		}
+	}
+	
+	public class PrototypeSerializer_Short : PrototypeSerializer<short>
+	{
+		protected override short _Deserialize(string value, PrototypeParserState state)
+		{
+			return short.Parse(value);
+		}
+	}
+	
+	public class PrototypeSerializer_Byte : PrototypeSerializer<byte>
+	{
+		protected override byte _Deserialize(string value, PrototypeParserState state)
+		{
+			return byte.Parse(value);
+		}
+	}
+
+	public class PrototypeSerializer_Enum : IPrototypeSerializer
+	{
+		public bool CanBeUsedFor(Type type)
+		{
+			return type.IsEnum;
+		}
+
+		public object Deserialize(Type type, string value, PrototypeParserState state)
+		{
+			return Enum.Parse(type, value);
+		}
+	}
+
+	public class PrototypeSerializer_Type : PrototypeSerializer<Type>
 	{
 		protected override Type _Deserialize(string value, PrototypeParserState state)
 		{
+			// TODO: Improve!
 			return Type.GetType(value);
 		}
 	}

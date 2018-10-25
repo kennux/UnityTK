@@ -18,6 +18,6 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		bool CanBeUsedFor(Type type);
 
-		object Deserialize(string value, PrototypeParserState state);
+		object Deserialize(Type type, string value, PrototypeParserState state);
 	}
 }

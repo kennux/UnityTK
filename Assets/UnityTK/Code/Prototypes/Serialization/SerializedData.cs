@@ -176,7 +176,7 @@ namespace UnityTK.Prototypes
 								continue;
 							}
 
-							updates.Add(field.Key, serializer.Deserialize(field.Value as string, state));
+							updates.Add(field.Key, serializer.Deserialize(fieldData.fieldInfo.FieldType, field.Value as string, state));
 						}
 						catch (Exception ex)
 						{
