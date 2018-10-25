@@ -68,6 +68,14 @@ namespace UnityTK.Prototypes
 			return byte.Parse(value);
 		}
 	}
+	
+	public class PrototypeSerializer_Bool : PrototypeSerializer<bool>
+	{
+		protected override bool _Deserialize(string value, PrototypeParserState state)
+		{
+			return bool.Parse(value);
+		}
+	}
 
 	public class PrototypeSerializer_Enum : IPrototypeSerializer
 	{

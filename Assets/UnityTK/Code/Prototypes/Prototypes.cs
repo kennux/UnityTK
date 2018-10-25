@@ -196,8 +196,7 @@ namespace UnityTK.Prototypes
 				d.LoadFields(errors, state);
 
 			// Step 4 - run sorting algorithm for reference resolve
-			sorted = data.TSort((sd) => sd.GetReferencedPrototypes().Select((r) => nameMapping[r]), true).ToList();
-			foreach (var d in sorted)
+			foreach (var d in data)
 				d.ResolveReferenceFieldsAndSubData(preAlloc, errors, state);
 
 			// Step 5 - Final data apply

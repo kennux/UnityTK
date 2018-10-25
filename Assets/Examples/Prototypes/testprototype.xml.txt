@@ -20,6 +20,10 @@
 			<baseStr>it works :O</baseStr>
 			<lul>2</lul>
 		</testBase>
+		<arrayRefs>
+			<li>Test3</li>
+			<li>Test2</li>
+		</arrayRefs>
 		<array>
 			<li>
 				<baseStr>it really works :O</baseStr>

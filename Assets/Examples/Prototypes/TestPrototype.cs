@@ -40,6 +40,7 @@ namespace UnityTK.Examples.Prototypes
 		public TestBase[] array;
 		public List<TestBase> list;
 		public HashSet<TestBase> hashSet;
+		public TestPrototype[] arrayRefs;
 
 		string IPrototype.name
 		{

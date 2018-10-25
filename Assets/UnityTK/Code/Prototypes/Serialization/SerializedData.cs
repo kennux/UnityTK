@@ -21,23 +21,7 @@ namespace UnityTK.Prototypes
 		/// All subinstances referenced in <see cref="fields"/> mapped to their instances.
 		/// </summary>
 		private Dictionary<SerializedData, object> subInstances = new Dictionary<SerializedData, object>();
-
-		class PrototypeReference
-		{
-			public string name;
-
-			public IPrototype Resolve(List<IPrototype> prototypes)
-			{
-				foreach (var p in prototypes)
-				{
-					if (string.Equals(p.name, this.name))
-						return p;
-				}
-
-				return null;
-			}
-		}
-
+		
 		public readonly SerializableTypeCache targetType;
 		public readonly XElement element;
 		public readonly string filename;
@@ -159,7 +143,7 @@ namespace UnityTK.Prototypes
 					if (fieldData.isPrototype)
 					{
 						// This is a reference!
-						updates.Add(field.Key, new PrototypeReference()
+						updates.Add(field.Key, new SerializedPrototypeReference()
 						{
 							name = element as string
 						});
@@ -210,7 +194,7 @@ namespace UnityTK.Prototypes
 			{
 				foreach (var field in fields)
 				{
-					var @ref = field.Value as PrototypeReference;
+					var @ref = field.Value as SerializedPrototypeReference;
 					if (!ReferenceEquals(@ref, null))
 					{
 						updates.Add(field.Key, @ref.Resolve(prototypes));
@@ -266,7 +250,7 @@ namespace UnityTK.Prototypes
 		{
 			foreach (var field in fields)
 			{
-				var v = field.Value as PrototypeReference;
+				var v = field.Value as SerializedPrototypeReference;
 				if (!ReferenceEquals(v, null))
 					yield return v.name;
 

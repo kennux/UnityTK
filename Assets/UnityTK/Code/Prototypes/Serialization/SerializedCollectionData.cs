@@ -93,7 +93,7 @@ namespace UnityTK.Prototypes
 		/// <summary>
 		/// All elements of this collection.
 		/// </summary>
-		public List<SerializedData> elements = new List<SerializedData>();
+		private List<object> elements = new List<object>();
 
 		public readonly Type collectionType;
 		public readonly XElement xElement;
@@ -135,35 +135,50 @@ namespace UnityTK.Prototypes
 					continue;
 				}
 
-				// Determine type
-				var serializableTypeCache = elementTypeCache;
-				string typeName = elementTypeName;
-
-				// Try to read class attrib
-				var classAttrib = xElementNode.Attribute(Prototypes.PrototypeAttributeClass);
-				if (!ReferenceEquals(classAttrib, null))
+				if (typeof(IPrototype).IsAssignableFrom(elementType))
 				{
-					serializableTypeCache = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
-					typeName = classAttrib.Value;
+					// Prototype ref
+					this.elements.Add(new SerializedPrototypeReference()
+					{
+						name = xElementNode.Value
+					});
 				}
-				
-				// Validity checks
-				// Field not serializable?
-				if (ReferenceEquals(serializableTypeCache, null))
+				else
 				{
-					// TODO: Line number
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Collection element with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypesTypeSerializableAttribute) + " attribute? Skipping field!"));
-					continue;
-				}
+					// Determine type
+					var serializableTypeCache = elementTypeCache;
+					string typeName = elementTypeName;
 
-				// Add element
-				this.elements.Add(new SerializedData(serializableTypeCache, xElementNode, this.filename));
+					// Try to read class attrib
+					var classAttrib = xElementNode.Attribute(Prototypes.PrototypeAttributeClass);
+					if (!ReferenceEquals(classAttrib, null))
+					{
+						serializableTypeCache = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
+						typeName = classAttrib.Value;
+					}
+
+					// Validity checks
+					// Field not serializable?
+					if (ReferenceEquals(serializableTypeCache, null))
+					{
+						// TODO: Line number
+						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Collection element with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypesTypeSerializableAttribute) + " attribute? Skipping field!"));
+						continue;
+					}
+
+					// Add element
+					this.elements.Add(new SerializedData(serializableTypeCache, xElementNode, this.filename));
+				}
 			}
 
 			foreach (var element in this.elements)
 			{
-				element.ParseFields(errors, state);
-				element.LoadFields(errors, state);
+				var sElement = element as SerializedData;
+				if (!ReferenceEquals(sElement, null))
+				{
+					sElement.ParseFields(errors, state);
+					sElement.LoadFields(errors, state);
+				}
 			}
 		}
 		
@@ -174,12 +189,25 @@ namespace UnityTK.Prototypes
 			{
 				// Finalize, create and apply
 				var element = this.elements[i];
-				element.ResolveReferenceFieldsAndSubData(prototypes, errors, state);
-				var obj = element.targetType.Create();
-				element.ApplyTo(obj, errors, state);
+				var sElement = element as SerializedData;
+				var protoRef = element as SerializedPrototypeReference;
+
+				object value = null;
+				if (!ReferenceEquals(sElement, null))
+				{
+					sElement.ResolveReferenceFieldsAndSubData(prototypes, errors, state);
+					value = sElement.targetType.Create();
+					sElement.ApplyTo(value, errors, state);
+				}
+				else if (!ReferenceEquals(protoRef, null))
+				{
+					value = protoRef.Resolve(prototypes);
+				}
+				else
+					value = element;
 
 				// Write to collection
-				WriteElementToCollection(collection, obj, i);
+				WriteElementToCollection(collection, value, i);
 			}
 
 			return collection;
