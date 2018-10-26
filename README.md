@@ -14,6 +14,12 @@ In order to sync the UnityTK submodule code to your unity project the bash scrip
 
 # Modules
 
+AssetManagement
+----
+
+Asset bundle based asset management system that can be used to implement DLCs, Modding or just to seperate your assets into several asset bundles.
+It provides an abstract and easy to use api to query for assets previously loaded and registered.
+
 DataBindings
 -----
 
@@ -52,15 +58,4 @@ Utility
 -----
 
 Provides utility for UnityTK itself and commonly used methods that are handy when working with unity.
-
-# Deprecated / Obsolete modules
-
-These modules should not be used in new projects anymore and are only still in the repository for old projects / reference.
-
-AssetManagement
-----
-
-Asset bundle based asset management system that can be used to implement DLCs, Modding or just to seperate your assets into several asset bundles.
-It provides an abstract and easy to use api to query for assets previously loaded and registered.
-*DEPRECATED*: Unity's Addressables do the same thing, they are a lot better optimized and should be used instead of this: https://forum.unity.com/threads/addressables-are-here.536304/
 

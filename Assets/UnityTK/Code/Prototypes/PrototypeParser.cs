@@ -13,15 +13,16 @@ namespace UnityTK.Prototypes
 	/// 
 	/// It provides parser methods to parse prototypes from XML.
 	/// </summary>
-	public static class Prototypes
+	public static class PrototypeParser
 	{
 		public const string PrototypeContainerXMLName = "PrototypeContainer";
 		public const string PrototypeContainerAttributeType = "Type";
 
 		public const string PrototypeElementXMLName = "Prototype";
 		public const string PrototypeAttributeInherits = "Inherits";
-		public const string PrototypeAttributeName = "Name";
+		public const string PrototypeAttributeIdentifier = "Id";
 		public const string PrototypeAttributeClass = "Class";
+		public const string PrototypeAttributeAbstract = "Abstract";
 
 		/// <summary>
 		/// Parses the specified XML content and returns all prototypes which could be parsed.
@@ -145,21 +146,29 @@ namespace UnityTK.Prototypes
 			// Pre-parse names, create instances and apply name
 			foreach (var d in data)
 			{
-				var attribName = d.element.Attribute(PrototypeAttributeName);
+				// Read name
+				var attribName = d.element.Attribute(PrototypeAttributeIdentifier);
 				if (ReferenceEquals(attribName, null))
 				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.element as IXmlLineInfo).LineNumber, "Prototype without name! Skipping prototype!"));
+					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.element as IXmlLineInfo).LineNumber, "Prototype without identifier! Skipping prototype!"));
 					invalid.Add(d);
 					continue;
 				}
-				
+
 				nameMapping.Add(attribName.Value, d);
 
-				var obj = d.targetType.Create();
-				instances.Add(d, obj);
+				// Check if abstract prototype data
+				var attribAbstract = d.element.Attribute(PrototypeAttributeAbstract);
+				bool isAbstract = !ReferenceEquals(attribAbstract, null) && string.Equals("True", attribAbstract.Value);
 				
-				(obj as IPrototype).name = attribName.Value;
-				preAlloc.Add(obj as IPrototype);
+				if (!isAbstract)
+				{
+					var obj = d.targetType.Create();
+					instances.Add(d, obj);
+
+					(obj as IPrototype).identifier = attribName.Value;
+					preAlloc.Add(obj as IPrototype);
+				}
 			}
 			
 			// Remove invalidated entries
@@ -199,22 +208,21 @@ namespace UnityTK.Prototypes
 			// Step 1 - sort by inheritance
 			List<SerializedData> empty = new List<SerializedData>();
 			var sorted = data.TSort((sd) => inheritingFrom.ContainsKey(sd) ? inheritingFrom[sd] : empty, true).ToList();
-			
-			// Step 2 - parse fields
-			foreach (var d in sorted)
-				d.ParseFields(errors, state);
 
-			// Step 3 - Preloads the fields and creates sub-data objects
+			// Step 2 - Preloads the fields and creates sub-data objects
 			foreach (var d in sorted)
 				d.LoadFields(errors, state);
 
-			// Step 4 - run sorting algorithm for reference resolve
+			// Step 3 - run sorting algorithm for reference resolve
 			foreach (var d in data)
 				d.ResolveReferenceFieldsAndSubData(preAlloc, errors, state);
 
-			// Step 5 - Final data apply
+			// Step 4 - Final data apply
 			foreach (var d in sorted)
 			{
+				if (!instances.ContainsKey(d))
+					continue;
+
 				// Apply inherited data first
 				if (!string.IsNullOrEmpty(d.inherits))
 					nameMapping[d.inherits].ApplyTo(instances[d], errors, state);

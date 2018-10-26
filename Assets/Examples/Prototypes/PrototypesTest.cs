@@ -14,7 +14,7 @@ public class PrototypesTest : MonoBehaviour
 	public void Start()
 	{
 		List<ParsingError> parsingErrors = new List<ParsingError>();
-		this.loadedPrototypes = Prototypes.Parse(this.xml.text, new PrototypeParseParameters()
+		this.loadedPrototypes = PrototypeParser.Parse(this.xml.text, new PrototypeParseParameters()
 		{
 			standardNamespace = "UnityTK.Examples.Prototypes"
 		}, ref parsingErrors).Cast<TestPrototype>().ToArray();

@@ -1,13 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityTK.AssetManagement;
 
 namespace UnityTK.Prototypes
 {
 	/// <summary>
-	/// Prototype interface that can be used to implement prototypes loadable by <see cref="PrototypeParser"/> from XML.
+	/// Prototype interface that can be used to implement prototypes loadable by <see cref="Prototypes"/> from XML.
 	/// </summary>
-	public interface IPrototype
+	public interface IManagedPrototype : IManagedAsset
 	{
 		/// <summary>
 		/// The identifier of the prototype.

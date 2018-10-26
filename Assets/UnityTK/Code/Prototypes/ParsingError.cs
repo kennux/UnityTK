@@ -30,12 +30,15 @@ namespace UnityTK.Prototypes
 
 		public string message;
 
+		public readonly string stackTrace;
+
 		public ParsingError(ParsingErrorSeverity severity, string file, int lineNumber, string message)
 		{
 			this.severity = severity;
 			this.file = file;
 			this.lineNumber = lineNumber;
 			this.message = message;
+			this.stackTrace = new System.Diagnostics.StackTrace().ToString();
 		}
 
 		/// <summary>
@@ -43,7 +46,7 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		public string GetFullMessage()
 		{
-			return string.Format("Parsing error in file '{0}' on line {1}:\nSeverity:{2}\n{3})", this.file, this.lineNumber.ToString(), this.severity.ToString(), this.message);
+			return string.Format("Parsing error in file '{0}' on line {1}:\nSeverity:{2}\n{3}\n\nStack Trace:\n{4}", this.file, this.lineNumber.ToString(), this.severity.ToString(), this.message, this.stackTrace);
 		}
 
 		/// <summary>

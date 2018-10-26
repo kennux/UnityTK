@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace UnityTK.Prototypes
 {
 	/// <summary>
-	/// Parameters for <see cref="Prototypes"/> parsing processes.
+	/// Parameters for <see cref="PrototypeParser"/> parsing processes.
 	/// </summary>
 	public struct PrototypeParseParameters
 	{

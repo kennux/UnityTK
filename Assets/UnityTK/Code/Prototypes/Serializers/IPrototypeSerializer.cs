@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace UnityTK.Prototypes
 {
 	/// <summary>
 	/// Interface to be used for prototype serializers.
 	/// 
-	/// These serializers are used by <see cref="Prototypes"/> in order to serialize field data.
+	/// These serializers are used by <see cref="PrototypeParser"/> in order to serialize field data.
 	/// </summary>
 	public interface IPrototypeSerializer
 	{
@@ -18,6 +19,6 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		bool CanBeUsedFor(Type type);
 
-		object Deserialize(Type type, string value, PrototypeParserState state);
+		object Deserialize(Type type, XElement value, PrototypeParserState state);
 	}
 }

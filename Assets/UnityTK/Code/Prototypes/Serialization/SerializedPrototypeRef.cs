@@ -17,7 +17,7 @@ namespace UnityTK.Prototypes
 		{
 			foreach (var p in prototypes)
 			{
-				if (string.Equals(p.name, this.name))
+				if (string.Equals(p.identifier, this.name))
 					return p;
 			}
 
