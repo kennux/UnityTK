@@ -52,7 +52,7 @@ namespace UnityTK.Prototypes
 
 			for (int i = 0; i < xmlContents.Length; i++)
 			{
-				_PreParse(xmlContents[i], filenames[i], ref parameters, ref errors);
+				_PreParse(xmlContents[i], filenames[i], ref parameters, ref errors, data);
 			}
 
 			return _Parse(data, ref parameters, ref errors);
