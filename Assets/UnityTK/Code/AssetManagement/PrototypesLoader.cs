@@ -10,21 +10,24 @@ namespace UnityTK.AssetManagement
 	{
 		public const string StreamingAssetsToken = "[STREAMING_ASSETS]";
 
-		public string path = StreamingAssetsToken;
+		public string[] paths = new string[] { StreamingAssetsToken };
 		public string standardNamespace = "";
 		
 		protected override List<IManagedAsset> LoadAssets()
 		{
-			string path = this.path.Replace(StreamingAssetsToken, Application.streamingAssetsPath);
-			
-			// Load data
-			var files = System.IO.Directory.GetFiles(path, "*.xml", System.IO.SearchOption.AllDirectories);
-			string[] contents = files.Select((f) => System.IO.File.ReadAllText(f)).ToArray();
 			var parser = new PrototypeParser();
-			parser.Parse(contents, files, new PrototypeParseParameters()
+			foreach (var p in this.paths)
 			{
-				standardNamespace = this.standardNamespace
-			});
+				string path = p.Replace(StreamingAssetsToken, Application.streamingAssetsPath);
+
+				// Load data
+				var files = System.IO.Directory.GetFiles(path, "*.xml", System.IO.SearchOption.AllDirectories);
+				string[] contents = files.Select((f) => System.IO.File.ReadAllText(f)).ToArray();
+				parser.Parse(contents, files, new PrototypeParseParameters()
+				{
+					standardNamespace = this.standardNamespace
+				});
+			}
 
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();

@@ -1,0 +1,5 @@
+<PrototypeContainer Type="AssetExample">
+	<Prototype Id="TestAssetFromXML">
+		<testStr>i was loaded via prototypes :D</testStr>
+	</Prototype>
+</PrototypeContainer>
