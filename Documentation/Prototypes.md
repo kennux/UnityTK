@@ -132,7 +132,7 @@ PrototypeDataSerializableAttribute
 This attribute can be used to mark types as serializable, similar to System.Serializable.
 Types will be treated as data and except for prototypes, no references will be serialized or resolved!
 
-IPrototypeSerializer
+IPrototypeDataSerializer
 ---
 
 This interface can be used to extend the prototype serializer by adding a new serializer.

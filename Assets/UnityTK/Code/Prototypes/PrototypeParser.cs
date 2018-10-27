@@ -88,65 +88,40 @@ namespace UnityTK.Prototypes
 			ListPool<ParsingError>.GetIfNull(ref errors);
 			var xElement = XElement.Parse(xmlContent);
 
-			// Validity check
-			if (!string.Equals(xElement.Name.LocalName, PrototypeContainerXMLName))
-			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element name '" + xElement.Name + "' is incorrect / not supported, must be '"+PrototypeContainerXMLName+"'! Skipping file!"));
-				return;
-			}
-			if (!xElement.HasAttributes)
-			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element has no attributes! Need atleast '"+PrototypeContainerAttributeType+"' attribute specifying the type of the prototypes to be loaded! Skipping container!"));
-				return;
-			}
 
+			// Validity checks
+			if (!ParsingValidation.ContainerElementName(xElement, filename, errors) ||
+				!ParsingValidation.ContainerTypeAttribute(xElement, filename, errors))
+				return;
+				
 			// Get type
 			XAttribute typeAttribute = xElement.Attribute(PrototypeContainerAttributeType);
-			if (ReferenceEquals(typeAttribute, null))
-			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element missing '"+PrototypeContainerAttributeType+"'! Need '"+PrototypeContainerAttributeType+"' attribute specifying the type of the prototypes to be loaded! Skipping container!"));
-				return;
-			}
-
 			var type = LookupSerializableTypeCache(typeAttribute.Value, ref parameters);
-			if (ReferenceEquals(type, null))
-			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element type " + typeAttribute.Value + " unknown! Skipping file!"));
+			if (!ParsingValidation.TypeFound(xElement, typeAttribute, type, filename, errors))
 				return;
-			}
 
 			// Iterate over nodes
-			foreach (var node in xElement.Nodes())
+			foreach (var xNode in xElement.Nodes())
 			{
 				var elementType = type;
+				var nodeXElement = xNode as XElement;
 
 				// Validity checks
-				if (!(node is XElement)) // Malformed XML
-				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (node as IXmlLineInfo).LineNumber, "Unable to cast node to element for " + node + "! Skipping element!"));
+				if (!ParsingValidation.NodeIsElement(xNode, filename, errors) ||
+					!ParsingValidation.PrototypeElementName(nodeXElement, filename, errors))
 					continue;
-				}
 
-				XElement nodeElement = node as XElement;
-				if (!string.Equals(nodeElement.Name.LocalName, PrototypeElementXMLName)) // Unsupported
-				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (nodeElement as IXmlLineInfo).LineNumber, "Element name '" + nodeElement.Name + "' is incorrect / not supported, must be '"+PrototypeElementXMLName+"'! Skipping element!"));
-					continue;
-				}
 
-				var elementTypeAttribute = nodeElement.Attribute(PrototypeContainerAttributeType);
+				var elementTypeAttribute = nodeXElement.Attribute(PrototypeContainerAttributeType);
 				if (!ReferenceEquals(elementTypeAttribute, null))
 				{
 					elementType = LookupSerializableTypeCache(elementTypeAttribute.Value, ref parameters);
-					if (ReferenceEquals(elementType, null))
-					{
-						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (nodeElement as IXmlLineInfo).LineNumber, "Element type " + elementTypeAttribute.Value + " unknown! Skipping element!"));
+					if (!ParsingValidation.TypeFound(nodeXElement, elementTypeAttribute, elementType, filename, errors))
 						continue;
-					}
 				}
 
 				// Prepare
-				var data = new SerializedData(elementType, nodeElement, filename);
+				var data = new SerializedData(elementType, nodeXElement, filename);
 				result.Add(data);
 			}
 		}
@@ -167,19 +142,18 @@ namespace UnityTK.Prototypes
 			// Pre-parse names, create instances and apply name
 			foreach (var d in data)
 			{
-				// Read name
-				var attribName = d.element.Attribute(PrototypeAttributeIdentifier);
-				if (ReferenceEquals(attribName, null))
+				if (!ParsingValidation.ElementHasId(d.xElement, d.filename, errors))
 				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.element as IXmlLineInfo).LineNumber, "Prototype without identifier! Skipping prototype!"));
 					invalid.Add(d);
 					continue;
 				}
 
+				// Read name
+				var attribName = d.xElement.Attribute(PrototypeAttributeIdentifier);
 				idMapping.Add(attribName.Value, d);
 
 				// Check if abstract prototype data
-				var attribAbstract = d.element.Attribute(PrototypeAttributeAbstract);
+				var attribAbstract = d.xElement.Attribute(PrototypeAttributeAbstract);
 				bool isAbstract = !ReferenceEquals(attribAbstract, null) && string.Equals("True", attribAbstract.Value);
 				
 				if (!isAbstract)
@@ -236,7 +210,7 @@ namespace UnityTK.Prototypes
 				{
 					SerializedData serializedData = null;
 					if (!this.serializedData.TryGetValue(d.inherits, out serializedData) && !idMapping.TryGetValue(d.inherits, out serializedData))
-						this.errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.element as IXmlLineInfo).LinePosition, "Could not find the prototype '" + d.inherits + "' for prototype '" + (instances[d] as IPrototype).identifier + "'! Ignoring inheritance!"));
+						this.errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.xElement as IXmlLineInfo).LinePosition, "Could not find the prototype '" + d.inherits + "' for prototype '" + (instances[d] as IPrototype).identifier + "'! Ignoring inheritance!"));
 					else
 						serializedData.ApplyTo(instances[d], errors, state);
 				}

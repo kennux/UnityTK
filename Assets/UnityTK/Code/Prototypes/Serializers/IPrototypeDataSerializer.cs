@@ -8,11 +8,10 @@ using System.Xml.Linq;
 namespace UnityTK.Prototypes
 {
 	/// <summary>
-	/// Interface to be used for prototype serializers.
-	/// 
-	/// These serializers are used by <see cref="PrototypeParser"/> in order to serialize field data.
+	/// These serializers are used by <see cref="PrototypeParser"/> in order to serialize data types.
+	/// <see cref="PrototypeDataSerializableAttribute"/>
 	/// </summary>
-	public interface IPrototypeSerializer
+	public interface IPrototypeDataSerializer
 	{
 		/// <summary>
 		/// Whether or not this serializer can be used for the specified type.

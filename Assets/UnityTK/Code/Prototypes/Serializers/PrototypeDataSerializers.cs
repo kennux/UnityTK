@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace UnityTK.Prototypes
 {
-	public abstract class ValueTypePrototypeSerializer<T> : IPrototypeSerializer
+	public abstract class ValueTypePrototypeSerializer<T> : IPrototypeDataSerializer
 	{
 		public bool CanBeUsedFor(Type type)
 		{
@@ -79,7 +79,7 @@ namespace UnityTK.Prototypes
 		}
 	}
 
-	public class PrototypeSerializer_Enum : IPrototypeSerializer
+	public class PrototypeSerializer_Enum : IPrototypeDataSerializer
 	{
 		public bool CanBeUsedFor(Type type)
 		{

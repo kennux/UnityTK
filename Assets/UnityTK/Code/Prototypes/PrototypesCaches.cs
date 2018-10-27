@@ -9,11 +9,11 @@ namespace UnityTK.Prototypes
 {
 	internal static class PrototypesCaches
 	{
-		private static List<IPrototypeSerializer> serializers = new List<IPrototypeSerializer>();
+		private static List<IPrototypeDataSerializer> serializers = new List<IPrototypeDataSerializer>();
 		private static Dictionary<Type, SerializableTypeCache> typeCache = new Dictionary<Type, SerializableTypeCache>();
 		private static bool wasInitialized = false;
 
-		public static IPrototypeSerializer GetBestSerializerFor(Type type)
+		public static IPrototypeDataSerializer GetBestSerializerFor(Type type)
 		{
 			foreach (var instance in serializers)
 			{
@@ -73,9 +73,9 @@ namespace UnityTK.Prototypes
 						cache.Build(type);
 						typeCache.Add(type, cache);
 					}
-					else if (!type.IsAbstract && !type.IsInterface && typeof(IPrototypeSerializer).IsAssignableFrom(type))
+					else if (!type.IsAbstract && !type.IsInterface && typeof(IPrototypeDataSerializer).IsAssignableFrom(type))
 					{
-						serializers.Add(Activator.CreateInstance(type) as IPrototypeSerializer);
+						serializers.Add(Activator.CreateInstance(type) as IPrototypeDataSerializer);
 					}
 				}
 			}

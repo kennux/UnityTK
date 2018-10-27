@@ -26,7 +26,7 @@ namespace UnityTK.Prototypes
 		private Dictionary<string, CollectionOverrideAction> collectionOverrideActions = new Dictionary<string, CollectionOverrideAction>();
 		
 		public readonly SerializableTypeCache targetType;
-		public readonly XElement element;
+		public readonly XElement xElement;
 		public readonly string filename;
 
 		/// <summary>
@@ -37,7 +37,7 @@ namespace UnityTK.Prototypes
 		public SerializedData(SerializableTypeCache targetType, XElement element, string filename)
 		{
 			this.targetType = targetType;
-			this.element = element;
+			this.xElement = element;
 			this.filename = filename;
 
 			var inheritsAttrib = element.Attribute(PrototypeParser.PrototypeAttributeInherits);
@@ -49,36 +49,30 @@ namespace UnityTK.Prototypes
 
 		/// <summary>
 		/// Actually loads the data from the previous parse <see cref="ParseFields(List{ParsingError})"/>.
-		/// It will for every field with string data deserialize this data using <see cref="IPrototypeSerializer"/>.
+		/// It will for every field with string data deserialize this data using <see cref="IPrototypeDataSerializer"/>.
 		/// 
 		/// For every sub-data field (<seealso cref="ParseFields(List{ParsingError})"/>) a <see cref="SerializedData"/> object is being written to <see cref="fields"/>.
 		/// The sub-data object will have <see cref="PrepareParse(SerializableTypeCache, XElement, string)"/>, <see cref="ParseFields(List{ParsingError})"/> and <see cref="LoadFields(List{ParsingError}, PrototypeParserState)"/> called.
 		/// </summary>
 		public void LoadFields(List<ParsingError> errors, PrototypeParserState state)
 		{
-			foreach (var node in element.Nodes())
+			foreach (var xNode in xElement.Nodes())
 			{
-				if (!(node is XElement)) // Malformed XML
-				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (node as IXmlLineInfo).LineNumber, "Unable to cast node to element for " + node + "! Skipping element!"));
+				if (!ParsingValidation.NodeIsElement(xNode, this.filename, errors)) // Malformed XML
 					continue;
-				}
-				var xElement = node as XElement;
+
+				var xElement = xNode as XElement;
 				var elementName = xElement.Name.LocalName;
 
 				// Field unknown?
-				if (!targetType.HasField(elementName))
-				{
-					// TODO: Line number
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Unknown field " + elementName + "! Skipping field!"));
+				if (!ParsingValidation.FieldKnown(targetType, elementName, filename, errors))
 					continue;
-				}
 				
 				var fieldData = targetType.GetFieldData(elementName);
 				var fieldType = fieldData.serializableTypeCache;
 				if (fieldType == null)
 				{
-					// Not a prototype serializable
+					// Not a prototype or data serializable
 
 					// Is this field a collection?
 					if (SerializedCollectionData.IsCollection(fieldData.fieldInfo.FieldType))
@@ -98,21 +92,16 @@ namespace UnityTK.Prototypes
 						try
 						{
 							var serializer = PrototypesCaches.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
-							if (ReferenceEquals(serializer, null))
-							{
-								errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer for field " + elementName + " on type " + targetType.type + " (" + fieldData.fieldInfo.FieldType + ") could not be found! Skipping field!"));
+							if (!ParsingValidation.SerializerWasFound(serializer, elementName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, filename, errors))
 								continue;
-							}
 
 							fields.Add(elementName, serializer.Deserialize(fieldData.fieldInfo.FieldType, xElement, state));
 						}
 						catch (Exception ex)
 						{
 							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer threw exception on field " + elementName + " on type " + targetType.type + ":\n\n" + ex.ToString() + "\n\nSkipping field!"));
-							continue;
 						}
 					}
-
 				}
 				else
 				{
@@ -129,7 +118,7 @@ namespace UnityTK.Prototypes
 					else
 					{
 						// Determine which type to serialize
-						var serializableTypeCache = fieldData.serializableTypeCache;
+						var targetType = fieldData.serializableTypeCache;
 						string typeName = fieldData.fieldInfo.Name;
 
 						// Check if element explicitly overwrites the type to support polymorphism
@@ -137,20 +126,16 @@ namespace UnityTK.Prototypes
 						var classAttrib = xElement.Attribute(PrototypeParser.PrototypeAttributeType);
 						if (!ReferenceEquals(classAttrib, null))
 						{
-							serializableTypeCache = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
+							targetType = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
 							typeName = classAttrib.Value;
 						}
 
 						// Field not serializable?
-						if (ReferenceEquals(serializableTypeCache, null))
-						{
-							// TODO: Line number
-							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Field '" + elementName + "' with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypeDataSerializableAttribute) + " attribute? Skipping field!"));
+						if (!ParsingValidation.DataFieldSerializerFound(xElement, targetType, typeName, elementName, filename, errors))
 							continue;
-						}
 
 						// Resolve field name type
-						var d = new SerializedData(serializableTypeCache, xElement as XElement, this.filename);
+						var d = new SerializedData(targetType, xElement as XElement, this.filename);
 						d.LoadFields(errors, state);
 						fields.Add(elementName, d);
 					}
@@ -237,11 +222,8 @@ namespace UnityTK.Prototypes
 						value = col.CreateCollection();
 				}
 
-				if (!ReferenceEquals(value, null) && !fieldInfo.fieldInfo.FieldType.IsAssignableFrom(value.GetType()))
-				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Fatal error deserializing field " + field.Key + " - tried applying field data but types mismatched! Stored type: " + value.GetType() + " - Declared type: " + fieldInfo.fieldInfo.FieldType + "! Skipping field!"));
+				if (!ParsingValidation.TypeCheck(field.Key, value, fieldInfo.fieldInfo.FieldType, filename, errors))
 					continue;
-				}
 
 				fieldInfo.fieldInfo.SetValue(obj, value);
 			}
