@@ -144,6 +144,6 @@ The prototypes cache will automatically find them via reflection and create an i
 
 ## Collections
 
-Collections are supported to a certain extend.
+Collections are supported to some extend.
 Officially only List<T> and System.Array are supported, but any collection implementing either ISet<>, ICollection<> or IList should work.
 
