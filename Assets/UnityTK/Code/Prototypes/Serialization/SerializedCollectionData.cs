@@ -112,7 +112,6 @@ namespace UnityTK.Prototypes
 		}
 
 		/// <summary>
-		/// <see cref="SerializedData.ParseFields(List{ParsingError}, PrototypeParserState)"/>
 		/// <see cref="SerializedData.LoadFields(List{ParsingError}, PrototypeParserState)"/>
 		/// </summary>
 		/// <param name="errors"></param>
@@ -181,34 +180,36 @@ namespace UnityTK.Prototypes
 			}
 		}
 		
-		public object GetCollectionResolveReferenceFieldsAndSubData(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
+		public void ResolveReferenceFieldsAndSubData(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
 		{
-			var collection = GetCollectionInstance(this.collectionType, this.elements.Count);
 			for (int i = 0; i < this.elements.Count; i++)
 			{
 				// Finalize, create and apply
 				var element = this.elements[i];
 				var sElement = element as SerializedData;
 				var protoRef = element as SerializedPrototypeReference;
-
-				object value = null;
+				
 				if (!ReferenceEquals(sElement, null))
 				{
-					sElement.ResolveReferenceFieldsAndSubData(prototypes, errors, state);
-					value = sElement.targetType.Create();
+					sElement.ResolveReferenceFields(prototypes, errors, state);
+					var value = sElement.targetType.Create();
 					sElement.ApplyTo(value, errors, state);
+					this.elements[i] = value;
 				}
 				else if (!ReferenceEquals(protoRef, null))
-				{
-					value = protoRef.Resolve(prototypes);
-				}
-				else
-					value = element;
+					this.elements[i] = protoRef.Resolve(prototypes);
 
-				// Write to collection
-				WriteElementToCollection(collection, value, i);
 			}
+		}
 
+		public object CreateCollection()
+		{
+			var collection = GetCollectionInstance(this.collectionType, this.elements.Count);
+			for (int i = 0; i < this.elements.Count; i++)
+			{
+				// Write to collection
+				WriteElementToCollection(collection, this.elements[i], i);
+			}
 			return collection;
 		}
 	}

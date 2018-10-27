@@ -215,7 +215,7 @@ namespace UnityTK.Prototypes
 
 			// Step 3 - run sorting algorithm for reference resolve
 			foreach (var d in data)
-				d.ResolveReferenceFieldsAndSubData(preAlloc, errors, state);
+				d.ResolveReferenceFields(preAlloc, errors, state);
 
 			// Step 4 - Final data apply
 			foreach (var d in sorted)

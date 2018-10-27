@@ -16,11 +16,6 @@ namespace UnityTK.Prototypes
 		/// All fields serialized in the data of this object.
 		/// </summary>
 		private Dictionary<string, object> fields = new Dictionary<string, object>();
-
-		/// <summary>
-		/// All subinstances referenced in <see cref="fields"/> mapped to their instances.
-		/// </summary>
-		private Dictionary<SerializedData, object> subInstances = new Dictionary<SerializedData, object>();
 		
 		public readonly SerializableTypeCache targetType;
 		public readonly XElement element;
@@ -41,31 +36,6 @@ namespace UnityTK.Prototypes
 			if (!ReferenceEquals(inheritsAttrib, null))
 			{
 				this.inherits = inheritsAttrib.Value;
-			}
-		}
-
-		/// <summary>
-		/// Parses field data from the XMLElement element.
-		/// This will iterate over every node in the xml element. For every node, an entry in <see cref="fields"/> is being created.
-		/// The entry may be of type string for nodes without sub-nodes (ex. <test>123</test> -> field name = test - field value = 123).
-		/// The entry also may be an xml node used to create sub data.
-		/// </summary>
-		public void ParseFields(List<ParsingError> errors, PrototypeParserState state)
-		{
-			foreach (var node in element.Nodes())
-			{
-				if (!(node is XElement)) // Malformed XML
-				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (node as IXmlLineInfo).LineNumber, "Unable to cast node to element for " + node + "! Skipping element!"));
-					continue;
-				}
-				var nodeElement = node as XElement;
-
-				// Parse element recursively
-				if (nodeElement.HasElements)
-					fields.Set(nodeElement.Name.LocalName, nodeElement);
-				else
-					fields.Set(nodeElement.Name.LocalName, nodeElement.Value);
 			}
 		}
 
@@ -169,7 +139,6 @@ namespace UnityTK.Prototypes
 						// Resolve field name type
 						var d = new SerializedData(serializableTypeCache, xElement as XElement, this.filename);
 						d.LoadFields(errors, state);
-						subInstances.Add(d, d.targetType.Create());
 						fields.Add(elementName, d);
 					}
 				}
@@ -182,7 +151,7 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		/// <param name="prototypes">Prototypes to use for remapping</param>
 		/// <param name="errors"></param>
-		public void ResolveReferenceFieldsAndSubData(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
+		public void ResolveReferenceFields(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
 		{
 			Dictionary<string, object> updates = DictionaryPool<string, object>.Get();
 
@@ -192,23 +161,15 @@ namespace UnityTK.Prototypes
 				{
 					var @ref = field.Value as SerializedPrototypeReference;
 					if (!ReferenceEquals(@ref, null))
-					{
 						updates.Add(field.Key, @ref.Resolve(prototypes));
-					}
 
 					var sub = field.Value as SerializedData;
 					if (!ReferenceEquals(sub, null))
-					{
-						sub.ResolveReferenceFieldsAndSubData(prototypes, errors, state);
-						sub.ApplyTo(subInstances[sub], errors, state);
-						updates.Add(field.Key, subInstances[sub]);
-					}
+						sub.ResolveReferenceFields(prototypes, errors, state);
 
 					var col = field.Value as SerializedCollectionData;
 					if (!ReferenceEquals(col, null))
-					{
-						updates.Add(field.Key, col.GetCollectionResolveReferenceFieldsAndSubData(prototypes, errors, state));
-					}
+						col.ResolveReferenceFieldsAndSubData(prototypes, errors, state);
 				}
 				
 				// Write updates
@@ -229,13 +190,35 @@ namespace UnityTK.Prototypes
 			foreach (var field in fields)
 			{
 				var fieldInfo = this.targetType.GetFieldData(field.Key);
-				if (!ReferenceEquals(field.Value, null) && !fieldInfo.fieldInfo.FieldType.IsAssignableFrom(field.Value.GetType()))
+				var value = field.Value;
+
+				var sub = value as SerializedData;
+				if (!ReferenceEquals(sub, null))
 				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Fatal error deserializing field " + field.Key + " - tried applying field data but types mismatched! Stored type: " + field.Value.GetType() + " - Declared type: " + fieldInfo.fieldInfo.FieldType + "! Skipping field!"));
+					// Field already set?
+					value = fieldInfo.fieldInfo.GetValue(obj);
+
+					// If not, create new obj
+					if (ReferenceEquals(value, null))
+						value = sub.targetType.Create();
+
+					sub.ApplyTo(value, errors, state);
+				}
+
+				var col = value as SerializedCollectionData;
+				if (!ReferenceEquals(col, null))
+				{
+					// TODO: Merging
+					value = col.CreateCollection();
+				}
+
+				if (!ReferenceEquals(value, null) && !fieldInfo.fieldInfo.FieldType.IsAssignableFrom(value.GetType()))
+				{
+					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Fatal error deserializing field " + field.Key + " - tried applying field data but types mismatched! Stored type: " + value.GetType() + " - Declared type: " + fieldInfo.fieldInfo.FieldType + "! Skipping field!"));
 					continue;
 				}
 
-				fieldInfo.fieldInfo.SetValue(obj, field.Value);
+				fieldInfo.fieldInfo.SetValue(obj, value);
 			}
 		}
 

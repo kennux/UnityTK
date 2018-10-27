@@ -14,6 +14,12 @@
 		<array></array>
 		<testBase></testBase>
 	</Prototype>
+	<Prototype Id="Test5" Inherits="Test1">
+		<array></array>
+		<testBase>
+			<baseStr>wow, it works :O</baseStr>
+		</testBase>
+	</Prototype>
 	<Prototype Id="Test1" Abstract="True">
 		<someRate>1.5</someRate>
 		<someInt>1337</someInt>
