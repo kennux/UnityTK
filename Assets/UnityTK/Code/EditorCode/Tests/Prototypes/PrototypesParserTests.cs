@@ -249,6 +249,40 @@ namespace UnityTK.Test.Prototypes
 			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
         }
 
+        [Test]
+        public void ParserTestCollectionsList()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<list>\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr1</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr2</baseStr>\n" +
+				"				<lul>10</lul>\n" +
+				"			</li>\n" +
+				"		</list>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+
+			List<ParsingError> errors = new List<ParsingError>();
+			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			}, ref errors);
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(1, prototypes.Count);
+
+			var collection = (prototypes[0] as TestPrototype).list;
+			Assert.AreEqual(2, collection.Count);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+        }
+
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		// Inheritance tests
 		/////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,6 +372,216 @@ namespace UnityTK.Test.Prototypes
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		// Override tests
 		/////////////////////////////////////////////////////////////////////////////////////////////
+
+        [Test]
+        public void ParserTestOverrideCombineCollectionsArray()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<array>\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr1</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr2</baseStr>\n" +
+				"				<lul>10</lul>\n" +
+				"			</li>\n" +
+				"		</array>\n" +
+				"	</Prototype>\n" +
+				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"		<array CollectionOverrideAction=\"Combine\">\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr3</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr4</baseStr>\n" +
+				"				<lul>11</lul>\n" +
+				"			</li>\n" +
+				"		</array>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+
+			List<ParsingError> errors = new List<ParsingError>();
+			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			}, ref errors);
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(2, prototypes.Count);
+			
+			var collection = (prototypes[0] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			
+			collection = (prototypes[1] as TestPrototype).array;
+			Assert.AreEqual(4, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual("teststr3", collection[2].baseStr);
+			Assert.AreEqual("teststr4", collection[3].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			Assert.AreEqual(11, (collection[3] as TestPrototype.SpecializedClass).lul);
+        }
+
+        [Test]
+        public void ParserTestOverrideCombineCollectionsList()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<list>\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr1</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr2</baseStr>\n" +
+				"				<lul>10</lul>\n" +
+				"			</li>\n" +
+				"		</list>\n" +
+				"	</Prototype>\n" +
+				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"		<list CollectionOverrideAction=\"Combine\">\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr3</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr4</baseStr>\n" +
+				"				<lul>11</lul>\n" +
+				"			</li>\n" +
+				"		</list>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+
+			List<ParsingError> errors = new List<ParsingError>();
+			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			}, ref errors);
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(2, prototypes.Count);
+			
+			var collection = (prototypes[0] as TestPrototype).list;
+			Assert.AreEqual(2, collection.Count);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			
+			collection = (prototypes[1] as TestPrototype).list;
+			Assert.AreEqual(4, collection.Count);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual("teststr3", collection[2].baseStr);
+			Assert.AreEqual("teststr4", collection[3].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			Assert.AreEqual(11, (collection[3] as TestPrototype.SpecializedClass).lul);
+        }
+
+        [Test]
+        public void ParserTestOverrideReplaceCollectionsArray()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<array>\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr1</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr2</baseStr>\n" +
+				"				<lul>10</lul>\n" +
+				"			</li>\n" +
+				"		</array>\n" +
+				"	</Prototype>\n" +
+				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"		<array CollectionOverrideAction=\"Replace\">\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr3</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr4</baseStr>\n" +
+				"				<lul>11</lul>\n" +
+				"			</li>\n" +
+				"		</array>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+
+			List<ParsingError> errors = new List<ParsingError>();
+			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			}, ref errors);
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(2, prototypes.Count);
+			
+			var collection = (prototypes[0] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			
+			collection = (prototypes[1] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr3", collection[0].baseStr);
+			Assert.AreEqual("teststr4", collection[1].baseStr);
+			Assert.AreEqual(11, (collection[1] as TestPrototype.SpecializedClass).lul);
+        }
+
+        [Test]
+        public void ParserTestOverrideReplaceCollectionsList()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<list>\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr1</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr2</baseStr>\n" +
+				"				<lul>10</lul>\n" +
+				"			</li>\n" +
+				"		</list>\n" +
+				"	</Prototype>\n" +
+				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"		<list CollectionOverrideAction=\"Replace\">\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr3</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr4</baseStr>\n" +
+				"				<lul>11</lul>\n" +
+				"			</li>\n" +
+				"		</list>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+
+			List<ParsingError> errors = new List<ParsingError>();
+			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			}, ref errors);
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(2, prototypes.Count);
+			
+			var collection = (prototypes[0] as TestPrototype).list;
+			Assert.AreEqual(2, collection.Count);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			
+			collection = (prototypes[1] as TestPrototype).list;
+			Assert.AreEqual(2, collection.Count);
+			Assert.AreEqual("teststr3", collection[0].baseStr);
+			Assert.AreEqual("teststr4", collection[1].baseStr);
+			Assert.AreEqual(11, (collection[1] as TestPrototype.SpecializedClass).lul);
+        }
 
         [Test]
         public void ParserTestOverridePrototypeRefs()

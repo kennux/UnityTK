@@ -68,14 +68,16 @@ namespace UnityTK.Prototypes
 		/// 
 		/// If not, it will try to reflect an "Add" method from the collection type.
 		/// If it found one, it will call it with the element - ignoring the index.
+		/// 
+		/// Index can be set to -1 to just add the element somewhere (preferrably at the end).
 		/// </summary>
-		private static void WriteElementToCollection(object collection, object element, int index)
+		private static void WriteElementToCollection(object collection, object element, int index = -1)
 		{
 			IList list = collection as IList;
 			if (!ReferenceEquals(list, null))
 			{
 				int count = list.Count;
-				if (count <= index)
+				if (index == -1 || count <= index)
 					list.Add(element);
 				else
 					list[index] = element;
@@ -179,6 +181,17 @@ namespace UnityTK.Prototypes
 				}
 			}
 		}
+
+		public IEnumerable<string> GetReferencedPrototypes()
+		{
+			foreach (var element in this.elements)
+			{
+				var sd = element as SerializedData;
+				if (!ReferenceEquals(sd, null))
+					foreach (var @ref in sd.GetReferencedPrototypes())
+						yield return @ref;
+			}
+		}
 		
 		public void ResolveReferenceFieldsAndSubData(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
 		{
@@ -200,6 +213,26 @@ namespace UnityTK.Prototypes
 					this.elements[i] = protoRef.Resolve(prototypes);
 
 			}
+		}
+
+		public object CombineWithInNew(object otherCollection)
+		{
+			var otherCount = (otherCollection as IEnumerable).Cast<object>().Count();
+			int c = this.elements.Count + otherCount, i = 0;
+
+			var collection = GetCollectionInstance(this.collectionType, c);
+			foreach (var obj in (otherCollection as IEnumerable).Cast<object>())
+			{
+				WriteElementToCollection(collection, obj, i);
+				i++;
+			}
+
+			for (int j = 0; j < this.elements.Count; j++)
+			{
+				WriteElementToCollection(collection, this.elements[j], i + j);
+			}
+
+			return collection;
 		}
 
 		public object CreateCollection()

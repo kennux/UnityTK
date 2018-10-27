@@ -23,6 +23,7 @@ namespace UnityTK.Prototypes
 		public const string PrototypeAttributeIdentifier = "Id";
 		public const string PrototypeAttributeType = "Type";
 		public const string PrototypeAttributeAbstract = "Abstract";
+		public const string PrototypeAttributeCollectionOverrideAction = "CollectionOverrideAction";
 
 		/// <summary>
 		/// Parses the specified XML content and returns all prototypes which could be parsed.

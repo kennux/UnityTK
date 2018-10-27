@@ -10,12 +10,20 @@ namespace UnityTK.Prototypes
 {
 	class SerializedData
 	{
+		public enum CollectionOverrideAction
+		{
+			Replace,
+			Combine
+		}
+
 		public string inherits;
 		
 		/// <summary>
 		/// All fields serialized in the data of this object.
 		/// </summary>
 		private Dictionary<string, object> fields = new Dictionary<string, object>();
+
+		private Dictionary<string, CollectionOverrideAction> collectionOverrideActions = new Dictionary<string, CollectionOverrideAction>();
 		
 		public readonly SerializableTypeCache targetType;
 		public readonly XElement element;
@@ -78,6 +86,11 @@ namespace UnityTK.Prototypes
 						var col = new SerializedCollectionData(fieldData.fieldInfo.FieldType, xElement, this.filename);
 						col.ParseAndLoadData(errors, state);
 						fields.Add(elementName, col);
+
+						// Collection override action?
+						var collectionOverrideAttrib = xElement.Attribute(PrototypeParser.PrototypeAttributeCollectionOverrideAction);
+						if (!ReferenceEquals(collectionOverrideAttrib, null))
+							collectionOverrideActions.Set(elementName, (CollectionOverrideAction)Enum.Parse(typeof(CollectionOverrideAction), collectionOverrideAttrib.Value));
 					}
 					// Value type serialized
 					else
@@ -208,8 +221,20 @@ namespace UnityTK.Prototypes
 				var col = value as SerializedCollectionData;
 				if (!ReferenceEquals(col, null))
 				{
-					// TODO: Merging
-					value = col.CreateCollection();
+					// Field already set?
+					value = fieldInfo.fieldInfo.GetValue(obj);
+					
+					CollectionOverrideAction action;
+					if (!ReferenceEquals(value, null) && collectionOverrideActions.TryGetValue(field.Key, out action))
+					{
+						switch (action)
+						{
+							case CollectionOverrideAction.Combine: value = col.CombineWithInNew(value); break;
+							case CollectionOverrideAction.Replace: value = col.CreateCollection(); break;
+						}
+					}
+					else // Write new collection
+						value = col.CreateCollection();
 				}
 
 				if (!ReferenceEquals(value, null) && !fieldInfo.fieldInfo.FieldType.IsAssignableFrom(value.GetType()))
@@ -236,6 +261,11 @@ namespace UnityTK.Prototypes
 				var sub = field.Value as SerializedData;
 				if (!ReferenceEquals(sub, null))
 					foreach (var @ref in sub.GetReferencedPrototypes())
+						yield return @ref;
+
+				var scd = field.Value as SerializedCollectionData;
+				if (!ReferenceEquals(scd, null))
+					foreach (var @ref in scd.GetReferencedPrototypes())
 						yield return @ref;
 			}
 		}
