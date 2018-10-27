@@ -124,7 +124,7 @@ namespace UnityTK.Prototypes
 			var collection = GetCollectionInstance(this.collectionType, elementNodes.Count);
 
 			Type elementType = GetElementType(this.collectionType);
-			var elementTypeCache = PrototypesCaches.GetSerializableTypeCacheFor(elementType);
+			var elementTypeCache = PrototypeCaches.GetSerializableTypeCacheFor(elementType);
 			string elementTypeName = elementType.Name;
 
 			foreach (var node in elementNodes)
@@ -154,7 +154,7 @@ namespace UnityTK.Prototypes
 					var classAttrib = xElementNode.Attribute(PrototypeParser.PrototypeAttributeType);
 					if (!ReferenceEquals(classAttrib, null))
 					{
-						serializableTypeCache = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
+						serializableTypeCache = PrototypeCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
 						typeName = classAttrib.Value;
 					}
 

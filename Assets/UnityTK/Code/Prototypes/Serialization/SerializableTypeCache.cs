@@ -16,7 +16,7 @@ namespace UnityTK.Prototypes
 			public FieldInfo fieldInfo;
 			public SerializableTypeCache serializableTypeCache
 			{
-				get { return PrototypesCaches.GetSerializableTypeCacheFor(this.fieldInfo.FieldType); }
+				get { return PrototypeCaches.GetSerializableTypeCacheFor(this.fieldInfo.FieldType); }
 			}
 			public bool isPrototype
 			{

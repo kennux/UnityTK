@@ -23,6 +23,7 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		private Dictionary<string, object> fields = new Dictionary<string, object>();
 
+		private Dictionary<string, IXmlLineInfo> debug = new Dictionary<string, IXmlLineInfo>();
 		private Dictionary<string, CollectionOverrideAction> collectionOverrideActions = new Dictionary<string, CollectionOverrideAction>();
 		
 		public readonly SerializableTypeCache targetType;
@@ -65,9 +66,10 @@ namespace UnityTK.Prototypes
 				var elementName = xElement.Name.LocalName;
 
 				// Field unknown?
-				if (!ParsingValidation.FieldKnown(targetType, elementName, filename, errors))
+				if (!ParsingValidation.FieldKnown(xElement, targetType, elementName, filename, errors))
 					continue;
-				
+
+				debug.Add(elementName, xElement);
 				var fieldData = targetType.GetFieldData(elementName);
 				var fieldType = fieldData.serializableTypeCache;
 				if (fieldType == null)
@@ -91,8 +93,8 @@ namespace UnityTK.Prototypes
 					{
 						try
 						{
-							var serializer = PrototypesCaches.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
-							if (!ParsingValidation.SerializerWasFound(serializer, elementName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, filename, errors))
+							var serializer = PrototypeCaches.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
+							if (!ParsingValidation.SerializerWasFound(xElement, serializer, elementName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, filename, errors))
 								continue;
 
 							fields.Add(elementName, serializer.Deserialize(fieldData.fieldInfo.FieldType, xElement, state));
@@ -126,7 +128,7 @@ namespace UnityTK.Prototypes
 						var classAttrib = xElement.Attribute(PrototypeParser.PrototypeAttributeType);
 						if (!ReferenceEquals(classAttrib, null))
 						{
-							targetType = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
+							targetType = PrototypeCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);
 							typeName = classAttrib.Value;
 						}
 
@@ -222,7 +224,7 @@ namespace UnityTK.Prototypes
 						value = col.CreateCollection();
 				}
 
-				if (!ParsingValidation.TypeCheck(field.Key, value, fieldInfo.fieldInfo.FieldType, filename, errors))
+				if (!ParsingValidation.TypeCheck(debug.TryGet(field.Key), field.Key, value, fieldInfo.fieldInfo.FieldType, filename, errors))
 					continue;
 
 				fieldInfo.fieldInfo.SetValue(obj, value);

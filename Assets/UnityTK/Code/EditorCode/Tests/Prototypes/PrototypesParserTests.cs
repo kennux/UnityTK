@@ -122,7 +122,7 @@ namespace UnityTK.Test.Prototypes
         {
 			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
 				"	<Prototype Id=\"Test\">\n" +
-				"		<type>TestPrototype.TestBase</type>\n" +
+				"		<type>TestPrototype+TestBase</type>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
 			

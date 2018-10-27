@@ -52,7 +52,7 @@ namespace UnityTK.Prototypes
 		/// <returns></returns>
 		public void Parse(string xmlContent, string filename, PrototypeParseParameters parameters)
 		{
-			PrototypesCaches.LazyInit();
+			PrototypeCaches.LazyInit();
 
 			// Pre-parse data
 			var data = new List<SerializedData>();
@@ -68,7 +68,7 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		public void Parse(string[] xmlContents, string[] filenames, PrototypeParseParameters parameters)
 		{
-			PrototypesCaches.LazyInit();
+			PrototypeCaches.LazyInit();
 			List<SerializedData> data = new List<SerializedData>();
 
 			if (xmlContents.Length != filenames.Length)
@@ -226,7 +226,7 @@ namespace UnityTK.Prototypes
 
 		private static SerializableTypeCache LookupSerializableTypeCache(string name, ref PrototypeParseParameters parameters)
 		{
-			return PrototypesCaches.LookupSerializableTypeCache(name, parameters.standardNamespace);
+			return PrototypeCaches.LookupSerializableTypeCache(name, parameters.standardNamespace);
 		}
 	}
 }

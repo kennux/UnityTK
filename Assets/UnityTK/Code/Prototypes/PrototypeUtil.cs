@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace UnityTK.Prototypes
 {
-    public static class PrototypesUtil
+    public static class PrototypeUtil
    {
         public static IEnumerable<T> TSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies, bool throwOnCycle = false)
         {

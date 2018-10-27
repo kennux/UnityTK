@@ -8,7 +8,7 @@ using UnityTK;
 using System;
 using System.Linq;
 
-namespace UnityTK.Test
+namespace UnityTK.Test.Utility
 {
     public class GraphTest
     {

@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Reflection;
 using System.Xml.Linq;
+using System.Linq;
 using System.Globalization;
 
 namespace UnityTK.Prototypes
@@ -96,8 +97,22 @@ namespace UnityTK.Prototypes
 	{
 		protected override Type _Deserialize(string value, PrototypeParserState state)
 		{
-			// TODO: Improve!
-			return Type.GetType(value);
+			// Create std namespace name string by prepending std namespace to value
+			bool doStdNamespaceCheck = !value.Contains('.');
+			string stdNamespacePrepended = doStdNamespaceCheck ? state.parameters.standardNamespace + "." + value : null;
+
+			// Look for type
+			foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				var t = asm.GetType(value, false, false);
+				if (doStdNamespaceCheck && ReferenceEquals(t, null))
+					t = asm.GetType(stdNamespacePrepended, false, false);
+
+				if (!ReferenceEquals(t, null))
+					return t;
+			}
+
+			return null;
 		}
 	}
 }

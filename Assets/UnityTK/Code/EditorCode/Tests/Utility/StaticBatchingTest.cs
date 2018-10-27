@@ -5,7 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace UnityTK.Test
+namespace UnityTK.Test.Utility
 {
     public class StaticBatchingTest
     {

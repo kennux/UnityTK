@@ -16,19 +16,19 @@ namespace UnityTK.Prototypes
 		{
 			if (ReferenceEquals(typeCache, null))
 			{
-				// TODO: Line number
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Field '" + fieldName + "' with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypeDataSerializableAttribute) + " attribute? Skipping field!"));
+				string msg = string.Format("Field '{0}' with unknown type {1} - unknown by the serializer cache! Are you missing {2} attribute?", fieldName, typeName, nameof(PrototypeDataSerializableAttribute));
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, msg));
 				return false;
 			}
 			return true;
 		}
-
-		// TODO: XElement for line number!
-		public static bool TypeCheck(string fieldName, object value, Type expectedType, string filename, List<ParsingError> errors)
+		
+		public static bool TypeCheck(IXmlLineInfo debug, string fieldName, object value, Type expectedType, string filename, List<ParsingError> errors)
 		{
 			if (!ReferenceEquals(value, null) && !expectedType.IsAssignableFrom(value.GetType()))
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Fatal error deserializing field " + fieldName + " - tried applying field data but types mismatched! Stored type: " + value.GetType() + " - Expected type: " + expectedType + "! Skipping field!"));
+				string msg = string.Format("Fatal error deserializing field {0} - tried applying field data but types mismatched! Stored type: {1} - Expected type: {2}!", fieldName, value.GetType(), expectedType);
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, ReferenceEquals(debug, null) ? -1 : debug.LineNumber, msg));
 				return false;
 			}
 			return true;
@@ -38,7 +38,8 @@ namespace UnityTK.Prototypes
 		{
 			if (!string.Equals(xElement.Name.LocalName, PrototypeParser.PrototypeContainerXMLName))
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element name '" + xElement.Name + "' is incorrect / not supported, must be '"+PrototypeParser.PrototypeContainerXMLName+"'!"));
+				string msg = string.Format("Element name '{0}' is incorrect / not supported, must be '{1}'!", xElement.Name, PrototypeParser.PrototypeContainerXMLName);
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, msg));
 				return false;
 			}
 			return true;
@@ -48,7 +49,8 @@ namespace UnityTK.Prototypes
 		{
 			if (!string.Equals(xElement.Name.LocalName, PrototypeParser.PrototypeElementXMLName)) // Unsupported
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element name '" + xElement.Name + "' is incorrect / not supported, must be '" + PrototypeParser.PrototypeElementXMLName + "'!"));
+				string msg = string.Format("Element name '{0}' is incorrect / not supported, must be '{1}'!", xElement.Name, PrototypeParser.PrototypeElementXMLName);
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, msg));
 				return false;
 			}
 			return true;
@@ -59,7 +61,8 @@ namespace UnityTK.Prototypes
 			var typeAttribute = xElement.Attribute(PrototypeParser.PrototypeContainerAttributeType);
 			if (ReferenceEquals(typeAttribute, null))
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element missing '"+PrototypeParser.PrototypeContainerAttributeType+"'! Need '"+PrototypeParser.PrototypeContainerAttributeType+"' attribute specifying the type of the prototypes to be loaded!"));
+				string msg = string.Format("Element missing '{0}'! Need '{1}' attribute specifying the type of the prototypes to be loaded!", PrototypeParser.PrototypeContainerAttributeType, PrototypeParser.PrototypeContainerAttributeType);
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, msg));
 				return false;
 			}
 			return true;
@@ -90,28 +93,32 @@ namespace UnityTK.Prototypes
 		{
 			if (!(xNode is XElement)) // Malformed XML
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xNode as IXmlLineInfo).LineNumber, "Unable to cast node to element for " + xNode + "!"));
+				string msg = string.Format("Unable to cast node to element for {0}!", xNode);
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xNode as IXmlLineInfo).LineNumber, msg));
 				return false;
 			}
 			return true;
 		}
 
-		public static bool SerializerWasFound(IPrototypeDataSerializer serializer, string field, Type declaringType, Type fieldType, string filename, List<ParsingError> errors)
+		public static bool SerializerWasFound(IXmlLineInfo debug, IPrototypeDataSerializer serializer, string field, Type declaringType, Type fieldType, string filename, List<ParsingError> errors)
 		{
 			if (ReferenceEquals(serializer, null))
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer for field " + field + " on type " + declaringType + " (Field type: " + fieldType + ") could not be found! Skipping field!"));
+				// TODO: Line number
+				string msg = string.Format("Serializer for field {0} on type {1} (Field type: {2}) could not be found!", field, declaringType, fieldType);
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, ReferenceEquals(debug, null) ? -1 : debug.LineNumber, msg));
 				return false;
 			}
 			return true;
 		}
 
-		public static bool FieldKnown(SerializableTypeCache type, string field, string filename, List<ParsingError> errors)
+		public static bool FieldKnown(IXmlLineInfo debug, SerializableTypeCache type, string field, string filename, List<ParsingError> errors)
 		{
 			if (!type.HasField(field))
 			{
 				// TODO: Line number
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Unknown field " + field + "!"));
+				string msg = string.Format("Unknown field {0}!", field);
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, ReferenceEquals(debug, null) ? -1 : debug.LineNumber, msg));
 				return false;
 			}
 			return true;

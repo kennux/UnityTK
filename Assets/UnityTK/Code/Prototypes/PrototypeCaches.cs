@@ -7,12 +7,24 @@ using System.Linq;
 
 namespace UnityTK.Prototypes
 {
-	internal static class PrototypesCaches
+	/// <summary>
+	/// UnityTK static cache class.
+	/// 
+	/// This will generate a type and serializer cache when <see cref="LazyInit"/> is called.
+	/// LazyInit can be called whenever this is about to be accessed in order to make sure the prototype cache is ready.
+	/// </summary>
+	internal static class PrototypeCaches
 	{
 		private static List<IPrototypeDataSerializer> serializers = new List<IPrototypeDataSerializer>();
 		private static Dictionary<Type, SerializableTypeCache> typeCache = new Dictionary<Type, SerializableTypeCache>();
 		private static bool wasInitialized = false;
 
+		/// <summary>
+		/// Returns the best known data serializer for the specified type.
+		/// Currently this will always return the first serializer found, TODO: Implement serializer rating and selecting the most appropriate one.
+		/// </summary>
+		/// <param name="type">The type to get a serializer for.</param>
+		/// <returns>Null if not found, the serializer otherwise.</returns>
 		public static IPrototypeDataSerializer GetBestSerializerFor(Type type)
 		{
 			foreach (var instance in serializers)
@@ -23,6 +35,10 @@ namespace UnityTK.Prototypes
 			return null;
 		}
 
+		/// <summary>
+		/// Returns the serializable type cache if known for the specified type.
+		/// Serializable type caches are being genearted in <see cref="LazyInit"/> from classes with <see cref="PrototypeDataSerializableAttribute"/> attributes via reflection.
+		/// </summary>
 		public static SerializableTypeCache GetSerializableTypeCacheFor(Type type)
 		{
 			SerializableTypeCache cache;
@@ -58,6 +74,9 @@ namespace UnityTK.Prototypes
 			}
 		}
 
+		/// <summary>
+		/// Lazy init method to ensure the cache is built.
+		/// </summary>
 		public static void LazyInit()
 		{
 			if (wasInitialized)

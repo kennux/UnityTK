@@ -109,6 +109,19 @@ namespace UnityTK
             else
                 dict.Add(key, value);
         }
+
+		/// <summary>
+		/// Tries getting a value for the specified key.
+		/// If none could be found, default(TValue) is returned.
+		/// </summary>
+		public static TValue TryGet<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key)
+		{
+			TValue val;
+			if (dict.TryGetValue(key, out val))
+				return val;
+			return default(TValue);
+		}
+
         /// <summary>
         /// Gets the first component in parents.
         /// Returns default(T) if there was no component found.
