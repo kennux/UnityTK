@@ -121,7 +121,7 @@ namespace UnityTK.Prototypes
 
 						// Check if element explicitly overwrites the type to support polymorphism
 						// The field type might be some base class type and the xml overwrites this type with a class extending from the base
-						var classAttrib = xElement.Attribute(PrototypeParser.PrototypeAttributeClass);
+						var classAttrib = xElement.Attribute(PrototypeParser.PrototypeAttributeType);
 						if (!ReferenceEquals(classAttrib, null))
 						{
 							serializableTypeCache = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);

@@ -21,7 +21,7 @@ namespace UnityTK.Prototypes
 		public const string PrototypeElementXMLName = "Prototype";
 		public const string PrototypeAttributeInherits = "Inherits";
 		public const string PrototypeAttributeIdentifier = "Id";
-		public const string PrototypeAttributeClass = "Class";
+		public const string PrototypeAttributeType = "Type";
 		public const string PrototypeAttributeAbstract = "Abstract";
 
 		/// <summary>

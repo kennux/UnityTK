@@ -149,7 +149,7 @@ namespace UnityTK.Prototypes
 					string typeName = elementTypeName;
 
 					// Try to read class attrib
-					var classAttrib = xElementNode.Attribute(PrototypeParser.PrototypeAttributeClass);
+					var classAttrib = xElementNode.Attribute(PrototypeParser.PrototypeAttributeType);
 					if (!ReferenceEquals(classAttrib, null))
 					{
 						serializableTypeCache = PrototypesCaches.LookupSerializableTypeCache(classAttrib.Value, state.parameters.standardNamespace);

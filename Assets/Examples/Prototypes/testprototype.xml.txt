@@ -27,7 +27,7 @@
 		<_struct>
 			<test>123</test>
 		</_struct>
-		<testBase Class="SpecializedClass">
+		<testBase Type="SpecializedClass">
 			<baseStr>it works :O</baseStr>
 			<lul>2</lul>
 		</testBase>
@@ -39,7 +39,7 @@
 			<li>
 				<baseStr>it really works :O</baseStr>
 			</li>
-			<li Class="SpecializedClass">
+			<li Type="SpecializedClass">
 				<baseStr>it really works :O</baseStr>
 				<lul>3</lul>
 			</li>
@@ -48,7 +48,7 @@
 			<li>
 				<baseStr>it really works :O</baseStr>
 			</li>
-			<li Class="SpecializedClass">
+			<li Type="SpecializedClass">
 				<baseStr>it really works :O</baseStr>
 				<lul>3</lul>
 			</li>
@@ -57,7 +57,7 @@
 			<li>
 				<baseStr>hashsets also work :O</baseStr>
 			</li>
-			<li Class="SpecializedClass">
+			<li Type="SpecializedClass">
 				<baseStr>hashsets also work :O</baseStr>
 				<lul>3</lul>
 			</li>
