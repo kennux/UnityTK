@@ -13,19 +13,22 @@ public class PrototypesTest : MonoBehaviour
 
 	public void Start()
 	{
-		List<ParsingError> parsingErrors = new List<ParsingError>();
-		this.loadedPrototypes = PrototypeParser.Parse(this.xml.text, new PrototypeParseParameters()
+		var parser = new PrototypeParser();
+		parser.Parse(this.xml.text, "DIRECT PARSE", new PrototypeParseParameters()
 		{
 			standardNamespace = "UnityTK.Examples.Prototypes"
-		}, ref parsingErrors).Cast<TestPrototype>().ToArray();
+		});
 
-		if (parsingErrors.Count == 0)
+		var errors = parser.GetParsingErrors();
+		this.loadedPrototypes = parser.GetPrototypes().Cast<TestPrototype>().ToArray();
+
+		if (errors.Count == 0)
 		{
 			Debug.Log("Parsed successfully " + loadedPrototypes.Length+ " objects!");
 		}
 		else
 		{
-			foreach (var error in parsingErrors)
+			foreach (var error in errors)
 				error.DoUnityDebugLog();
 		}
 	}

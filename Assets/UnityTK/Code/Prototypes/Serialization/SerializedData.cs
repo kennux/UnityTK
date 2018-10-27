@@ -145,7 +145,7 @@ namespace UnityTK.Prototypes
 						if (ReferenceEquals(serializableTypeCache, null))
 						{
 							// TODO: Line number
-							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Field '" + elementName + "' with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypesTypeSerializableAttribute) + " attribute? Skipping field!"));
+							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Field '" + elementName + "' with unknown type " + typeName + " - unknown by the serializer cache! Are you missing " + nameof(PrototypeDataSerializableAttribute) + " attribute? Skipping field!"));
 							continue;
 						}
 

@@ -67,7 +67,7 @@ namespace UnityTK.Prototypes
 			{
 				foreach (var type in asm.GetTypes())
 				{
-					if (typeof(IPrototype).IsAssignableFrom(type) || type.GetCustomAttributes(true).Any((a) => a.GetType() == typeof(PrototypesTypeSerializableAttribute)))
+					if (typeof(IPrototype).IsAssignableFrom(type) || type.GetCustomAttributes(true).Any((a) => a.GetType() == typeof(PrototypeDataSerializableAttribute)))
 					{
 						SerializableTypeCache cache = new SerializableTypeCache();
 						cache.Build(type);

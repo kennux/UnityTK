@@ -15,20 +15,20 @@ namespace UnityTK.Test.Prototypes
 	
 	public class TestPrototype : IPrototype
 	{
-		[PrototypesTypeSerializableAttribute]
+		[PrototypeDataSerializable]
 		public struct TestStruct
 		{
 			public int test;
 			public int test2;
 		}
 		
-		[PrototypesTypeSerializableAttribute]
+		[PrototypeDataSerializable]
 		public class TestBase
 		{
 			public string baseStr;
 		}
 		
-		[PrototypesTypeSerializableAttribute]
+		[PrototypeDataSerializable]
 		public class SpecializedClass : TestBase
 		{
 			public int lul;
@@ -73,12 +73,14 @@ namespace UnityTK.Test.Prototypes
 				"		<testField>500</testField>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 			
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -98,12 +100,14 @@ namespace UnityTK.Test.Prototypes
 				"		<someInt>5</someInt>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -111,6 +115,30 @@ namespace UnityTK.Test.Prototypes
 			
 			Assert.AreEqual(2.5f, (prototypes[0] as TestPrototype).someRate);
 			Assert.AreEqual(5f, (prototypes[0] as TestPrototype).someInt);
+        }
+
+        [Test]
+        public void ParserTestTypeSerializer()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<type>TestPrototype.TestBase</type>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(1, prototypes.Count);
+			
+			Assert.AreSame(typeof(TestPrototype.TestBase), (prototypes[0] as TestPrototype).type);
         }
 
         [Test]
@@ -125,12 +153,14 @@ namespace UnityTK.Test.Prototypes
 				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -151,12 +181,14 @@ namespace UnityTK.Test.Prototypes
 				"		</testBase>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -175,12 +207,14 @@ namespace UnityTK.Test.Prototypes
 				"		</_struct>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -200,12 +234,14 @@ namespace UnityTK.Test.Prototypes
 				"		</testBase>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -231,12 +267,14 @@ namespace UnityTK.Test.Prototypes
 				"		</array>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -265,12 +303,14 @@ namespace UnityTK.Test.Prototypes
 				"		</list>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -314,12 +354,80 @@ namespace UnityTK.Test.Prototypes
 				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(2, prototypes.Count);
+			
+			Assert.AreEqual(2.5f, (prototypes[0] as TestPrototype).someRate);
+			var collection = (prototypes[0] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			Assert.AreEqual("teststr", (prototypes[0] as TestPrototype).testBase.baseStr);
+			Assert.AreEqual(1337, (prototypes[0] as TestPrototype)._struct.test);
+
+			Assert.AreEqual(2.5f, (prototypes[1] as TestPrototype).someRate);
+			collection = (prototypes[1] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			Assert.AreEqual("teststr", (prototypes[1] as TestPrototype).testBase.baseStr);
+			Assert.AreEqual(1337, (prototypes[1] as TestPrototype)._struct.test);
+			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[1] as TestPrototype).someOtherPrototype);
+        }
+		
+        [Test]
+        public void ParserTestInheritanceSplit()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<someRate>2.5</someRate>\n" +
+				"		<testBase Type=\"SpecializedClass\">\n" +
+				"			<baseStr>teststr</baseStr>\n" +
+				"			<lul>10</lul>\n" +
+				"		</testBase>\n" +
+				"		<_struct>\n" +
+				"			<test>1337</test>\n" +
+				"		</_struct>\n" +
+				"		<array>\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr1</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr2</baseStr>\n" +
+				"				<lul>10</lul>\n" +
+				"			</li>\n" +
+				"		</array>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+				string xml2 = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			});
+			parser.Parse(xml2, "DIRECT PARSE", new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -355,12 +463,14 @@ namespace UnityTK.Test.Prototypes
 				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -400,12 +510,14 @@ namespace UnityTK.Test.Prototypes
 				"		</array>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -454,12 +566,14 @@ namespace UnityTK.Test.Prototypes
 				"		</list>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -508,12 +622,14 @@ namespace UnityTK.Test.Prototypes
 				"		</array>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -559,12 +675,14 @@ namespace UnityTK.Test.Prototypes
 				"		</list>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -598,12 +716,14 @@ namespace UnityTK.Test.Prototypes
 				"		<someOtherPrototype>Test2</someOtherPrototype>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -631,12 +751,14 @@ namespace UnityTK.Test.Prototypes
 				"		</testBase>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -663,12 +785,14 @@ namespace UnityTK.Test.Prototypes
 				"		</_struct>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());
@@ -690,12 +814,14 @@ namespace UnityTK.Test.Prototypes
 				"		<someRate>4</someRate>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
-
-			List<ParsingError> errors = new List<ParsingError>();
-			var prototypes = PrototypeParser.Parse(xml, new PrototypeParseParameters()
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
 			{
 				standardNamespace = "UnityTK.Test.Prototypes"
-			}, ref errors);
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
 
 			foreach (var error in errors)
 				throw new Exception(error.GetFullMessage());

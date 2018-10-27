@@ -54,6 +54,12 @@ Benchmarking
 
 Simplistic (micro-)benchmarking system you can use to quickly author benchmarks and execute them in the unity editor.
 
+Prototypes
+----
+
+An XML-Deserializer with the ability to deserialize objects from XML code, supporting inheritance.
+Originally developed as a substitute for ScriptableObjects / GameObjects when working with ECS.
+
 Utility
 -----
 

@@ -10,7 +10,7 @@ namespace UnityTK.Prototypes
 	/// A marked class will be generating a type cache object in <see cref="PrototypesCaches"/>
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-	public class PrototypesTypeSerializableAttribute : Attribute
+	public class PrototypeDataSerializableAttribute : Attribute
 	{
 	}
 }

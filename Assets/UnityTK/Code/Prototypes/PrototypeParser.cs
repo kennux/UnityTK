@@ -9,11 +9,9 @@ using System.Linq;
 namespace UnityTK.Prototypes
 {
 	/// <summary>
-	/// The main API for UnityTK prototypes.
-	/// 
-	/// It provides parser methods to parse prototypes from XML.
+	/// Parser object with the ability to parse prototypes from XML content.
 	/// </summary>
-	public static class PrototypeParser
+	public class PrototypeParser
 	{
 		public const string PrototypeContainerXMLName = "PrototypeContainer";
 		public const string PrototypeContainerAttributeType = "Type";
@@ -25,17 +23,41 @@ namespace UnityTK.Prototypes
 		public const string PrototypeAttributeAbstract = "Abstract";
 		public const string PrototypeAttributeCollectionOverrideAction = "CollectionOverrideAction";
 
+		private List<ParsingError> errors = new List<ParsingError>();
+		private List<IPrototype> prototypes = new List<IPrototype>();
+		private Dictionary<string, SerializedData> serializedData = new Dictionary<string, SerializedData>();
+
+		/// <summary>
+		/// Returns the internal prototypes list.
+		/// </summary>
+		public List<IPrototype> GetPrototypes()
+		{
+			return this.prototypes;
+		}
+
+		/// <summary>
+		/// Returns the internal errors list.
+		/// </summary>
+		public List<ParsingError> GetParsingErrors()
+		{
+			return this.errors;
+		}
+
 		/// <summary>
 		/// Parses the specified XML content and returns all prototypes which could be parsed.
 		/// </summary>
 		/// <param name="xmlContent">The xml content to use for parsing-</param>
 		/// <param name="parameters">The parameters for the parser.</param>
-		/// <param name="errors">A list where parsing errors will be written to.</param>
+		/// <param name="extend">The result to extend when parsing. Setting this will give the parser the ability to let data to be loaded now inherited from data loaded in extend.</param>
 		/// <returns></returns>
-		public static List<IPrototype> Parse(string xmlContent, PrototypeParseParameters parameters, ref List<ParsingError> errors)
+		public void Parse(string xmlContent, string filename, PrototypeParseParameters parameters)
 		{
 			PrototypesCaches.LazyInit();
-			return _Parse(_PreParse(xmlContent, "DIRECT PARSE", ref parameters, ref errors), ref parameters, ref errors);
+
+			// Pre-parse data
+			var data = new List<SerializedData>();
+			_PreParse(xmlContent, filename, ref parameters, data);
+			_Parse(data, ref parameters);
 		}
 
 		/// <summary>
@@ -44,7 +66,7 @@ namespace UnityTK.Prototypes
 		/// 
 		/// The prototypes will be loaded in order and able to resolve references across multiple files!
 		/// </summary>
-		public static List<IPrototype> Parse(string[] xmlContents, string[] filenames, PrototypeParseParameters parameters, ref List<ParsingError> errors)
+		public void Parse(string[] xmlContents, string[] filenames, PrototypeParseParameters parameters)
 		{
 			PrototypesCaches.LazyInit();
 			List<SerializedData> data = new List<SerializedData>();
@@ -54,15 +76,15 @@ namespace UnityTK.Prototypes
 
 			for (int i = 0; i < xmlContents.Length; i++)
 			{
-				_PreParse(xmlContents[i], filenames[i], ref parameters, ref errors, data);
+				_PreParse(xmlContents[i], filenames[i], ref parameters, data);
 			}
-
-			return _Parse(data, ref parameters, ref errors);
+			
+			_Parse(data, ref parameters);
 		}
 		
-		private static List<SerializedData> _PreParse(string xmlContent, string filename, ref PrototypeParseParameters parameters, ref List<ParsingError> errors, List<SerializedData> preAlloc = null)
+		private void _PreParse(string xmlContent, string filename, ref PrototypeParseParameters parameters, List<SerializedData> result)
 		{
-			ListPool<SerializedData>.GetIfNull(ref preAlloc);
+			ListPool<SerializedData>.GetIfNull(ref result);
 			ListPool<ParsingError>.GetIfNull(ref errors);
 			var xElement = XElement.Parse(xmlContent);
 
@@ -70,12 +92,12 @@ namespace UnityTK.Prototypes
 			if (!string.Equals(xElement.Name.LocalName, PrototypeContainerXMLName))
 			{
 				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element name '" + xElement.Name + "' is incorrect / not supported, must be '"+PrototypeContainerXMLName+"'! Skipping file!"));
-				return preAlloc;
+				return;
 			}
 			if (!xElement.HasAttributes)
 			{
 				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element has no attributes! Need atleast '"+PrototypeContainerAttributeType+"' attribute specifying the type of the prototypes to be loaded! Skipping container!"));
-				return preAlloc;
+				return;
 			}
 
 			// Get type
@@ -83,14 +105,14 @@ namespace UnityTK.Prototypes
 			if (ReferenceEquals(typeAttribute, null))
 			{
 				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element missing '"+PrototypeContainerAttributeType+"'! Need '"+PrototypeContainerAttributeType+"' attribute specifying the type of the prototypes to be loaded! Skipping container!"));
-				return preAlloc;
+				return;
 			}
 
 			var type = LookupSerializableTypeCache(typeAttribute.Value, ref parameters);
 			if (ReferenceEquals(type, null))
 			{
 				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Element type " + typeAttribute.Value + " unknown! Skipping file!"));
-				return preAlloc;
+				return;
 			}
 
 			// Iterate over nodes
@@ -109,7 +131,7 @@ namespace UnityTK.Prototypes
 				if (!string.Equals(nodeElement.Name.LocalName, PrototypeElementXMLName)) // Unsupported
 				{
 					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (nodeElement as IXmlLineInfo).LineNumber, "Element name '" + nodeElement.Name + "' is incorrect / not supported, must be '"+PrototypeElementXMLName+"'! Skipping element!"));
-					return preAlloc;
+					continue;
 				}
 
 				var elementTypeAttribute = nodeElement.Attribute(PrototypeContainerAttributeType);
@@ -118,31 +140,29 @@ namespace UnityTK.Prototypes
 					elementType = LookupSerializableTypeCache(elementTypeAttribute.Value, ref parameters);
 					if (ReferenceEquals(elementType, null))
 					{
-						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (nodeElement as IXmlLineInfo).LineNumber, "Element type " + elementTypeAttribute.Value + " unknown! Skipping file!"));
-						return preAlloc;
+						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (nodeElement as IXmlLineInfo).LineNumber, "Element type " + elementTypeAttribute.Value + " unknown! Skipping element!"));
+						continue;
 					}
 				}
 
 				// Prepare
 				var data = new SerializedData(elementType, nodeElement, filename);
-				preAlloc.Add(data);
+				result.Add(data);
 			}
-			
-			return preAlloc;
 		}
 
-		private static List<IPrototype> _Parse(List<SerializedData> data, ref PrototypeParseParameters parameters, ref List<ParsingError> errors, List<IPrototype> preAlloc = null)
+		private void _Parse(List<SerializedData> data, ref PrototypeParseParameters parameters)
 		{
-			ListPool<IPrototype>.GetIfNull(ref preAlloc);
 			ListPool<ParsingError>.GetIfNull(ref errors);
 
 			// Get prototypes with others inheriting from first
 
 			// Key = type which is inheriting from something, Value = the type its inheriting from
-			Dictionary<SerializedData, List<SerializedData>> inheritingFrom = new Dictionary<SerializedData, List<SerializedData>>();
+			Dictionary<SerializedData, List<SerializedData>> inheritingFrom = new Dictionary<SerializedData, List<SerializedData>>(); // This is only used for topo sort!
 			Dictionary<SerializedData, object> instances = new Dictionary<SerializedData, object>();
-			Dictionary<string, SerializedData> nameMapping = new Dictionary<string, SerializedData>();
+			Dictionary<string, SerializedData> idMapping = new Dictionary<string, SerializedData>();
 			List<SerializedData> invalid = new List<SerializedData>();
+			
 
 			// Pre-parse names, create instances and apply name
 			foreach (var d in data)
@@ -156,7 +176,7 @@ namespace UnityTK.Prototypes
 					continue;
 				}
 
-				nameMapping.Add(attribName.Value, d);
+				idMapping.Add(attribName.Value, d);
 
 				// Check if abstract prototype data
 				var attribAbstract = d.element.Attribute(PrototypeAttributeAbstract);
@@ -168,7 +188,7 @@ namespace UnityTK.Prototypes
 					instances.Add(d, obj);
 
 					(obj as IPrototype).identifier = attribName.Value;
-					preAlloc.Add(obj as IPrototype);
+					this.prototypes.Add(obj as IPrototype);
 				}
 			}
 			
@@ -179,22 +199,9 @@ namespace UnityTK.Prototypes
 			invalid.Clear();
 			foreach (var d in data)
 			{
-				if (!string.IsNullOrEmpty(d.inherits))
-				{
-					SerializedData inheritedData = nameMapping[d.inherits];
-
-					if (ReferenceEquals(inheritedData, null))
-					{
-						// TODO: Line number
-						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, -1, "Prototype is inheriting from unknown prototype '" + d.inherits + "'! Skipping prototype!"));
-						invalid.Add(d);
-						continue;
-					}
-					else
-					{
-						inheritingFrom.GetOrCreate(d).Add(inheritedData);
-					}
-				}
+				SerializedData inheritedData;
+				if (!string.IsNullOrEmpty(d.inherits) && idMapping.TryGetValue(d.inherits, out inheritedData))
+					inheritingFrom.GetOrCreate(d).Add(inheritedData);
 			}
 
 			PrototypeParserState state = new PrototypeParserState()
@@ -216,9 +223,9 @@ namespace UnityTK.Prototypes
 
 			// Step 3 - run sorting algorithm for reference resolve
 			foreach (var d in data)
-				d.ResolveReferenceFields(preAlloc, errors, state);
+				d.ResolveReferenceFields(this.prototypes, errors, state);
 
-			// Step 4 - Final data apply
+			// Step 5 - Final data apply
 			foreach (var d in sorted)
 			{
 				if (!instances.ContainsKey(d))
@@ -226,13 +233,21 @@ namespace UnityTK.Prototypes
 
 				// Apply inherited data first
 				if (!string.IsNullOrEmpty(d.inherits))
-					nameMapping[d.inherits].ApplyTo(instances[d], errors, state);
+				{
+					SerializedData serializedData = null;
+					if (!this.serializedData.TryGetValue(d.inherits, out serializedData) && !idMapping.TryGetValue(d.inherits, out serializedData))
+						this.errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.element as IXmlLineInfo).LinePosition, "Could not find the prototype '" + d.inherits + "' for prototype '" + (instances[d] as IPrototype).identifier + "'! Ignoring inheritance!"));
+					else
+						serializedData.ApplyTo(instances[d], errors, state);
+				}
 
 				// Apply data over inherited
 				d.ApplyTo(instances[d], errors, state);
 			}
 
-			return preAlloc;
+			// Step 6 - record serialized data in result
+			foreach (var kvp in idMapping)
+				this.serializedData.Add(kvp.Key, kvp.Value);
 		}
 
 		private static SerializableTypeCache LookupSerializableTypeCache(string name, ref PrototypeParseParameters parameters)

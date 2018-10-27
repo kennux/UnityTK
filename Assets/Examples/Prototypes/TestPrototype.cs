@@ -15,20 +15,20 @@ namespace UnityTK.Examples.Prototypes
 	[System.Serializable]
 	public class TestPrototype : IPrototype
 	{
-		[PrototypesTypeSerializableAttribute]
+		[PrototypeDataSerializable]
 		[System.Serializable]
 		public struct TestStruct
 		{
 			public int test;
 		}
 		
-		[PrototypesTypeSerializableAttribute]
+		[PrototypeDataSerializable]
 		public class TestBase
 		{
 			public string baseStr;
 		}
 		
-		[PrototypesTypeSerializableAttribute]
+		[PrototypeDataSerializable]
 		public class SpecializedClass : TestBase
 		{
 			public int lul;
