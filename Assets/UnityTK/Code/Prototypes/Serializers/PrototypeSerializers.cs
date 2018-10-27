@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Reflection;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace UnityTK.Prototypes
 {
@@ -26,7 +27,7 @@ namespace UnityTK.Prototypes
 	{
 		protected override float _Deserialize(string value, PrototypeParserState state)
 		{
-			return float.Parse(value);
+			return float.Parse(value, CultureInfo.InvariantCulture);
 		}
 	}
 	
@@ -50,7 +51,7 @@ namespace UnityTK.Prototypes
 	{
 		protected override double _Deserialize(string value, PrototypeParserState state)
 		{
-			return double.Parse(value);
+			return double.Parse(value, CultureInfo.InvariantCulture);
 		}
 	}
 	
