@@ -200,6 +200,7 @@ namespace UnityTK.Prototypes
 				d.ResolveReferenceFields(this.prototypes, errors, state);
 
 			// Step 5 - Final data apply
+			List<SerializedData> inheritingFromTmp = new List<SerializedData>();
 			foreach (var d in sorted)
 			{
 				if (!instances.ContainsKey(d))
@@ -208,11 +209,28 @@ namespace UnityTK.Prototypes
 				// Apply inherited data first
 				if (!string.IsNullOrEmpty(d.inherits))
 				{
-					SerializedData serializedData = null;
-					if (!this.serializedData.TryGetValue(d.inherits, out serializedData) && !idMapping.TryGetValue(d.inherits, out serializedData))
-						this.errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.xElement as IXmlLineInfo).LinePosition, "Could not find the prototype '" + d.inherits + "' for prototype '" + (instances[d] as IPrototype).identifier + "'! Ignoring inheritance!"));
-					else
-						serializedData.ApplyTo(instances[d], errors, state);
+					// Look up all inherited data in bottom to top order
+					inheritingFromTmp.Clear();
+					var inheritedData = d.inherits;
+
+					while (!string.IsNullOrEmpty(inheritedData))
+					{
+						SerializedData serializedData = null;
+						if (!this.serializedData.TryGetValue(inheritedData, out serializedData) && !idMapping.TryGetValue(inheritedData, out serializedData))
+							this.errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.xElement as IXmlLineInfo).LinePosition, "Could not find the prototype '" + inheritedData + "' for prototype '" + (instances[d] as IPrototype).identifier + "'! Ignoring inheritance!"));
+						else
+							inheritingFromTmp.Add(serializedData);
+
+						// Recursion
+						inheritedData = serializedData.inherits;
+					}
+
+					// Reverse so we apply in top to bottom order
+					inheritingFromTmp.Reverse();
+
+					// Apply
+					foreach (var _d in inheritingFromTmp)
+						_d.ApplyTo(instances[d], errors, state);
 				}
 
 				// Apply data over inherited

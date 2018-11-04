@@ -388,6 +388,78 @@ namespace UnityTK.Test.Prototypes
         }
 		
         [Test]
+        public void ParserTestDeepInheritance()
+        {
+			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
+				"	<Prototype Id=\"Test\">\n" +
+				"		<someRate>2.5</someRate>\n" +
+				"		<testBase Type=\"SpecializedClass\">\n" +
+				"			<baseStr>teststr</baseStr>\n" +
+				"			<lul>10</lul>\n" +
+				"		</testBase>\n" +
+				"		<_struct>\n" +
+				"			<test>1337</test>\n" +
+				"		</_struct>\n" +
+				"		<array>\n" +
+				"			<li>\n" +
+				"				<baseStr>teststr1</baseStr>\n" +
+				"			</li>\n" +
+				"			<li Type=\"SpecializedClass\">\n" +
+				"				<baseStr>teststr2</baseStr>\n" +
+				"				<lul>10</lul>\n" +
+				"			</li>\n" +
+				"		</array>\n" +
+				"	</Prototype>\n" +
+				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
+				"	</Prototype>\n" +
+				"	<Prototype Id=\"Test3\" Inherits=\"Test2\">\n" +
+				"	</Prototype>\n" +
+				"</PrototypeContainer>";
+			
+			var parser = new PrototypeParser();
+			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
+			{
+				standardNamespace = "UnityTK.Test.Prototypes"
+			});
+			var prototypes = parser.GetPrototypes();
+			var errors = parser.GetParsingErrors();
+
+			foreach (var error in errors)
+				throw new Exception(error.GetFullMessage());
+			Assert.AreEqual(3, prototypes.Count);
+			
+			Assert.AreEqual(2.5f, (prototypes[0] as TestPrototype).someRate);
+			var collection = (prototypes[0] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			Assert.AreEqual("teststr", (prototypes[0] as TestPrototype).testBase.baseStr);
+			Assert.AreEqual(1337, (prototypes[0] as TestPrototype)._struct.test);
+
+			Assert.AreEqual(2.5f, (prototypes[1] as TestPrototype).someRate);
+			collection = (prototypes[1] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			Assert.AreEqual("teststr", (prototypes[1] as TestPrototype).testBase.baseStr);
+			Assert.AreEqual(1337, (prototypes[1] as TestPrototype)._struct.test);
+			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[1] as TestPrototype).someOtherPrototype);
+
+			Assert.AreEqual(2.5f, (prototypes[2] as TestPrototype).someRate);
+			collection = (prototypes[2] as TestPrototype).array;
+			Assert.AreEqual(2, collection.Length);
+			Assert.AreEqual("teststr1", collection[0].baseStr);
+			Assert.AreEqual("teststr2", collection[1].baseStr);
+			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
+			Assert.AreEqual("teststr", (prototypes[2] as TestPrototype).testBase.baseStr);
+			Assert.AreEqual(1337, (prototypes[2] as TestPrototype)._struct.test);
+			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[2] as TestPrototype).someOtherPrototype);
+        }
+		
+        [Test]
         public void ParserTestInheritanceSplit()
         {
 			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
