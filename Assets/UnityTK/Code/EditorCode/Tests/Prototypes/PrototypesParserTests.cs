@@ -45,6 +45,7 @@ namespace UnityTK.Test.Prototypes
 		public Type type = null;
 		public TestStruct _struct;
 		public TestBase testBase;
+		public Color color;
 		
 		public TestBase[] array;
 		public List<TestBase> list;
@@ -106,6 +107,7 @@ namespace UnityTK.Test.Prototypes
 				"		<vec3>2.5,5.1,9</vec3>\n" +
 				"		<vec4>9,2.5,5,1.25</vec4>\n" +
 				"		<quat>9,2.5,5,1.25</quat>\n" +
+				"		<color>0.25,1,0.5,1</color>\n" +
 				"	</Prototype>\n" +
 				"</PrototypeContainer>";
 			
@@ -127,6 +129,7 @@ namespace UnityTK.Test.Prototypes
 			Assert.AreEqual(new Vector3(2.5f, 5.1f, 9), (prototypes[0] as TestPrototype).vec3);
 			Assert.AreEqual(new Vector4(9, 2.5f, 5, 1.25f), (prototypes[0] as TestPrototype).vec4);
 			Assert.AreEqual(new Quaternion(9, 2.5f, 5, 1.25f), (prototypes[0] as TestPrototype).quat);
+			Assert.AreEqual(new Color(0.25f, 1f, 0.5f, 1f), (prototypes[0] as TestPrototype).color);
         }
 
         [Test]
