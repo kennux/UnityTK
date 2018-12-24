@@ -51,7 +51,7 @@ namespace UnityTK.Prototypes
 
 		/// <summary>
 		/// Returns the serializable type cache if known for the specified type.
-		/// Serializable type caches are being genearted in <see cref="LazyInit"/> from classes with <see cref="PrototypeDataSerializableAttribute"/> attributes via reflection.
+		/// Will be cached just in time.
 		/// </summary>
 		public static SerializableTypeCache GetSerializableTypeCacheFor(Type type)
 		{
