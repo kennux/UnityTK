@@ -46,35 +46,22 @@ namespace UnityTK.Prototypes
 			return true;
 		}
 
-		public static bool PrototypeElementName(XElement xElement, string filename, List<ParsingError> errors)
-		{
-			if (!string.Equals(xElement.Name.LocalName, PrototypeParser.PrototypeElementXMLName)) // Unsupported
-			{
-				string msg = string.Format("Element name '{0}' is incorrect / not supported, must be '{1}'!", xElement.Name, PrototypeParser.PrototypeElementXMLName);
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, msg));
-				return false;
-			}
-			return true;
-		}
-
-		public static bool ContainerTypeAttribute(XElement xElement, string filename, List<ParsingError> errors)
-		{
-			var typeAttribute = xElement.Attribute(PrototypeParser.PrototypeContainerAttributeType);
-			if (ReferenceEquals(typeAttribute, null))
-			{
-				string msg = string.Format("Element missing '{0}'! Need '{1}' attribute specifying the type of the prototypes to be loaded!", PrototypeParser.PrototypeContainerAttributeType, PrototypeParser.PrototypeContainerAttributeType);
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, msg));
-				return false;
-			}
-			return true;
-		}
-
 		public static bool ElementHasId(XElement xElement, string filename, List<ParsingError> errors)
 		{
 			var attribName = xElement.Attribute(PrototypeParser.PrototypeAttributeIdentifier);
 			if (ReferenceEquals(attribName, null))
 			{
 				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Prototype without identifier!"));
+				return false;
+			}
+			return true;
+		}
+
+		public static bool PrototypeTypeFound(string typeName, XElement xElement, SerializableTypeCache type, string filename, List<ParsingError> errors)
+		{
+			if (ReferenceEquals(type, null))
+			{
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Prototype type " + typeName + " unknown!"));
 				return false;
 			}
 			return true;

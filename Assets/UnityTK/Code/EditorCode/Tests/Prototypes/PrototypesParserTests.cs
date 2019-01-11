@@ -68,12 +68,12 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestCustomPrototypeClass()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\" Type=\"TestPrototypeSpec\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototypeSpec Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<someInt>5</someInt>\n" +
 				"		<testField>500</testField>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototypeSpec>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -96,8 +96,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestValueTypes()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<someInt>5</someInt>\n" +
 				"		<vec2>5.1,2.5</vec2>\n" +
@@ -105,7 +105,7 @@ namespace UnityTK.Test.Prototypes
 				"		<vec4>9,2.5,5,1.25</vec4>\n" +
 				"		<quat>9,2.5,5,1.25</quat>\n" +
 				"		<color>0.25,1,0.5,1</color>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -132,10 +132,10 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestTypeSerializer()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<type>TestPrototype+TestBase</type>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -156,14 +156,14 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestPrototypeRefs()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<someInt>5</someInt>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\">\n" +
 				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -186,12 +186,12 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestSubData()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<testBase>\n" +
 				"			<baseStr>teststr</baseStr>\n" +
 				"		</testBase>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -212,12 +212,12 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestSubDataStruct()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<_struct>\n" +
 				"			<test>1337</test>\n" +
 				"		</_struct>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -238,13 +238,13 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestSubDataCustomType()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<testBase Type=\"SpecializedClass\">\n" +
 				"			<baseStr>teststr</baseStr>\n" +
 				"			<lul>10</lul>\n" +
 				"		</testBase>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -266,8 +266,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestCollectionsArray()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -277,7 +277,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -302,8 +302,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestCollectionsList()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -313,7 +313,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -342,8 +342,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestInheritance()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<testBase Type=\"SpecializedClass\">\n" +
 				"			<baseStr>teststr</baseStr>\n" +
@@ -361,10 +361,10 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -402,8 +402,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestDeepInheritance()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<testBase Type=\"SpecializedClass\">\n" +
 				"			<baseStr>teststr</baseStr>\n" +
@@ -421,12 +421,12 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test3\" Inherits=\"Test2\">\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test3\" Inherits=\"Test2\">\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -474,8 +474,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestInheritanceSplit()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<testBase Type=\"SpecializedClass\">\n" +
 				"			<baseStr>teststr</baseStr>\n" +
@@ -493,12 +493,12 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
-				string xml2 = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				string xml2 = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -540,12 +540,12 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestAbstractPrototypes()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\" Abstract=\"True\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\" Abstract=\"True\">\n" +
 				"		<someRate>2.5</someRate>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -570,8 +570,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverrideCombineCollectionsArray()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -581,8 +581,8 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<array CollectionOverrideAction=\"Combine\">\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr3</baseStr>\n" +
@@ -592,7 +592,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>11</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -626,8 +626,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverrideCombineCollectionsList()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -637,8 +637,8 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<list CollectionOverrideAction=\"Combine\">\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr3</baseStr>\n" +
@@ -648,7 +648,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>11</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -682,8 +682,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestImplicitCombineCollectionsArray()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -693,8 +693,8 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<array>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr3</baseStr>\n" +
@@ -704,10 +704,10 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>11</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test3\">\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test4\" ParentName=\"Test3\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test3\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test4\" ParentName=\"Test3\">\n" +
 				"		<array>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -717,7 +717,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -757,8 +757,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestImplicitCombineCollectionsList()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -768,8 +768,8 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<list>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr3</baseStr>\n" +
@@ -779,10 +779,10 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>11</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test3\">\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test4\" ParentName=\"Test3\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test3\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test4\" ParentName=\"Test3\">\n" +
 				"		<list>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -792,7 +792,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -832,8 +832,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverrideReplaceCollectionsArray()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -843,8 +843,8 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<array CollectionOverrideAction=\"Replace\">\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr3</baseStr>\n" +
@@ -854,7 +854,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>11</lul>\n" +
 				"			</li>\n" +
 				"		</array>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -885,8 +885,8 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverrideReplaceCollectionsList()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr1</baseStr>\n" +
@@ -896,8 +896,8 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>10</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<list CollectionOverrideAction=\"Replace\">\n" +
 				"			<li>\n" +
 				"				<baseStr>teststr3</baseStr>\n" +
@@ -907,7 +907,7 @@ namespace UnityTK.Test.Prototypes
 				"				<lul>11</lul>\n" +
 				"			</li>\n" +
 				"		</list>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -938,17 +938,17 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverridePrototypeRefs()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<someInt>5</someInt>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\">\n" +
 				"		<someOtherPrototype>Test</someOtherPrototype>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test3\" Inherits=\"Test2\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test3\" Inherits=\"Test2\">\n" +
 				"		<someOtherPrototype>Test2</someOtherPrototype>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -972,18 +972,18 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverrideSubData()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<testBase Type=\"SpecializedClass\">\n" +
 				"			<baseStr>teststr</baseStr>\n" +
 				"			<lul>1</lul>\n" +
 				"		</testBase>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<testBase>\n" +
 				"			<baseStr>teststr2</baseStr>\n" +
 				"		</testBase>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -1007,17 +1007,17 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverrideSubDataStruct()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\">\n" +
 				"		<_struct>\n" +
 				"			<test>1337</test>\n" +
 				"		</_struct>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<_struct>\n" +
 				"			<test2>1338</test2>\n" +
 				"		</_struct>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();
@@ -1039,14 +1039,14 @@ namespace UnityTK.Test.Prototypes
         [Test]
         public void ParserTestOverrideValueTypes()
         {
-			string xml = "<PrototypeContainer Type=\"TestPrototype\">\n" +
-				"	<Prototype Id=\"Test\" Abstract=\"True\">\n" +
+			string xml = "<PrototypeContainer>\n" +
+				"	<TestPrototype Id=\"Test\" Abstract=\"True\">\n" +
 				"		<someRate>2.5</someRate>\n" +
 				"		<someInt>5</someInt>\n" +
-				"	</Prototype>\n" +
-				"	<Prototype Id=\"Test2\" Inherits=\"Test\">\n" +
+				"	</TestPrototype>\n" +
+				"	<TestPrototype Id=\"Test2\" Inherits=\"Test\">\n" +
 				"		<someRate>4</someRate>\n" +
-				"	</Prototype>\n" +
+				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
 			var parser = new PrototypeParser();

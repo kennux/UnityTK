@@ -14,9 +14,7 @@ namespace UnityTK.Prototypes
 	public class PrototypeParser
 	{
 		public const string PrototypeContainerXMLName = "PrototypeContainer";
-		public const string PrototypeContainerAttributeType = "Type";
-
-		public const string PrototypeElementXMLName = "Prototype";
+        
 		public const string PrototypeAttributeInherits = "Inherits";
 		public const string PrototypeAttributeIdentifier = "Id";
 		public const string PrototypeAttributeType = "Type";
@@ -85,37 +83,22 @@ namespace UnityTK.Prototypes
 			ListPool<ParsingError>.GetIfNull(ref errors);
 			var xElement = XElement.Parse(xmlContent);
 
-
 			// Validity checks
-			if (!ParsingValidation.ContainerElementName(xElement, filename, errors) ||
-				!ParsingValidation.ContainerTypeAttribute(xElement, filename, errors))
+			if (!ParsingValidation.ContainerElementName(xElement, filename, errors))
 				return;
-				
-			// Get type
-			XAttribute typeAttribute = xElement.Attribute(PrototypeContainerAttributeType);
-			var type = GetSerializableTypeCacheFor(typeAttribute.Value, ref parameters);
-			if (!ParsingValidation.TypeFound(xElement, typeAttribute, type, filename, errors))
-				return;
-
+            
 			// Iterate over nodes
 			foreach (var xNode in xElement.Nodes())
 			{
-				var elementType = type;
 				var nodeXElement = xNode as XElement;
 
 				// Validity checks
-				if (!ParsingValidation.NodeIsElement(xNode, filename, errors) ||
-					!ParsingValidation.PrototypeElementName(nodeXElement, filename, errors))
+				if (!ParsingValidation.NodeIsElement(xNode, filename, errors))
 					continue;
 
-
-				var elementTypeAttribute = nodeXElement.Attribute(PrototypeContainerAttributeType);
-				if (!ReferenceEquals(elementTypeAttribute, null))
-				{
-					elementType = GetSerializableTypeCacheFor(elementTypeAttribute.Value, ref parameters);
-					if (!ParsingValidation.TypeFound(nodeXElement, elementTypeAttribute, elementType, filename, errors))
-						continue;
-				}
+                var elementType = PrototypeCaches.GetSerializableTypeCacheFor(nodeXElement.Name.LocalName, parameters.standardNamespace);
+                if (!ParsingValidation.PrototypeTypeFound(nodeXElement.Name.LocalName, nodeXElement, elementType, filename, errors))
+                    continue;
 
 				// Prepare
 				var data = new SerializedData(elementType, nodeXElement, filename);
