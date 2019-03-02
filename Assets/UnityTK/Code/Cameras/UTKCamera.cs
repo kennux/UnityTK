@@ -20,7 +20,7 @@ namespace UnityTK.Cameras
         /// <summary>
         /// The current state of the camera.
         /// </summary>
-        protected CameraState cameraState;
+        public CameraState cameraState;
 
         /// <summary>
         /// The underlying camera wrapped by this UTKCamera.

@@ -67,14 +67,14 @@ namespace UnityTK.Cameras
         protected float zoomLevel
         {
             get { return this.minYZoomLevel + (this.maxYZoomLevel * this.zoomLevelNormalized); }
+            set { this.zoomLevelNormalized = value.Remap(this.minYZoomLevel, this.maxYZoomLevel, 0, 1); }
         }
         
         [Header("Debug")]
-        [SerializeField]
         /// <summary>
         /// The normalized zoomlevel, normalized between <see cref="minYZoomLevel"/>, <see cref="maxYZoomLevel"/>
         /// </summary>
-        protected float zoomLevelNormalized;
+        public float zoomLevelNormalized;
         
         [SerializeField]
         /// <summary>
@@ -88,11 +88,10 @@ namespace UnityTK.Cameras
         /// </summary>
         protected Vector2 planeMax;
         
-        [SerializeField]
         /// <summary>
         /// The camera position on a plane defined by <see cref="planeMin"/> and <see cref="planeMax"/>
         /// </summary>
-        protected Vector2 planeCoords;
+        public Vector2 planeCoords;
 
         protected override TopDownCameraModeInputData MergeInputData(Dictionary<CameraModeInput<TopDownCameraModeInputData>, TopDownCameraModeInputData> data)
         {
