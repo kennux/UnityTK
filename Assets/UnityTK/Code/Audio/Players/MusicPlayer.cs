@@ -109,6 +109,7 @@ namespace UnityTK.Audio
         {
             this.audioSource.ResetConfig();
             this.audioSourceNext.ResetConfig();
+
             if (this.playOnAwake)
                 this.Play();
         }
@@ -182,6 +183,7 @@ namespace UnityTK.Audio
                 while (this.audioSource.time < startBlend)
                 {
                     // Wait one frame and measure time
+                    this.audioSource.volume = this.volume;
                     yield return null;
                 }
 
