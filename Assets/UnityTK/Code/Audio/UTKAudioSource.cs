@@ -19,15 +19,44 @@ namespace UnityTK.Audio
 
         public virtual float volume
         {
-            get { return this.underlying.volume; }
-            set { this.underlying.volume = value; }
+            get { return this._volume; }
+            set { this._volume = value; UpdateVolume(); }
         }
+        [Range(0,1)]
+        [SerializeField]
+        private float _volume = 1;
 
+        /// <summary>
+        /// The volume of the currently played clip.
+        /// This will be multiplied with <see cref="volume"/>
+        /// </summary>
+        public virtual float clipVolume
+        {
+            get { return this._clipVolume; }
+            set { this._clipVolume = value; UpdateVolume(); }
+        }
+        private float _clipVolume;
+        
         public virtual float pitch
         {
-            get { return this.underlying.pitch; }
-            set { this.underlying.pitch = value; }
+            get { return this._pitch; }
+            set { this._pitch = value; UpdatePitch(); }
         }
+        [Range(-3,3)]
+        [SerializeField]
+        private float _pitch;
+
+        /// <summary>
+        /// The pitch of the currently played clip.
+        /// This will be multiplied with <see cref="pitch"/>
+        /// </summary>
+        public virtual float clipPitch
+        {
+            get { return _clipPitch; }
+            set { _clipPitch = value; UpdatePitch(); }
+        }
+        private float _clipPitch;
+
         public virtual AudioClip clip
         {
             get { return this.underlying.clip; }
@@ -63,6 +92,16 @@ namespace UnityTK.Audio
             set { this.underlying.rolloffMode = value; }
         }
 
+        protected virtual void UpdateVolume()
+        {
+            this.underlying.volume = this._volume * this._clipVolume;
+        }
+
+        protected virtual void UpdatePitch()
+        {
+            this.underlying.pitch = this._pitch * this._clipPitch;
+        }
+
         public virtual void Play(AudioClip clip, bool loop = false)
         {
             this.clip = clip;
@@ -80,6 +119,8 @@ namespace UnityTK.Audio
         {
             this.volume = 1;
             this.pitch = 1;
+            this.clipVolume = 1;
+            this.clipPitch = 1;
             this.clip = null;
             this.minDistance = 1;
             this.maxDistance = 500;

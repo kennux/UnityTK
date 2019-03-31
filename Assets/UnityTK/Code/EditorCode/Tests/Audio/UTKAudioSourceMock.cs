@@ -16,6 +16,16 @@ namespace UnityTK.Test.Audio
             get; set;
         }
 
+        public virtual float clipVolume
+        {
+            get; set;
+        }
+
+        public virtual float clipPitch
+        {
+            get; set;
+        }
+
         public virtual float pitch
         {
             get; set;

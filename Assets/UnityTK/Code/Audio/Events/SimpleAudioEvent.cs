@@ -50,8 +50,8 @@ namespace UnityTK.Audio
         /// </summary>
         public override void Play(IUTKAudioSource audioSource, bool loop = false)
         {
-            audioSource.volume = this.volume.GetRandomInRange();
-            audioSource.pitch = this.pitch.GetRandomInRange();
+            audioSource.clipVolume = this.volume.GetRandomInRange();
+            audioSource.clipPitch = this.pitch.GetRandomInRange();
             audioSource.minDistance = this.minDistance;
             audioSource.maxDistance = this.maxDistance;
             audioSource.rolloffMode = this.rolloffMode;

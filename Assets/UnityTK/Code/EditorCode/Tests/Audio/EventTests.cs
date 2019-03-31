@@ -35,8 +35,8 @@ namespace UnityTK.Test.Audio
             evt.Play(aSource, false);
 
             // Assert
-            Assert.IsTrue(aSource.volume >= evt.volume.minValue && aSource.volume <= evt.volume.maxValue);
-            Assert.IsTrue(aSource.pitch >= evt.pitch.minValue && aSource.pitch <= evt.pitch.maxValue);
+            Assert.IsTrue(aSource.clipVolume >= evt.volume.minValue && aSource.clipVolume <= evt.volume.maxValue);
+            Assert.IsTrue(aSource.clipPitch >= evt.pitch.minValue && aSource.clipPitch <= evt.pitch.maxValue);
             Assert.AreEqual(evt.minDistance, aSource.minDistance);
             Assert.AreEqual(evt.maxDistance, aSource.maxDistance);
             Assert.AreEqual(evt.rolloffMode, aSource.rolloffMode);
@@ -52,8 +52,8 @@ namespace UnityTK.Test.Audio
             evt.Play(aSource, true);
 
             // Assert
-            Assert.IsTrue(aSource.volume >= evt.volume.minValue && aSource.volume <= evt.volume.maxValue);
-            Assert.IsTrue(aSource.pitch >= evt.pitch.minValue && aSource.pitch <= evt.pitch.maxValue);
+            Assert.IsTrue(aSource.clipVolume >= evt.volume.minValue && aSource.clipVolume <= evt.volume.maxValue);
+            Assert.IsTrue(aSource.clipPitch >= evt.pitch.minValue && aSource.clipPitch <= evt.pitch.maxValue);
             Assert.AreEqual(evt.minDistance, aSource.minDistance);
             Assert.AreEqual(evt.maxDistance, aSource.maxDistance);
             Assert.AreEqual(evt.rolloffMode, aSource.rolloffMode);

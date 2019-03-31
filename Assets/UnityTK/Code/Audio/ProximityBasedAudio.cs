@@ -54,21 +54,10 @@ namespace UnityTK.Audio
         }
 
         /// <summary>
-        /// The base volume
-        /// </summary>
-        [SerializeField]
-        protected float _volume = 1;
-
-        /// <summary>
         /// The animation curve used to calculate the audio fadeout.
         /// The time axis is mapped to the distance of this audio source in the camera screenspace.
         /// </summary>
         public AnimationCurve proximityFadeout;
-
-        /// <summary>
-        /// If set to true, will set <see cref="_volume"/> to <see cref="UTKAudioSource.volume"/> on <see cref="OnEnable"/>
-        /// </summary>
-        public bool getSettingsFromAudioSourceOnEnable = false;
 
         private void OnValidate()
         {
@@ -85,18 +74,12 @@ namespace UnityTK.Audio
             this.Update();
         }
 
-        public void OnEnable()
-        {
-            if (this.getSettingsFromAudioSourceOnEnable)
-                this._volume = this.volume;
-        }
-
         public void Update()
         {
             float panStereo;
             float proximity = ProximityPlayer.instance.GetProximity(this.transform, out panStereo);
 
-            float volume = this.proximityFadeout.Evaluate(proximity) * this._volume;
+            float volume = this.proximityFadeout.Evaluate(proximity) * this.volume;
             this.underlying.volume = volume;
             this.underlying.panStereo = panStereo;
         }

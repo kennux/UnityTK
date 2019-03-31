@@ -10,7 +10,9 @@ namespace UnityTK.Audio
     public interface IUTKAudioSource
     {
         float volume { get; set; }
+        float clipVolume { get; set; }
         float pitch { get; set; }
+        float clipPitch { get; set; }
         float time { get; set; }
         AudioClip clip { get; }
         bool isPlaying { get; }
