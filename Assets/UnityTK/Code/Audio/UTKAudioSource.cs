@@ -35,7 +35,7 @@ namespace UnityTK.Audio
             get { return this._clipVolume; }
             set { this._clipVolume = value; UpdateVolume(); }
         }
-        private float _clipVolume;
+        private float _clipVolume = 1;
         
         public virtual float pitch
         {
@@ -55,7 +55,7 @@ namespace UnityTK.Audio
             get { return _clipPitch; }
             set { _clipPitch = value; UpdatePitch(); }
         }
-        private float _clipPitch;
+        private float _clipPitch = 1;
 
         public virtual AudioClip clip
         {
