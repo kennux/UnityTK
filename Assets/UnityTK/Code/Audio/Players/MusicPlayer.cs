@@ -107,6 +107,8 @@ namespace UnityTK.Audio
 
         private void Awake()
         {
+            this.audioSource.ResetConfig();
+            this.audioSourceNext.ResetConfig();
             if (this.playOnAwake)
                 this.Play();
         }
