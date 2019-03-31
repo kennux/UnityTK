@@ -74,14 +74,21 @@ namespace UnityTK.Audio
             this.Update();
         }
 
-        public void Update()
+        protected override void UpdateVolume()
         {
+            base.UpdateVolume();
+            
             float panStereo;
             float proximity = ProximityPlayer.instance.GetProximity(this.transform, out panStereo);
 
-            float volume = this.proximityFadeout.Evaluate(proximity) * this.volume;
+            float volume = this.proximityFadeout.Evaluate(proximity) * underlying.volume;
             this.underlying.volume = volume;
             this.underlying.panStereo = panStereo;
+        }
+
+        public void Update()
+        {
+            UpdateVolume();
         }
 
         public override void ResetConfig()
