@@ -44,7 +44,7 @@ namespace UnityTK.Audio
         }
         [Range(-3,3)]
         [SerializeField]
-        private float _pitch;
+        private float _pitch = 1;
 
         /// <summary>
         /// The pitch of the currently played clip.
