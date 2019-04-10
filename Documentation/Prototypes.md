@@ -3,10 +3,7 @@
 The prototypes system can be used to parse objects from XML.
 They were implemented as a substitute for unity prefabs / scriptableobjects and used mainly together with UnityECS.
 
-Prototypes support inheritance, custom types and collections.
-You can mark your types to be serializable as data by the prototype with the attribute [PrototypesTypeSerializableAttribute], which can be added to classes or structs.
-
-Marked types will enable prototype data serialization for them.
+Prototypes support polymorphism, custom types and collections.
 
 ## Example
 
