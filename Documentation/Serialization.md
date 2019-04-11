@@ -1,6 +1,6 @@
 # Prototypes
 
-The prototypes system can be used to parse objects from XML.
+The prototypes system can be used to parse objects using a UnityTK serializer.
 They were implemented as a substitute for unity prefabs / scriptableobjects and used mainly together with UnityECS.
 
 Prototypes support polymorphism, custom types and collections.
@@ -49,6 +49,12 @@ namespace UnityTK.Examples.Prototypes
 	}
 }
 ```
+
+PrototypesParser
+----
+
+The core class of the prototype system. It exposes the ability to parse prototypes.
+It provides the ability to parse files in batch or one file at once. See the "Examples" section for usage.
 
 XML
 ---
@@ -115,32 +121,25 @@ else
 }
 ```
 
-## Script reference
+# Deserialization
 
-PrototypesParser
-----
+Deserialization works the same way as Prototypes do, just that you'll need to use the serialization API directly.
 
-The core class of the prototype system. It exposes the ability to parse XML to prototypes.
-It provides the ability to parse files in batch or one file at once. See the "Examples" section for usage.
 
-PrototypeDataSerializableAttribute
+# Script reference
+
+IXMLDataSerializer
 ---
 
-This attribute can be used to mark types as serializable, similar to System.Serializable.
-Types will be treated as data and except for prototypes, no references will be serialized or resolved!
-
-IPrototypeDataSerializer
----
-
-This interface can be used to extend the prototype serializer by adding a new serializer.
-Whenever the serializer comes across a field in xml with a type thats not marked as data serializable, it will look for a serializer for the type.
+This interface can be used to extend the xml serializer by adding a new data serializers.
+Whenever the serializer comes across a field in xml, it will look for a serializer for the type.
 If a serializer is found it will be called to deserialize the data.
 
-When implementing new serializers, you only have to implement them somewhere and thats it!
+When implementing new serializers, you only have to create the implementing class somewhere and thats it!
 The prototypes cache will automatically find them via reflection and create an instance for them.
 
 ## Collections
 
 Collections are supported to some extend.
-Officially only List<T> and System.Array are supported, but any collection implementing either ISet<>, ICollection<> or IList should work.
+I only tested List<T> and System.Array, but any collection implementing either ISet<>, ICollection<> or IList should work.
 

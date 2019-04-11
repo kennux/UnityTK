@@ -5,17 +5,11 @@ using System;
 using System.Xml.Linq;
 using System.Linq;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
-	/// <summary>
-	/// UnityTK static cache class.
-	/// 
-	/// This will generate a type and serializer cache when <see cref="LazyInit"/> is called.
-	/// LazyInit can be called whenever this is about to be accessed in order to make sure the prototype cache is ready.
-	/// </summary>
-	public static class PrototypeCaches
+	public static class SerializerCache
 	{
-		private static List<IPrototypeDataSerializer> serializers;
+		private static List<IXMLDataSerializer> serializers;
 		private static Dictionary<Type, SerializableTypeCache> typeCache = new Dictionary<Type, SerializableTypeCache>();
 		private static Type[] allTypes = null;
 
@@ -25,19 +19,19 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		/// <param name="type">The type to get a serializer for.</param>
 		/// <returns>Null if not found, the serializer otherwise.</returns>
-		public static IPrototypeDataSerializer GetBestSerializerFor(Type type)
+		public static IXMLDataSerializer GetBestSerializerFor(Type type)
 		{
 			if (ReferenceEquals(serializers, null))
 			{
-				serializers = new List<IPrototypeDataSerializer>();
+				serializers = new List<IXMLDataSerializer>();
 				LazyAllTypesInit();
 				
 				int len = allTypes.Length;
 				for (int i = 0; i < len; i++)
 				{
 					Type t = allTypes[i];
-					if (t.IsClass && !t.IsAbstract && typeof(IPrototypeDataSerializer).IsAssignableFrom(t))
-						serializers.Add(Activator.CreateInstance(t) as IPrototypeDataSerializer);
+					if (t.IsClass && !t.IsAbstract && typeof(IXMLDataSerializer).IsAssignableFrom(t))
+						serializers.Add(Activator.CreateInstance(t) as IXMLDataSerializer);
 				}
 			}
 
@@ -72,10 +66,14 @@ namespace UnityTK.Prototypes
 				// Init all types cache
 				foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
 				{
-					foreach (var type in asm.GetTypes())
-					{
-						types.Add(type);
-					}
+                    try
+                    {
+                        foreach (var type in asm.GetTypes())
+                        {
+                            types.Add(type);
+                        }
+                    }
+                    catch (Exception ex) { Debug.LogError("Exception while initializing types of " + asm + " for serialization!"); Debug.LogException(ex); }
 				}
 				allTypes = types.ToArray();
 			}

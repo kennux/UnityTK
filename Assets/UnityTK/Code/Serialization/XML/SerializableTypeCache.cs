@@ -4,10 +4,10 @@ using UnityEngine;
 using System;
 using System.Reflection;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
 	/// <summary>
-	/// A cache datatype used to cache information on how to serialize types for the XML Parser.
+	/// A cache datatype used to cache information on how to serialize types for the XML Serializer.
 	/// </summary>
 	public class SerializableTypeCache
 	{
@@ -55,11 +55,11 @@ namespace UnityTK.Prototypes
 			public FieldInfo fieldInfo;
 			public SerializableTypeCache serializableTypeCache
 			{
-				get { return PrototypeCaches.GetSerializableTypeCacheFor(this.fieldInfo.FieldType); }
+				get { return SerializerCache.GetSerializableTypeCacheFor(this.fieldInfo.FieldType); }
 			}
-			public bool isPrototype
+			public bool isSerializableRoot
 			{
-				get { return typeof(IPrototype).IsAssignableFrom(this.fieldInfo.FieldType); }
+				get { return typeof(ISerializableRoot).IsAssignableFrom(this.fieldInfo.FieldType); }
 			}
 
 			public FieldCache(FieldInfo fieldInfo)

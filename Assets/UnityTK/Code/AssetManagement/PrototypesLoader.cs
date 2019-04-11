@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityTK.Prototypes;
+using UnityTK.Serialization.Prototypes;
 using System.Linq;
+using UnityTK.Serialization;
 
 namespace UnityTK.AssetManagement
 {
@@ -15,7 +16,7 @@ namespace UnityTK.AssetManagement
 		
 		protected override List<IManagedAsset> LoadAssets()
 		{
-			var parser = new PrototypeParser();
+			var parser = new PrototypeParser(PrototypeParser.CreateXMLSerializer(standardNamespace));
 			foreach (var p in this.paths)
 			{
 				string path = p.Replace(StreamingAssetsToken, Application.streamingAssetsPath);
@@ -23,10 +24,7 @@ namespace UnityTK.AssetManagement
 				// Load data
 				var files = System.IO.Directory.GetFiles(path, "*.xml", System.IO.SearchOption.AllDirectories);
 				string[] contents = files.Select((f) => System.IO.File.ReadAllText(f)).ToArray();
-				parser.Parse(contents, files, new PrototypeParseParameters()
-				{
-					standardNamespace = this.standardNamespace
-				});
+				parser.Parse(contents, files);
 			}
 
 			var prototypes = parser.GetPrototypes();

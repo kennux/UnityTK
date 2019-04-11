@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityTK.Benchmarking;
-using UnityTK.Prototypes;
+using UnityTK.Serialization.Prototypes;
+using UnityTK.Serialization;
 
 namespace UnityTK.Editor.Benchmarking
 {
@@ -24,7 +25,7 @@ namespace UnityTK.Editor.Benchmarking
 
         protected override void Prepare()
         {
-            this.parser = new PrototypeParser();
+            this.parser = new PrototypeParser(PrototypeParser.CreateXMLSerializer("UnityTK.Editor.Benchmarking"));
 
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("<PrototypeContainer Type=\"SimplePrototype\">");
@@ -49,10 +50,7 @@ namespace UnityTK.Editor.Benchmarking
         {
             bRes.BeginLabel("10k simple prototypes load");
 
-			this.parser.Parse(this.xml, "TEST", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Editor.Benchmarking"
-			});
+            this.parser.Parse(this.xml, "TEST");
 
             bRes.EndLabel();
         }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
-    public static class PrototypeUtil
+    public static class SerializerUtil
    {
         public static IEnumerable<T> TSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies, bool throwOnCycle = false)
         {

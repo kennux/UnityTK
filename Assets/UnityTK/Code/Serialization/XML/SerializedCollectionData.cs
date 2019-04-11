@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
 	/// <summary>
 	/// <see cref="SerializedData"/> alike object for storing collections.
@@ -118,13 +118,13 @@ namespace UnityTK.Prototypes
 		/// </summary>
 		/// <param name="errors"></param>
 		/// <param name="state"></param>
-		public void ParseAndLoadData(List<ParsingError> errors, PrototypeParserState state)
+		public void ParseAndLoadData(List<ParsingError> errors, XMLSerializerParams parameters)
 		{
 			var elementNodes = xElement.Nodes().ToList();
 			var collection = GetCollectionInstance(this.collectionType, elementNodes.Count);
 
 			Type elementType = GetElementType(this.collectionType);
-			var elementTypeCache = PrototypeCaches.GetSerializableTypeCacheFor(elementType);
+			var elementTypeCache = SerializerCache.GetSerializableTypeCacheFor(elementType);
 			string elementTypeName = elementType.Name;
 
 			foreach (var node in elementNodes)
@@ -136,10 +136,10 @@ namespace UnityTK.Prototypes
 					continue;
 				}
 
-				if (typeof(IPrototype).IsAssignableFrom(elementType))
+				if (typeof(ISerializableRoot).IsAssignableFrom(elementType))
 				{
-					// Prototype ref
-					this.elements.Add(new SerializedPrototypeReference()
+					// object ref
+					this.elements.Add(new SerializedRootObjectReference()
 					{
 						identifier = xElementNode.Value
 					});
@@ -151,10 +151,10 @@ namespace UnityTK.Prototypes
 					string typeName = elementTypeName;
 
 					// Try to read class attrib
-					var classAttrib = xElementNode.Attribute(PrototypeParser.PrototypeAttributeType);
+					var classAttrib = xElementNode.Attribute(XMLSerializer.AttributeType);
 					if (!ReferenceEquals(classAttrib, null))
 					{
-						serializableTypeCache = PrototypeCaches.GetSerializableTypeCacheFor(classAttrib.Value, state.parameters.standardNamespace);
+						serializableTypeCache = SerializerCache.GetSerializableTypeCacheFor(classAttrib.Value, parameters.standardNamespace);
 						typeName = classAttrib.Value;
 					}
 
@@ -177,40 +177,40 @@ namespace UnityTK.Prototypes
 				var sElement = element as SerializedData;
 				if (!ReferenceEquals(sElement, null))
 				{
-					sElement.LoadFields(errors, state);
+					sElement.LoadFields(errors, parameters);
 				}
 			}
 		}
 
-		public IEnumerable<string> GetReferencedPrototypes()
+		public IEnumerable<string> GetReferencedObjectRoots()
 		{
 			foreach (var element in this.elements)
 			{
 				var sd = element as SerializedData;
 				if (!ReferenceEquals(sd, null))
-					foreach (var @ref in sd.GetReferencedPrototypes())
+					foreach (var @ref in sd.GetReferencedObjectRoots())
 						yield return @ref;
 			}
 		}
 		
-		public void ResolveReferenceFieldsAndSubData(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
+		public void ResolveReferenceFieldsAndSubData(List<ISerializableRoot> objects, List<ParsingError> errors, XMLSerializerParams parameters)
 		{
 			for (int i = 0; i < this.elements.Count; i++)
 			{
 				// Finalize, create and apply
 				var element = this.elements[i];
 				var sElement = element as SerializedData;
-				var protoRef = element as SerializedPrototypeReference;
+				var protoRef = element as SerializedRootObjectReference;
 				
 				if (!ReferenceEquals(sElement, null))
 				{
-					sElement.ResolveReferenceFields(prototypes, errors, state);
+					sElement.ResolveReferenceFields(objects, errors, parameters);
 					var value = sElement.targetType.Create();
-					sElement.ApplyTo(value, errors, state);
+					sElement.ApplyTo(value, errors, parameters);
 					this.elements[i] = value;
 				}
 				else if (!ReferenceEquals(protoRef, null))
-					this.elements[i] = protoRef.Resolve(prototypes);
+					this.elements[i] = protoRef.Resolve(objects);
 
 			}
 		}

@@ -6,13 +6,11 @@ using System.Xml.Linq;
 using System.Xml;
 using System.Linq;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
 	internal static class ParsingValidation
 	{
-		// TODO: string.Format()
-
-		public static bool DataFieldSerializerValid(XElement xElement, SerializableTypeCache typeCache, string typeName, string fieldName, string filename, List<ParsingError> errors)
+		public static bool DataFieldSerializerValid(XMLSerializerParams parameters, XElement xElement, SerializableTypeCache typeCache, string typeName, string fieldName, string filename, List<ParsingError> errors)
 		{
 			if (ReferenceEquals(typeCache, null))
 			{
@@ -24,7 +22,7 @@ namespace UnityTK.Prototypes
 			return true;
 		}
 		
-		public static bool TypeCheck(IXmlLineInfo debug, string fieldName, object value, Type expectedType, string filename, List<ParsingError> errors)
+		public static bool TypeCheck(XMLSerializerParams parameters, IXmlLineInfo debug, string fieldName, object value, Type expectedType, string filename, List<ParsingError> errors)
 		{
 			if (!ReferenceEquals(value, null) && !expectedType.IsAssignableFrom(value.GetType()))
 			{
@@ -35,39 +33,39 @@ namespace UnityTK.Prototypes
 			return true;
 		}
 
-		public static bool ContainerElementName(XElement xElement, string filename, List<ParsingError> errors)
+		public static bool ContainerElementName(XMLSerializerParams parameters, XElement xElement, string filename, List<ParsingError> errors)
 		{
-			if (!string.Equals(xElement.Name.LocalName, PrototypeParser.PrototypeContainerXMLName))
+			if (!string.Equals(xElement.Name.LocalName, parameters.rootElementName))
 			{
-				string msg = string.Format("Element name '{0}' is incorrect / not supported, must be '{1}'!", xElement.Name, PrototypeParser.PrototypeContainerXMLName);
+				string msg = string.Format("Element name '{0}' is incorrect / not supported, must be '{1}'!", xElement.Name, parameters.rootElementName);
 				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, msg));
 				return false;
 			}
 			return true;
 		}
 
-		public static bool ElementHasId(XElement xElement, string filename, List<ParsingError> errors)
+		public static bool ElementHasId(XMLSerializerParams parameters, XElement xElement, string filename, List<ParsingError> errors)
 		{
-			var attribName = xElement.Attribute(PrototypeParser.PrototypeAttributeIdentifier);
+			var attribName = xElement.Attribute(XMLSerializer.AttributeIdentifier);
 			if (ReferenceEquals(attribName, null))
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Prototype without identifier!"));
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Root object without identifier!"));
 				return false;
 			}
 			return true;
 		}
 
-		public static bool PrototypeTypeFound(string typeName, XElement xElement, SerializableTypeCache type, string filename, List<ParsingError> errors)
+		public static bool RootTypeFound(XMLSerializerParams parameters, string typeName, XElement xElement, SerializableTypeCache type, string filename, List<ParsingError> errors)
 		{
 			if (ReferenceEquals(type, null))
 			{
-				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Prototype type " + typeName + " unknown!"));
+				errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Root object type " + typeName + " unknown!"));
 				return false;
 			}
 			return true;
 		}
 
-		public static bool TypeFound(XElement xElement, XAttribute typeAttribute, SerializableTypeCache type, string filename, List<ParsingError> errors)
+		public static bool TypeFound(XMLSerializerParams parameters, XElement xElement, XAttribute typeAttribute, SerializableTypeCache type, string filename, List<ParsingError> errors)
 		{
 			if (ReferenceEquals(type, null))
 			{
@@ -77,7 +75,7 @@ namespace UnityTK.Prototypes
 			return true;
 		}
 
-		public static bool NodeIsElement(XNode xNode, string filename, List<ParsingError> errors)
+		public static bool NodeIsElement(XMLSerializerParams parameters, XNode xNode, string filename, List<ParsingError> errors)
 		{
 			if (!(xNode is XElement)) // Malformed XML
 			{
@@ -88,7 +86,7 @@ namespace UnityTK.Prototypes
 			return true;
 		}
 
-		public static bool SerializerWasFound(IXmlLineInfo debug, IPrototypeDataSerializer serializer, string field, Type declaringType, Type fieldType, string filename, List<ParsingError> errors)
+		public static bool SerializerWasFound(XMLSerializerParams parameters, IXmlLineInfo debug, IXMLDataSerializer serializer, string field, Type declaringType, Type fieldType, string filename, List<ParsingError> errors)
 		{
 			if (ReferenceEquals(serializer, null))
 			{
@@ -100,7 +98,7 @@ namespace UnityTK.Prototypes
 			return true;
 		}
 
-		public static bool FieldKnown(IXmlLineInfo debug, SerializableTypeCache type, string field, string filename, List<ParsingError> errors)
+		public static bool FieldKnown(XMLSerializerParams parameters, IXmlLineInfo debug, SerializableTypeCache type, string field, string filename, List<ParsingError> errors)
 		{
 			if (!type.HasField(field))
 			{

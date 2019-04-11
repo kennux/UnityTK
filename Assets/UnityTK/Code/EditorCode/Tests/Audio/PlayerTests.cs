@@ -31,7 +31,11 @@ namespace UnityTK.Test.Audio
             AudioOneShotPlayer.instance.nonSpatialPrefab = nsPrefabAS;
 
             var proximityPlayer = new GameObject("Proximity Player");
-            proximityPlayer.AddComponent<ProximityPlayer>();
+            var pp = proximityPlayer.AddComponent<ProximityPlayer>();
+            pp.Awake();
+
+            var cameraGo = new GameObject("Camera");
+            pp.proximityCamera = cameraGo.AddComponent<Camera>();
 
             AudioEventMock evtMock = new AudioEventMock();
             bool wasPlayed = false;

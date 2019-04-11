@@ -4,7 +4,8 @@ using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityTK.Prototypes;
+using UnityTK.Serialization.Prototypes;
+using UnityTK.Serialization;
 
 namespace UnityTK.Test.Prototypes
 {
@@ -49,7 +50,7 @@ namespace UnityTK.Test.Prototypes
 		public HashSet<TestBase> hashSet;
 		public TestPrototype[] arrayRefs;
 
-		string IPrototype.identifier
+		string ISerializableRoot.identifier
 		{
 			get
 			{
@@ -63,10 +64,15 @@ namespace UnityTK.Test.Prototypes
 		}
 	}
 
-    public class PrototypesParserTest
+    public class XMLPrototypeParserTest
     {
+        protected virtual ISerializer CreateSerializer()
+        {
+            return PrototypeParser.CreateXMLSerializer("UnityTK.Test.Prototypes");
+        }
+
         [Test]
-        public void ParserTestCustomPrototypeClass()
+        public void TestCustomPrototypeClass()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototypeSpec Id=\"Test\">\n" +
@@ -76,11 +82,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototypeSpec>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 			
@@ -94,7 +97,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestValueTypes()
+        public void TestValueTypes()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -108,11 +111,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -130,7 +130,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestTypeSerializer()
+        public void TestTypeSerializer()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -138,11 +138,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -154,7 +151,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestPrototypeRefs()
+        public void TestPrototypeRefs()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -166,11 +163,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -184,7 +178,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestSubData()
+        public void TestSubData()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -194,11 +188,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -210,7 +201,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestSubDataStruct()
+        public void TestSubDataStruct()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -220,11 +211,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -236,7 +224,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestSubDataCustomType()
+        public void TestSubDataCustomType()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -247,11 +235,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -264,7 +249,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestCollectionsArray()
+        public void TestCollectionsArray()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -280,11 +265,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -300,7 +282,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestCollectionsList()
+        public void TestCollectionsList()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -316,11 +298,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -340,7 +319,7 @@ namespace UnityTK.Test.Prototypes
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		
         [Test]
-        public void ParserTestInheritance()
+        public void TestInheritance()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -367,11 +346,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -400,7 +376,7 @@ namespace UnityTK.Test.Prototypes
         }
 		
         [Test]
-        public void ParserTestDeepInheritance()
+        public void TestDeepInheritance()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -429,11 +405,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -472,7 +445,7 @@ namespace UnityTK.Test.Prototypes
         }
 		
         [Test]
-        public void ParserTestInheritanceSplit()
+        public void TestInheritanceSplit()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -501,15 +474,9 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
-			parser.Parse(xml2, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
+			parser.Parse(xml2, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -538,7 +505,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestAbstractPrototypes()
+        public void TestAbstractPrototypes()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\" Abstract=\"True\">\n" +
@@ -548,11 +515,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -568,7 +532,7 @@ namespace UnityTK.Test.Prototypes
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
         [Test]
-        public void ParserTestOverrideCombineCollectionsArray()
+        public void TestOverrideCombineCollectionsArray()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -595,11 +559,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -624,7 +585,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestOverrideCombineCollectionsList()
+        public void TestOverrideCombineCollectionsList()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -651,11 +612,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -680,7 +638,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestImplicitCombineCollectionsArray()
+        public void TestImplicitCombineCollectionsArray()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -720,11 +678,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -755,7 +710,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestImplicitCombineCollectionsList()
+        public void TestImplicitCombineCollectionsList()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -795,11 +750,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -830,7 +782,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestOverrideReplaceCollectionsArray()
+        public void TestOverrideReplaceCollectionsArray()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -857,11 +809,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -883,7 +832,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestOverrideReplaceCollectionsList()
+        public void TestOverrideReplaceCollectionsList()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -910,11 +859,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -936,7 +882,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestOverridePrototypeRefs()
+        public void TestOverridePrototypeRefs()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -951,11 +897,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -970,7 +913,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestOverrideSubData()
+        public void TestOverrideSubData()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -986,11 +929,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -1005,7 +945,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestOverrideSubDataStruct()
+        public void TestOverrideSubDataStruct()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
@@ -1020,11 +960,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 
@@ -1037,7 +974,7 @@ namespace UnityTK.Test.Prototypes
         }
 
         [Test]
-        public void ParserTestOverrideValueTypes()
+        public void TestOverrideValueTypes()
         {
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\" Abstract=\"True\">\n" +
@@ -1049,11 +986,8 @@ namespace UnityTK.Test.Prototypes
 				"	</TestPrototype>\n" +
 				"</PrototypeContainer>";
 			
-			var parser = new PrototypeParser();
-			parser.Parse(xml, "DIRECT PARSE", new PrototypeParseParameters()
-			{
-				standardNamespace = "UnityTK.Test.Prototypes"
-			});
+			var parser = new PrototypeParser(CreateSerializer());
+			parser.Parse(xml, "DIRECT PARSE");
 			var prototypes = parser.GetPrototypes();
 			var errors = parser.GetParsingErrors();
 

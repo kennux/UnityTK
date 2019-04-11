@@ -7,82 +7,82 @@ using System.Xml.Linq;
 using System.Linq;
 using System.Globalization;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
-	public abstract class ValueTypePrototypeSerializer<T> : IPrototypeDataSerializer
+	public abstract class XMLSerializer_ValueTypeBase<T> : IXMLDataSerializer
 	{
 		public bool CanBeUsedFor(Type type)
 		{
 			return ReferenceEquals(type, typeof(T));
 		}
 
-		public object Deserialize(Type type, XElement value, PrototypeParserState state)
+		public object Deserialize(Type type, XElement value, XMLSerializerParams parameters)
 		{
-			return _Deserialize(value.Value, state);
+			return _Deserialize(value.Value, parameters);
 		}
 
-		protected abstract T _Deserialize(string value, PrototypeParserState state);
+		protected abstract T _Deserialize(string value, XMLSerializerParams parameters);
 	}
 	
-	public class PrototypeSerializer_Float : ValueTypePrototypeSerializer<float>
+	public class XMLSerializer_Float : XMLSerializer_ValueTypeBase<float>
 	{
-		protected override float _Deserialize(string value, PrototypeParserState state)
+		protected override float _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return float.Parse(value, CultureInfo.InvariantCulture);
 		}
 	}
 	
-	public class PrototypeSerializer_Int : ValueTypePrototypeSerializer<int>
+	public class XMLSerializer_Int : XMLSerializer_ValueTypeBase<int>
 	{
-		protected override int _Deserialize(string value, PrototypeParserState state)
+		protected override int _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return int.Parse(value);
 		}
 	}
 	
-	public class PrototypeSerializer_String : ValueTypePrototypeSerializer<string>
+	public class XMLSerializer_String : XMLSerializer_ValueTypeBase<string>
 	{
-		protected override string _Deserialize(string value, PrototypeParserState state)
+		protected override string _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return value;
 		}
 	}
 	
-	public class PrototypeSerializer_Double : ValueTypePrototypeSerializer<double>
+	public class XMLSerializer_Double : XMLSerializer_ValueTypeBase<double>
 	{
-		protected override double _Deserialize(string value, PrototypeParserState state)
+		protected override double _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return double.Parse(value, CultureInfo.InvariantCulture);
 		}
 	}
 	
-	public class PrototypeSerializer_Short : ValueTypePrototypeSerializer<short>
+	public class XMLSerializer_Short : XMLSerializer_ValueTypeBase<short>
 	{
-		protected override short _Deserialize(string value, PrototypeParserState state)
+		protected override short _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return short.Parse(value);
 		}
 	}
 	
-	public class PrototypeSerializer_Byte : ValueTypePrototypeSerializer<byte>
+	public class XMLSerializer_Byte : XMLSerializer_ValueTypeBase<byte>
 	{
-		protected override byte _Deserialize(string value, PrototypeParserState state)
+		protected override byte _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return byte.Parse(value);
 		}
 	}
 	
-	public class PrototypeSerializer_Bool : ValueTypePrototypeSerializer<bool>
+	public class XMLSerializer_Bool : XMLSerializer_ValueTypeBase<bool>
 	{
-		protected override bool _Deserialize(string value, PrototypeParserState state)
+		protected override bool _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return bool.Parse(value);
 		}
 	}
 	
-	public class PrototypeSerializer_Vector2 : ValueTypePrototypeSerializer<Vector2>
+	public class XMLSerializer_Vector2 : XMLSerializer_ValueTypeBase<Vector2>
 	{
-		protected override Vector2 _Deserialize(string value, PrototypeParserState state)
+		protected override Vector2 _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
 			if (parts.Length < 2)
@@ -92,9 +92,9 @@ namespace UnityTK.Prototypes
 		}
 	}
 	
-	public class PrototypeSerializer_Vector3 : ValueTypePrototypeSerializer<Vector3>
+	public class XMLSerializer_Vector3 : XMLSerializer_ValueTypeBase<Vector3>
 	{
-		protected override Vector3 _Deserialize(string value, PrototypeParserState state)
+		protected override Vector3 _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
 			if (parts.Length < 3)
@@ -105,9 +105,9 @@ namespace UnityTK.Prototypes
 		}
 	}
 	
-	public class PrototypeSerializer_Vector4 : ValueTypePrototypeSerializer<Vector4>
+	public class XMLSerializer_Vector4 : XMLSerializer_ValueTypeBase<Vector4>
 	{
-		protected override Vector4 _Deserialize(string value, PrototypeParserState state)
+		protected override Vector4 _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
 			if (parts.Length < 4)
@@ -118,9 +118,9 @@ namespace UnityTK.Prototypes
 		}
 	}
 	
-	public class PrototypeSerializer_Color : ValueTypePrototypeSerializer<Color>
+	public class XMLSerializer_Color : XMLSerializer_ValueTypeBase<Color>
 	{
-		protected override Color _Deserialize(string value, PrototypeParserState state)
+		protected override Color _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
 			if (parts.Length < 4)
@@ -131,9 +131,9 @@ namespace UnityTK.Prototypes
 		}
 	}
 	
-	public class PrototypeSerializer_Quaternion : ValueTypePrototypeSerializer<Quaternion>
+	public class XMLSerializer_Quaternion : XMLSerializer_ValueTypeBase<Quaternion>
 	{
-		protected override Quaternion _Deserialize(string value, PrototypeParserState state)
+		protected override Quaternion _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
 			if (parts.Length < 4)
@@ -144,26 +144,26 @@ namespace UnityTK.Prototypes
 		}
 	}
 
-	public class PrototypeSerializer_Enum : IPrototypeDataSerializer
+	public class XMLSerializer_Enum : IXMLDataSerializer
 	{
 		public bool CanBeUsedFor(Type type)
 		{
 			return type.IsEnum;
 		}
 
-		public object Deserialize(Type type, XElement value, PrototypeParserState state)
+		public object Deserialize(Type type, XElement value, XMLSerializerParams parameters)
 		{
 			return Enum.Parse(type, value.Value as string);
 		}
 	}
 
-	public class PrototypeSerializer_Type : ValueTypePrototypeSerializer<Type>
+	public class XMLSerializer_Type : XMLSerializer_ValueTypeBase<Type>
 	{
-		protected override Type _Deserialize(string value, PrototypeParserState state)
+		protected override Type _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			// Create std namespace name string by prepending std namespace to value
 			bool doStdNamespaceCheck = !value.Contains('.');
-			string stdNamespacePrepended = doStdNamespaceCheck ? state.parameters.standardNamespace + "." + value : null;
+			string stdNamespacePrepended = doStdNamespaceCheck ? parameters.standardNamespace + "." + value : null;
 
 			// Look for type
 			foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())

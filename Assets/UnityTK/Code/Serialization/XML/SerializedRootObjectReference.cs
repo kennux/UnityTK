@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
-	class SerializedPrototypeReference
+	class SerializedRootObjectReference
 	{
 		public string identifier;
 
-		public IPrototype Resolve(List<IPrototype> prototypes)
+		public ISerializableRoot Resolve(List<ISerializableRoot> objects)
 		{
-			foreach (var p in prototypes)
+			foreach (var p in objects)
 			{
 				if (string.Equals(p.identifier, this.identifier))
 					return p;

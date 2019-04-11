@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace UnityTK.Prototypes
+namespace UnityTK.Serialization.XML
 {
 	class SerializedData
 	{
@@ -41,7 +41,7 @@ namespace UnityTK.Prototypes
 			this.xElement = element;
 			this.filename = filename;
 
-			var inheritsAttrib = element.Attribute(PrototypeParser.PrototypeAttributeInherits);
+			var inheritsAttrib = element.Attribute(XMLSerializer.AttributeInherits);
 			if (!ReferenceEquals(inheritsAttrib, null))
 			{
 				this.inherits = inheritsAttrib.Value;
@@ -49,40 +49,38 @@ namespace UnityTK.Prototypes
 		}
 
 		/// <summary>
-		/// Actually loads the data from the previous parse <see cref="ParseFields(List{ParsingError})"/>.
-		/// It will for every field with string data deserialize this data using <see cref="IPrototypeDataSerializer"/>.
+		/// It will for every field with string data deserialize this data using <see cref="IXMLDataSerializer"/>.
 		/// 
-		/// For every sub-data field (<seealso cref="ParseFields(List{ParsingError})"/>) a <see cref="SerializedData"/> object is being written to <see cref="fields"/>.
-		/// The sub-data object will have <see cref="PrepareParse(SerializableTypeCache, XElement, string)"/>, <see cref="ParseFields(List{ParsingError})"/> and <see cref="LoadFields(List{ParsingError}, PrototypeParserState)"/> called.
+		/// For every sub-data field a <see cref="SerializedData"/> object is being written to <see cref="fields"/>.
 		/// </summary>
-		public void LoadFields(List<ParsingError> errors, PrototypeParserState state)
+		public void LoadFields(List<ParsingError> errors, XMLSerializerParams parameters)
 		{
 			foreach (var xNode in xElement.Nodes())
 			{
-				if (!ParsingValidation.NodeIsElement(xNode, this.filename, errors)) // Malformed XML
+				if (!ParsingValidation.NodeIsElement(parameters, xNode, this.filename, errors)) // Malformed XML
 					continue;
 
 				var xElement = xNode as XElement;
 				var elementName = xElement.Name.LocalName;
 
 				// Field unknown?
-				if (!ParsingValidation.FieldKnown(xElement, targetType, elementName, filename, errors))
+				if (!ParsingValidation.FieldKnown(parameters, xElement, targetType, elementName, filename, errors))
 					continue;
 
 				debug.Add(elementName, xElement);
 				var fieldData = targetType.GetFieldData(elementName);
 				var fieldType = fieldData.serializableTypeCache;
 				bool isCollection = SerializedCollectionData.IsCollection(fieldData.fieldInfo.FieldType);
-				IPrototypeDataSerializer serializer = PrototypeCaches.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
+				IXMLDataSerializer serializer = SerializerCache.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
 
 				if (!ReferenceEquals(serializer, null))
 				{
 					try
 					{
-						if (!ParsingValidation.SerializerWasFound(xElement, serializer, elementName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, filename, errors))
+						if (!ParsingValidation.SerializerWasFound(parameters, xElement, serializer, elementName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, filename, errors))
 							continue;
 
-						fields.Add(elementName, serializer.Deserialize(fieldData.fieldInfo.FieldType, xElement, state));
+						fields.Add(elementName, serializer.Deserialize(fieldData.fieldInfo.FieldType, xElement, parameters));
 					}
 					catch (Exception ex)
 					{
@@ -92,11 +90,11 @@ namespace UnityTK.Prototypes
 				else if (isCollection)
 				{
 					var col = new SerializedCollectionData(fieldData.fieldInfo.FieldType, xElement, this.filename);
-					col.ParseAndLoadData(errors, state);
+					col.ParseAndLoadData(errors, parameters);
 					fields.Add(elementName, col);
 
 					// Collection override action?
-					var collectionOverrideAttrib = xElement.Attribute(PrototypeParser.PrototypeAttributeCollectionOverrideAction);
+					var collectionOverrideAttrib = xElement.Attribute(XMLSerializer.AttributeCollectionOverrideAction);
 					if (!ReferenceEquals(collectionOverrideAttrib, null))
 						collectionOverrideActions.Set(elementName, (CollectionOverrideAction)Enum.Parse(typeof(CollectionOverrideAction), collectionOverrideAttrib.Value));
 				}
@@ -104,10 +102,10 @@ namespace UnityTK.Prototypes
 				{
 					// A known serializable
 
-					// Prototype reference?
-					if (fieldData.isPrototype)
+					// root reference?
+					if (fieldData.isSerializableRoot)
 					{
-						fields.Add(elementName, new SerializedPrototypeReference()
+						fields.Add(elementName, new SerializedRootObjectReference()
 						{
 							identifier = xElement.Value as string
 						});
@@ -120,20 +118,20 @@ namespace UnityTK.Prototypes
 
 						// Check if element explicitly overwrites the type to support polymorphism
 						// The field type might be some base class type and the xml overwrites this type with a class extending from the base
-						var classAttrib = xElement.Attribute(PrototypeParser.PrototypeAttributeType);
+						var classAttrib = xElement.Attribute(XMLSerializer.AttributeType);
 						if (!ReferenceEquals(classAttrib, null))
 						{
-							targetType = PrototypeCaches.GetSerializableTypeCacheFor(classAttrib.Value, state.parameters.standardNamespace);
+							targetType = SerializerCache.GetSerializableTypeCacheFor(classAttrib.Value, parameters.standardNamespace);
 							typeName = classAttrib.Value;
 						}
 
 						// Field not serializable?
-						if (!ParsingValidation.DataFieldSerializerValid(xElement, targetType, typeName, elementName, filename, errors))
+						if (!ParsingValidation.DataFieldSerializerValid(parameters, xElement, targetType, typeName, elementName, filename, errors))
 							continue;
 
 						// Resolve field name type
 						var d = new SerializedData(targetType, xElement as XElement, this.filename);
-						d.LoadFields(errors, state);
+						d.LoadFields(errors, parameters);
 						fields.Add(elementName, d);
 					}
 				}
@@ -142,11 +140,11 @@ namespace UnityTK.Prototypes
 
 		/// <summary>
 		/// The last step for loading data.
-		/// In this step, prototype references are being resolved for this serialized data and their sub data objects.
+		/// In this step, root references are being resolved for this serialized data and their sub data objects.
 		/// </summary>
-		/// <param name="prototypes">Prototypes to use for remapping</param>
+		/// <param name="objects">Root objects to use for remapping</param>
 		/// <param name="errors"></param>
-		public void ResolveReferenceFields(List<IPrototype> prototypes, List<ParsingError> errors, PrototypeParserState state)
+		public void ResolveReferenceFields(List<ISerializableRoot> objects, List<ParsingError> errors, XMLSerializerParams parameters)
 		{
 			Dictionary<string, object> updates = DictionaryPool<string, object>.Get();
 
@@ -154,17 +152,17 @@ namespace UnityTK.Prototypes
 			{
 				foreach (var field in fields)
 				{
-					var @ref = field.Value as SerializedPrototypeReference;
+					var @ref = field.Value as SerializedRootObjectReference;
 					if (!ReferenceEquals(@ref, null))
-						updates.Add(field.Key, @ref.Resolve(prototypes));
+						updates.Add(field.Key, @ref.Resolve(objects));
 
 					var sub = field.Value as SerializedData;
 					if (!ReferenceEquals(sub, null))
-						sub.ResolveReferenceFields(prototypes, errors, state);
+						sub.ResolveReferenceFields(objects, errors, parameters);
 
 					var col = field.Value as SerializedCollectionData;
 					if (!ReferenceEquals(col, null))
-						col.ResolveReferenceFieldsAndSubData(prototypes, errors, state);
+						col.ResolveReferenceFieldsAndSubData(objects, errors, parameters);
 				}
 				
 				// Write updates
@@ -180,7 +178,7 @@ namespace UnityTK.Prototypes
 		/// <summary>
 		/// Applies the data stored in this serialized data to the specified object using reflection.
 		/// </summary>
-		public void ApplyTo(object obj, List<ParsingError> errors, PrototypeParserState state)
+		public void ApplyTo(object obj, List<ParsingError> errors, XMLSerializerParams parameters)
 		{
 			foreach (var field in fields)
 			{
@@ -197,7 +195,7 @@ namespace UnityTK.Prototypes
 					if (ReferenceEquals(value, null))
 						value = sub.targetType.Create();
 
-					sub.ApplyTo(value, errors, state);
+					sub.ApplyTo(value, errors, parameters);
 				}
 
 				var col = value as SerializedCollectionData;
@@ -222,7 +220,7 @@ namespace UnityTK.Prototypes
 						value = col.CreateCollection();
 				}
 
-				if (!ParsingValidation.TypeCheck(debug.TryGet(field.Key), field.Key, value, fieldInfo.fieldInfo.FieldType, filename, errors))
+				if (!ParsingValidation.TypeCheck(parameters, debug.TryGet(field.Key), field.Key, value, fieldInfo.fieldInfo.FieldType, filename, errors))
 					continue;
 
 				fieldInfo.fieldInfo.SetValue(obj, value);
@@ -232,22 +230,22 @@ namespace UnityTK.Prototypes
 		/// <summary>
 		/// Returns an enumeration to be used to iterate over every reference in this data and all its sub data objects.
 		/// </summary>
-		public IEnumerable<string> GetReferencedPrototypes()
+		public IEnumerable<string> GetReferencedObjectRoots()
 		{
 			foreach (var field in fields)
 			{
-				var v = field.Value as SerializedPrototypeReference;
+				var v = field.Value as SerializedRootObjectReference;
 				if (!ReferenceEquals(v, null))
 					yield return v.identifier;
 
 				var sub = field.Value as SerializedData;
 				if (!ReferenceEquals(sub, null))
-					foreach (var @ref in sub.GetReferencedPrototypes())
+					foreach (var @ref in sub.GetReferencedObjectRoots())
 						yield return @ref;
 
 				var scd = field.Value as SerializedCollectionData;
 				if (!ReferenceEquals(scd, null))
-					foreach (var @ref in scd.GetReferencedPrototypes())
+					foreach (var @ref in scd.GetReferencedObjectRoots())
 						yield return @ref;
 			}
 		}

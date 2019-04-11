@@ -54,11 +54,14 @@ Benchmarking
 
 Simplistic (micro-)benchmarking system you can use to quickly author benchmarks and execute them in the unity editor.
 
-Prototypes
+Serialization
 ----
 
-An XML-Deserializer with the ability to deserialize objects from XML code, supporting inheritance.
-Originally developed as a substitute for ScriptableObjects / GameObjects when working with ECS.
+Custom serializers implementation that is supposed to be used to (de-)serialize savegames and gamedata.
+The XML-Deserializer can serialize and deserialize from and to XML, supporting inheritance.
+
+The prototype system can be used to load game data using a prototype pattern.
+It was originally developed as a substitute for ScriptableObjects / GameObjects when working with ECS.
 
 Utility
 -----
