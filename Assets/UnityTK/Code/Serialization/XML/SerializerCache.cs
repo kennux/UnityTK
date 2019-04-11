@@ -79,22 +79,51 @@ namespace UnityTK.Serialization.XML
 			}
 		}
 
+        struct TypeCacheKey : IEquatable<TypeCacheKey>
+        {
+            public string writtenName;
+            public string preferredNamespace;
+
+            public bool Equals(TypeCacheKey other)
+            {
+                return string.Equals(writtenName, other.writtenName) && string.Equals(preferredNamespace, other.preferredNamespace);
+            }
+
+            public override int GetHashCode()
+            {
+                return Essentials.CombineHashCodes(writtenName.GetHashCode(), preferredNamespace.GetHashCode());
+            }
+
+            public TypeCacheKey(string writtenName, string preferredNamespace)
+            {
+                this.writtenName = writtenName;
+                this.preferredNamespace = preferredNamespace;
+            }
+        }
+
+        private static Dictionary<TypeCacheKey, Type> _serializableTypeCache = new Dictionary<TypeCacheKey, Type>();
 		public static SerializableTypeCache GetSerializableTypeCacheFor(string writtenName, string preferredNamespace)
 		{
+            TypeCacheKey cacheKey = new TypeCacheKey(writtenName, preferredNamespace);
 			Type foundType = null;
-			bool dontDoNamespaceCheck = string.IsNullOrEmpty(preferredNamespace);
-			LazyAllTypesInit();
+            if (!_serializableTypeCache.TryGetValue(cacheKey, out foundType))
+            {
+                bool dontDoNamespaceCheck = string.IsNullOrEmpty(preferredNamespace);
+                LazyAllTypesInit();
 
-			int len = allTypes.Length;
-			for (int i = 0; i < len; i++)
-			{
-				Type t = allTypes[i];
-				if (t.Name.Equals(writtenName) && (dontDoNamespaceCheck || t.Namespace.Equals(preferredNamespace)))
-				{
-					foundType = t;
-					break;
-				}
-			}
+                int len = allTypes.Length;
+                for (int i = 0; i < len; i++)
+                {
+                    Type t = allTypes[i];
+                    if (t.Name.Equals(writtenName) && (dontDoNamespaceCheck || t.Namespace.Equals(preferredNamespace)))
+                    {
+                        foundType = t;
+                        break;
+                    }
+                }
+
+                _serializableTypeCache.Add(cacheKey, foundType);
+            }
 
 			if (!ReferenceEquals(foundType, null))
 				return GetSerializableTypeCacheFor(foundType);

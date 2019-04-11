@@ -60,8 +60,10 @@ namespace UnityTK.Serialization.Prototypes
 		public void Parse(string data, string filename)
 		{
             List<ISerializableRoot> serializables;
-            serializer.Deserialize(new string[] { data }, new string[] { filename }, out serializables);
+            List<ParsingError> errors;
+            serializer.Deserialize(new string[] { data }, new string[] { filename }, out serializables, out errors);
 
+            this.errors.AddRange(errors);
             foreach (var s in serializables)
                 if (s is IPrototype)
                     prototypes.Add(s as IPrototype);
@@ -75,8 +77,10 @@ namespace UnityTK.Serialization.Prototypes
 		public void Parse(string[] data, string[] filenames)
 		{
             List<ISerializableRoot> serializables;
-            serializer.Deserialize(data, filenames, out serializables);
+            List<ParsingError> errors;
+            serializer.Deserialize(data, filenames, out serializables, out errors);
 
+            this.errors.AddRange(errors);
             foreach (var s in serializables)
                 if (s is IPrototype)
                     prototypes.Add(s as IPrototype);

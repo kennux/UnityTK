@@ -28,18 +28,18 @@ namespace UnityTK.Editor.Benchmarking
             this.parser = new PrototypeParser(PrototypeParser.CreateXMLSerializer("UnityTK.Editor.Benchmarking"));
 
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("<PrototypeContainer Type=\"SimplePrototype\">");
-			sb.AppendLine("	<Prototype Id=\"Base\">\n" +
+			sb.AppendLine("<PrototypeContainer>");
+			sb.AppendLine("	<SimplePrototype Id=\"Base\">\n" +
 				"		<someInt>32</someInt>\n" +
-				"	</Prototype>");
+				"	</SimplePrototype>");
 
 			for (int i = 0; i < 10000; i++)
 			{
-				sb.Append("	<Prototype Id=\"Test");
+				sb.Append("	<SimplePrototype Id=\"Test");
 				sb.Append(i.ToString());
 				sb.AppendLine("\" Inherits=\"Base\">");
 				sb.AppendLine("		<someInt>123</someInt>");
-				sb.AppendLine("	</Prototype>");
+				sb.AppendLine("	</SimplePrototype>");
 			}
 
 			sb.AppendLine("</PrototypeContainer>");
@@ -51,6 +51,9 @@ namespace UnityTK.Editor.Benchmarking
             bRes.BeginLabel("10k simple prototypes load");
 
             this.parser.Parse(this.xml, "TEST");
+
+            foreach (var error in this.parser.GetParsingErrors())
+                error.DoUnityDebugLog();
 
             bRes.EndLabel();
         }

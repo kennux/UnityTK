@@ -53,11 +53,11 @@ namespace UnityTK.Serialization
 			}
 		}
 
-        public override void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects)
+        public override void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<ParsingError> errors)
         {
             parsedObjects = new List<ISerializableRoot>();
             List<SerializedData> serializedData = ListPool<SerializedData>.Get();
-            List<ParsingError> errors = ListPool<ParsingError>.Get();
+            errors = ListPool<ParsingError>.Get();
             for (int i = 0; i < data.Length; i++)
             {
                 _PreParse(data[i], filenames[i], parameters, serializedData, errors);
