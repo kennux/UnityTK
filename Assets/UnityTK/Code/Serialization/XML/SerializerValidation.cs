@@ -44,17 +44,6 @@ namespace UnityTK.Serialization.XML
 			return true;
 		}
 
-		public static bool ElementHasId(XMLSerializerParams parameters, XElement xElement, string filename, List<SerializerError> errors)
-		{
-			var attribName = xElement.Attribute(XMLSerializer.AttributeIdentifier);
-			if (ReferenceEquals(attribName, null))
-			{
-				errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, filename, (xElement as IXmlLineInfo).LineNumber, "Root object without identifier!"));
-				return false;
-			}
-			return true;
-		}
-
 		public static bool RootTypeFound(XMLSerializerParams parameters, string typeName, XElement xElement, SerializableTypeCache type, string filename, List<SerializerError> errors)
 		{
 			if (ReferenceEquals(type, null))

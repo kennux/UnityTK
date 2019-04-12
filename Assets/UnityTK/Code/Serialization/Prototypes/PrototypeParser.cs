@@ -11,6 +11,8 @@ namespace UnityTK.Serialization.Prototypes
 {
 	/// <summary>
 	/// Parser object with the ability to parse prototypes using serializers <see cref="ISerializer"/>.
+	/// 
+	/// This is an example application of the UnityTK serializers code.
 	/// </summary>
 	public class PrototypeParser
 	{
@@ -27,6 +29,7 @@ namespace UnityTK.Serialization.Prototypes
 
 		private List<SerializerError> errors = new List<SerializerError>();
 		private List<IPrototype> prototypes = new List<IPrototype>();
+		private List<ISerializableRoot> allRoots = new List<ISerializableRoot>();
         private ISerializer serializer;
 
         public PrototypeParser(ISerializer serializer)
@@ -57,16 +60,26 @@ namespace UnityTK.Serialization.Prototypes
 		/// <param name="data">The data to use for parsing.</param>
         /// <param name="filename">The filename used to report errors</param>
 		/// <returns></returns>
-		public void Parse(string data, string filename)
+		public void Parse(string data, string filename, List<ISerializableRoot> externalReferenceables = null)
 		{
+			List<ISerializableRoot> allReferenceables = allRoots;
+			if (externalReferenceables != null && externalReferenceables.Count > 0)
+			{
+				allReferenceables = new List<ISerializableRoot>(allReferenceables);
+				allReferenceables.AddRange(externalReferenceables);
+			}
+
             List<ISerializableRoot> serializables;
             List<SerializerError> errors;
-            serializer.Deserialize(new string[] { data }, new string[] { filename }, out serializables, out errors);
+            serializer.Deserialize(new string[] { data }, new string[] { filename }, allReferenceables, out serializables, out errors);
 
             this.errors.AddRange(errors);
-            foreach (var s in serializables)
-                if (s is IPrototype)
-                    prototypes.Add(s as IPrototype);
+			foreach (var s in serializables)
+			{
+				allRoots.Add(s);
+				if (s is IPrototype)
+					prototypes.Add(s as IPrototype);
+			}
 		}
 
 		/// <summary>
@@ -74,16 +87,26 @@ namespace UnityTK.Serialization.Prototypes
 		/// 
 		/// The prototypes will be loaded in order and able to resolve references across multiple files!
 		/// </summary>
-		public void Parse(string[] data, string[] filenames)
+		public void Parse(string[] data, string[] filenames, List<ISerializableRoot> externalReferenceables = null)
 		{
+			List<ISerializableRoot> allReferenceables = allRoots;
+			if (externalReferenceables != null && externalReferenceables.Count > 0)
+			{
+				allReferenceables = new List<ISerializableRoot>(allReferenceables);
+				allReferenceables.AddRange(externalReferenceables);
+			}
+
             List<ISerializableRoot> serializables;
             List<SerializerError> errors;
-            serializer.Deserialize(data, filenames, out serializables, out errors);
-
+            serializer.Deserialize(data, filenames, allReferenceables, out serializables, out errors);
+			
             this.errors.AddRange(errors);
-            foreach (var s in serializables)
-                if (s is IPrototype)
-                    prototypes.Add(s as IPrototype);
+			foreach (var s in serializables)
+			{
+				allRoots.Add(s);
+				if (s is IPrototype)
+					prototypes.Add(s as IPrototype);
+			}
 		}
 	}
 }

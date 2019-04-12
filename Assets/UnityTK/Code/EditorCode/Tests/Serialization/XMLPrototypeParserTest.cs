@@ -68,7 +68,7 @@ namespace UnityTK.Test.Serialization
     {
         protected virtual ISerializer CreateSerializer()
         {
-            return PrototypeParser.CreateXMLSerializer("UnityTK.Test.Prototypes");
+            return PrototypeParser.CreateXMLSerializer("UnityTK.Test.Serialization");
         }
 
         [Test]

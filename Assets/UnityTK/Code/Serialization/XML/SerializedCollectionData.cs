@@ -116,7 +116,7 @@ namespace UnityTK.Serialization.XML
 		/// <param name="targetElement">The element to write the loaded data to.</param>
 		/// <param name="obj">The collection to load and write to <see cref="xElement"/></param>
 		/// <param name="referenceables">Serializable object roots which will possibly be referenced by elements in obj.</param>
-		public void WriteFromObject(object collection, XElement targetElement, List<ISerializableRoot> referenceables, List<SerializerError> errors, XMLSerializerParams parameters)
+		public void WriteFromObject(object collection, XElement targetElement, List<SerializerError> errors, XMLSerializerParams parameters)
 		{
 			Type elementType = GetElementType(this.collectionType);
 			var elementTypeCache = SerializerCache.GetSerializableTypeCacheFor(elementType);
@@ -149,7 +149,7 @@ namespace UnityTK.Serialization.XML
 					}
 
 					// Add element
-					new SerializedData(serializableTypeCache, _targetElement).WriteFromObject(obj, referenceables, errors, parameters);
+					new SerializedData(serializableTypeCache, _targetElement).WriteFromObject(obj, errors, parameters);
 				}
 
 				targetElement.Add(_targetElement);

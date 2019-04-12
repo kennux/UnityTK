@@ -22,8 +22,11 @@ namespace UnityTK.Serialization
 		public const string AttributeAbstract = "Abstract";
 		public const string AttributeCollectionOverrideAction = "CollectionOverrideAction";
 
+		public const string TokenNull = "$NULL";
+
         public XMLSerializer(XMLSerializerParams parameters) : base(parameters) { }
 
+		private Dictionary<SerializedData, string> filenameMappings = new Dictionary<SerializedData, string>();
         private List<ISerializableRoot> allParsedObjects = new List<ISerializableRoot>();
 		private Dictionary<string, SerializedData> serializedData = new Dictionary<string, SerializedData>();
 		private void _PreParse(string xmlContent, string filename, XMLSerializerParams parameters, List<SerializedData> result, Dictionary<SerializedData, string> filenameMappings, List<SerializerError> errors)
@@ -50,16 +53,20 @@ namespace UnityTK.Serialization
 				// Prepare
 				var data = new SerializedData(elementType, nodeXElement);
 				result.Add(data);
-				filenameMappings.Add(data, filename);
+				filenameMappings.Set(data, filename);
 			}
 		}
 
-        public override void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<SerializerError> errors)
+        public override void Deserialize(string[] data, string[] filenames, List<ISerializableRoot> externalReferenceables, out List<ISerializableRoot> parsedObjects, out List<SerializerError> errors)
         {
-			Dictionary<SerializedData, string> filenameMappings = new Dictionary<SerializedData, string>();
+			if (externalReferenceables == null)
+				externalReferenceables = new List<ISerializableRoot>();
+
             parsedObjects = new List<ISerializableRoot>();
             List<SerializedData> serializedData = ListPool<SerializedData>.Get();
             errors = ListPool<SerializerError>.Get();
+
+			List<ISerializableRoot> allReferenceables = new List<ISerializableRoot>(externalReferenceables);
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -78,28 +85,29 @@ namespace UnityTK.Serialization
 			// Pre-parse names, create instances and apply name
 			foreach (var d in serializedData)
 			{
-				if (!SerializerValidation.ElementHasId(parameters, d.xElement, filenameMappings[d], errors))
-				{
-					invalid.Add(d);
-					continue;
-				}
-
-				// Read name
-				var attribName = d.xElement.Attribute(AttributeIdentifier);
-				idMapping.Add(attribName.Value, d);
-
 				// Check if abstract prototype data
 				var attribAbstract = d.xElement.Attribute(AttributeAbstract);
 				bool isAbstract = !ReferenceEquals(attribAbstract, null) && string.Equals("True", attribAbstract.Value);
+
+				// Read name
+				var attribId = d.xElement.Attribute(AttributeIdentifier);
+				if (isAbstract && attribId == null)
+					errors.Add(new SerializerError(SerializerErrorSeverity.WARNING, filenameMappings[d], (d.xElement as IXmlLineInfo).LineNumber, "Abstract object doesn't have an Id. This doesnt make sense!"));
 				
+				if (attribId != null)
+					idMapping.Add(attribId.Value, d);
+
 				if (!isAbstract)
 				{
 					var obj = d.targetType.Create();
 					instances.Add(d, obj);
-                    
-					(obj as ISerializableRoot).identifier = attribName.Value;
+
+					if (attribId != null)
+						(obj as ISerializableRoot).identifier = attribId.Value;
+
                     parsedObjects.Add(obj as ISerializableRoot);
                     allParsedObjects.Add(obj as ISerializableRoot);
+					allReferenceables.Add(obj as ISerializableRoot);
 				}
 			}
 			
@@ -125,7 +133,7 @@ namespace UnityTK.Serialization
 
 			// Step 3 - run sorting algorithm for reference resolve
 			foreach (var d in serializedData)
-				d.ResolveReferenceFields(filenameMappings[d], allParsedObjects, errors, parameters);
+				d.ResolveReferenceFields(filenameMappings[d], allReferenceables, errors, parameters);
 
 			// Step 4 - Final data apply
 			List<SerializedData> inheritingFromTmp = new List<SerializedData>();
@@ -170,7 +178,7 @@ namespace UnityTK.Serialization
 				this.serializedData.Add(kvp.Key, kvp.Value);
         }
 
-        public override string Serialize(List<ISerializableRoot> roots, List<ISerializableRoot> referenceables, out List<SerializerError> errors)
+        public override string Serialize(List<ISerializableRoot> roots, out List<SerializerError> errors)
         {
             errors = ListPool<SerializerError>.Get();
 			XDocument document = new XDocument();
@@ -183,7 +191,7 @@ namespace UnityTK.Serialization
 				var element = new XElement(typeName);
 				element.SetAttributeValue(AttributeIdentifier, root.identifier);
 				var data = new SerializedData(SerializerCache.GetSerializableTypeCacheFor(typeName, parameters.standardNamespace), element);
-				data.WriteFromObject(root, referenceables, errors, parameters);
+				data.WriteFromObject(root, errors, parameters);
 				rootElement.Add(element);
 			}
 

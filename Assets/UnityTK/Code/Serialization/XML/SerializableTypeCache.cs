@@ -63,7 +63,7 @@ namespace UnityTK.Serialization.XML
 			}
 			public bool isSerialized
 			{
-				get { return this.fieldInfo.GetCustomAttribute<NonSerializedAttribute>() == null; }
+				get { return this.fieldInfo.GetCustomAttribute<NonSerializedAttribute>() == null && this.fieldInfo.GetCustomAttribute<UnityTKNonSerializedAttribute>() == null; }
 			}
 
 			public FieldCache(FieldInfo fieldInfo)

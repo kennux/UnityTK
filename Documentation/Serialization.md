@@ -125,6 +125,27 @@ else
 
 Deserialization works the same way as Prototypes do, just that you'll need to use the serialization API directly.
 
+# Serialization
+
+The UnityTK serialization system can be used to serialize and deserialize arbitrary objects at runtime to any arbitrary format (given, there's a serializer implementation for it).
+A good starting point for working with the unity tk serializer are the unit tests [here](https://github.com/kennux/UnityTK/tree/master/Assets/UnityTK/Code/EditorCode/Tests/Serialization)
+## Attributes
+
+### UnityTKNonSerialized / System.NonSerialized
+
+As the name suggests, fields with this attribute will not be serialized at all.
+The UnityTKNonSerialized attribute exists because there can be cases where you want a field serialized by the UnityTK serializer but not the unity editor for example.
+Both will be interpreted the same way.
+
+### AlwaysSerialized
+
+This attribute can be used when an object reference field referencing null should be explicitly serialized.
+If this field is not set, the serializer will ignore fields with null as value.
+
+# XML-Serializer
+
+This is currently the only serialized UnityTK implements, I don't think unity will ever implement a different serializer but the API should be abstract enough to do so quite easily.
+
 
 # Script reference
 

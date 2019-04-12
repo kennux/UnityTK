@@ -56,6 +56,19 @@ namespace UnityTK.Serialization.XML
 		}
 	}
 	
+	public class XMLSerializer_UInt : XMLSerializer_ValueTypeBase<uint>
+	{
+		protected override string Serialize(uint value, XMLSerializerParams parameters)
+		{
+			return value.ToString();
+		}
+
+		protected override uint _Deserialize(string value, XMLSerializerParams parameters)
+		{
+			return uint.Parse(value);
+		}
+	}
+	
 	public class XMLSerializer_String : XMLSerializer_ValueTypeBase<string>
 	{
 		protected override string Serialize(string value, XMLSerializerParams parameters)
@@ -94,6 +107,18 @@ namespace UnityTK.Serialization.XML
 		}
 	}
 	
+	public class XMLSerializer_UShort : XMLSerializer_ValueTypeBase<ushort>
+	{
+		protected override string Serialize(ushort value, XMLSerializerParams parameters)
+		{
+			return value.ToString();
+		}
+		protected override ushort _Deserialize(string value, XMLSerializerParams parameters)
+		{
+			return ushort.Parse(value);
+		}
+	}
+	
 	public class XMLSerializer_Byte : XMLSerializer_ValueTypeBase<byte>
 	{
 		protected override string Serialize(byte value, XMLSerializerParams parameters)
@@ -103,6 +128,18 @@ namespace UnityTK.Serialization.XML
 		protected override byte _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return byte.Parse(value);
+		}
+	}
+	
+	public class XMLSerializer_SByte : XMLSerializer_ValueTypeBase<sbyte>
+	{
+		protected override string Serialize(sbyte value, XMLSerializerParams parameters)
+		{
+			return value.ToString();
+		}
+		protected override sbyte _Deserialize(string value, XMLSerializerParams parameters)
+		{
+			return sbyte.Parse(value);
 		}
 	}
 	
