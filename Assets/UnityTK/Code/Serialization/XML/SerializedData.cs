@@ -28,18 +28,16 @@ namespace UnityTK.Serialization.XML
 		
 		public readonly SerializableTypeCache targetType;
 		public readonly XElement xElement;
-		public readonly string filename;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="targetType">The target type to be parsed.</param>
 		/// <param name="element">The xml element to parse the data from.</param>
 		/// <param name="filename">The filename to be reported in case of errors.</param>
-		public SerializedData(SerializableTypeCache targetType, XElement element, string filename)
+		public SerializedData(SerializableTypeCache targetType, XElement element)
 		{
 			this.targetType = targetType;
 			this.xElement = element;
-			this.filename = filename;
 
 			var inheritsAttrib = element.Attribute(XMLSerializer.AttributeInherits);
 			if (!ReferenceEquals(inheritsAttrib, null))
@@ -48,27 +46,92 @@ namespace UnityTK.Serialization.XML
 			}
 		}
 
+		private List<SerializableTypeCache.FieldCache> _fields = new List<SerializableTypeCache.FieldCache>();
+		public void WriteFromObject(object obj, List<ISerializableRoot> referenceables, List<SerializerError> errors, XMLSerializerParams parameters)
+		{
+			targetType.GetAllFields(_fields);
+			foreach (var fieldData in _fields)
+			{
+				if (!fieldData.isSerialized)
+					continue;
+
+				var fieldType = fieldData.serializableTypeCache;
+				bool isCollection = SerializedCollectionData.IsCollection(fieldData.fieldInfo.FieldType);
+				IXMLDataSerializer serializer = SerializerCache.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
+				string fieldName = fieldData.fieldInfo.Name;
+
+				XElement targetElement = new XElement(fieldName);
+
+				if (!ReferenceEquals(serializer, null))
+				{
+					try
+					{
+						if (!SerializerValidation.SerializerWasFound(parameters, targetElement, serializer, fieldName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, "SERIALIZE", errors))
+							continue;
+							
+						serializer.Serialize(fieldData.fieldInfo.GetValue(obj), targetElement, parameters);
+					}
+					catch (Exception ex)
+					{
+						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, "SERIALIZE", -1, "Serializer threw exception on field " + fieldName + " on type " + targetType.type + ":\n\n" + ex.ToString() + "\n\nSkipping field!"));
+					}
+				}
+				else if (isCollection)
+				{
+					var col = new SerializedCollectionData(fieldData.fieldInfo.FieldType, targetElement);
+					col.WriteFromObject(fieldData.fieldInfo.GetValue(obj), targetElement, referenceables, errors, parameters);
+				}
+				else
+				{
+					// root reference?
+					if (fieldData.isSerializableRoot)
+						targetElement.Value = (fieldData.fieldInfo.GetValue(obj) as ISerializableRoot).identifier;
+					else
+					{
+						// Determine which type to serialize
+						var targetType = fieldData.serializableTypeCache;
+						string typeName = fieldData.fieldInfo.Name;
+
+						// Write class attribute
+						targetElement.SetAttributeValue(XMLSerializer.AttributeType, typeName);
+
+						// Field not serializable?
+						if (!SerializerValidation.DataFieldSerializerValid(parameters, targetElement, targetType, typeName, fieldName, "SERIALIZE", errors))
+							continue;
+
+						// Write field
+						var d = new SerializedData(targetType, targetElement);
+						d.WriteFromObject(fieldData.fieldInfo.GetValue(obj), referenceables, errors, parameters);
+					}
+				}
+
+				xElement.Add(targetElement);
+			}
+		}
+
 		/// <summary>
 		/// It will for every field with string data deserialize this data using <see cref="IXMLDataSerializer"/>.
 		/// 
 		/// For every sub-data field a <see cref="SerializedData"/> object is being written to <see cref="fields"/>.
 		/// </summary>
-		public void LoadFields(List<ParsingError> errors, XMLSerializerParams parameters)
+		/// <param name="filename">Only used for error reporting</param>
+		public void LoadFieldsFromXML(string filename, List<SerializerError> errors, XMLSerializerParams parameters)
 		{
 			foreach (var xNode in xElement.Nodes())
 			{
-				if (!ParsingValidation.NodeIsElement(parameters, xNode, this.filename, errors)) // Malformed XML
+				if (!SerializerValidation.NodeIsElement(parameters, xNode, filename, errors)) // Malformed XML
 					continue;
 
 				var xElement = xNode as XElement;
 				var elementName = xElement.Name.LocalName;
 
 				// Field unknown?
-				if (!ParsingValidation.FieldKnown(parameters, xElement, targetType, elementName, filename, errors))
+				if (!SerializerValidation.FieldKnown(parameters, xElement, targetType, elementName, filename, errors))
 					continue;
 
 				debug.Add(elementName, xElement);
-				var fieldData = targetType.GetFieldData(elementName);
+				var _fieldData = targetType.GetFieldData(elementName);
+				var fieldData = _fieldData.Value;
 				var fieldType = fieldData.serializableTypeCache;
 				bool isCollection = SerializedCollectionData.IsCollection(fieldData.fieldInfo.FieldType);
 				IXMLDataSerializer serializer = SerializerCache.GetBestSerializerFor(fieldData.fieldInfo.FieldType);
@@ -77,20 +140,20 @@ namespace UnityTK.Serialization.XML
 				{
 					try
 					{
-						if (!ParsingValidation.SerializerWasFound(parameters, xElement, serializer, elementName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, filename, errors))
+						if (!SerializerValidation.SerializerWasFound(parameters, xElement, serializer, elementName, targetType == null ? null : targetType.type, fieldType == null ? null : fieldType.type, filename, errors))
 							continue;
 
 						fields.Add(elementName, serializer.Deserialize(fieldData.fieldInfo.FieldType, xElement, parameters));
 					}
 					catch (Exception ex)
 					{
-						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Serializer threw exception on field " + elementName + " on type " + targetType.type + ":\n\n" + ex.ToString() + "\n\nSkipping field!"));
+						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, filename, -1, "Serializer threw exception on field " + elementName + " on type " + targetType.type + ":\n\n" + ex.ToString() + "\n\nSkipping field!"));
 					}
 				}
 				else if (isCollection)
 				{
-					var col = new SerializedCollectionData(fieldData.fieldInfo.FieldType, xElement, this.filename);
-					col.ParseAndLoadData(errors, parameters);
+					var col = new SerializedCollectionData(fieldData.fieldInfo.FieldType, xElement);
+					col.ParseAndLoadData(filename, errors, parameters);
 					fields.Add(elementName, col);
 
 					// Collection override action?
@@ -100,8 +163,6 @@ namespace UnityTK.Serialization.XML
 				}
 				else
 				{
-					// A known serializable
-
 					// root reference?
 					if (fieldData.isSerializableRoot)
 					{
@@ -126,12 +187,12 @@ namespace UnityTK.Serialization.XML
 						}
 
 						// Field not serializable?
-						if (!ParsingValidation.DataFieldSerializerValid(parameters, xElement, targetType, typeName, elementName, filename, errors))
+						if (!SerializerValidation.DataFieldSerializerValid(parameters, xElement, targetType, typeName, elementName, filename, errors))
 							continue;
 
 						// Resolve field name type
-						var d = new SerializedData(targetType, xElement as XElement, this.filename);
-						d.LoadFields(errors, parameters);
+						var d = new SerializedData(targetType, xElement as XElement);
+						d.LoadFieldsFromXML(filename, errors, parameters);
 						fields.Add(elementName, d);
 					}
 				}
@@ -143,8 +204,8 @@ namespace UnityTK.Serialization.XML
 		/// In this step, root references are being resolved for this serialized data and their sub data objects.
 		/// </summary>
 		/// <param name="objects">Root objects to use for remapping</param>
-		/// <param name="errors"></param>
-		public void ResolveReferenceFields(List<ISerializableRoot> objects, List<ParsingError> errors, XMLSerializerParams parameters)
+		/// <param name="filename">Only used for error reporting</param>
+		public void ResolveReferenceFields(string filename, List<ISerializableRoot> objects, List<SerializerError> errors, XMLSerializerParams parameters)
 		{
 			Dictionary<string, object> updates = DictionaryPool<string, object>.Get();
 
@@ -158,11 +219,11 @@ namespace UnityTK.Serialization.XML
 
 					var sub = field.Value as SerializedData;
 					if (!ReferenceEquals(sub, null))
-						sub.ResolveReferenceFields(objects, errors, parameters);
+						sub.ResolveReferenceFields(filename, objects, errors, parameters);
 
 					var col = field.Value as SerializedCollectionData;
 					if (!ReferenceEquals(col, null))
-						col.ResolveReferenceFieldsAndSubData(objects, errors, parameters);
+						col.ResolveReferenceFieldsAndSubData(filename, objects, errors, parameters);
 				}
 				
 				// Write updates
@@ -178,11 +239,13 @@ namespace UnityTK.Serialization.XML
 		/// <summary>
 		/// Applies the data stored in this serialized data to the specified object using reflection.
 		/// </summary>
-		public void ApplyTo(object obj, List<ParsingError> errors, XMLSerializerParams parameters)
+		/// <param name="filename">Only used for error reporting</param>
+		public void ApplyTo(string filename, object obj, List<SerializerError> errors, XMLSerializerParams parameters)
 		{
 			foreach (var field in fields)
 			{
-				var fieldInfo = this.targetType.GetFieldData(field.Key);
+				var _fieldInfo = this.targetType.GetFieldData(field.Key);
+				var fieldInfo = _fieldInfo.Value;
 				var value = field.Value;
 
 				var sub = value as SerializedData;
@@ -195,7 +258,7 @@ namespace UnityTK.Serialization.XML
 					if (ReferenceEquals(value, null))
 						value = sub.targetType.Create();
 
-					sub.ApplyTo(value, errors, parameters);
+					sub.ApplyTo(filename, value, errors, parameters);
 				}
 
 				var col = value as SerializedCollectionData;
@@ -220,7 +283,7 @@ namespace UnityTK.Serialization.XML
 						value = col.CreateCollection();
 				}
 
-				if (!ParsingValidation.TypeCheck(parameters, debug.TryGet(field.Key), field.Key, value, fieldInfo.fieldInfo.FieldType, filename, errors))
+				if (!SerializerValidation.TypeCheck(parameters, debug.TryGet(field.Key), field.Key, value, fieldInfo.fieldInfo.FieldType, filename, errors))
 					continue;
 
 				fieldInfo.fieldInfo.SetValue(obj, value);

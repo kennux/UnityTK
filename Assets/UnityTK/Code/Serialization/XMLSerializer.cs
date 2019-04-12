@@ -26,12 +26,12 @@ namespace UnityTK.Serialization
 
         private List<ISerializableRoot> allParsedObjects = new List<ISerializableRoot>();
 		private Dictionary<string, SerializedData> serializedData = new Dictionary<string, SerializedData>();
-		private void _PreParse(string xmlContent, string filename, XMLSerializerParams parameters, List<SerializedData> result, List<ParsingError> errors)
+		private void _PreParse(string xmlContent, string filename, XMLSerializerParams parameters, List<SerializedData> result, Dictionary<SerializedData, string> filenameMappings, List<SerializerError> errors)
 		{
 			var xElement = XElement.Parse(xmlContent);
 
 			// Validity checks
-			if (!ParsingValidation.ContainerElementName(parameters, xElement, filename, errors))
+			if (!SerializerValidation.ContainerElementName(parameters, xElement, filename, errors))
 				return;
             
 			// Iterate over nodes
@@ -40,27 +40,30 @@ namespace UnityTK.Serialization
 				var nodeXElement = xNode as XElement;
 
 				// Validity checks
-				if (!ParsingValidation.NodeIsElement(parameters, xNode, filename, errors))
+				if (!SerializerValidation.NodeIsElement(parameters, xNode, filename, errors))
 					continue;
 
                 var elementType = SerializerCache.GetSerializableTypeCacheFor(nodeXElement.Name.LocalName, parameters.standardNamespace);
-                if (!ParsingValidation.RootTypeFound(parameters, nodeXElement.Name.LocalName, nodeXElement, elementType, filename, errors))
+                if (!SerializerValidation.RootTypeFound(parameters, nodeXElement.Name.LocalName, nodeXElement, elementType, filename, errors))
                     continue;
 
 				// Prepare
-				var data = new SerializedData(elementType, nodeXElement, filename);
+				var data = new SerializedData(elementType, nodeXElement);
 				result.Add(data);
+				filenameMappings.Add(data, filename);
 			}
 		}
 
-        public override void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<ParsingError> errors)
+        public override void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<SerializerError> errors)
         {
+			Dictionary<SerializedData, string> filenameMappings = new Dictionary<SerializedData, string>();
             parsedObjects = new List<ISerializableRoot>();
             List<SerializedData> serializedData = ListPool<SerializedData>.Get();
-            errors = ListPool<ParsingError>.Get();
+            errors = ListPool<SerializerError>.Get();
+
             for (int i = 0; i < data.Length; i++)
             {
-                _PreParse(data[i], filenames[i], parameters, serializedData, errors);
+                _PreParse(data[i], filenames[i], parameters, serializedData, filenameMappings, errors);
             }
             
 			// Get prototypes with others inheriting from first
@@ -75,7 +78,7 @@ namespace UnityTK.Serialization
 			// Pre-parse names, create instances and apply name
 			foreach (var d in serializedData)
 			{
-				if (!ParsingValidation.ElementHasId(parameters, d.xElement, d.filename, errors))
+				if (!SerializerValidation.ElementHasId(parameters, d.xElement, filenameMappings[d], errors))
 				{
 					invalid.Add(d);
 					continue;
@@ -118,11 +121,11 @@ namespace UnityTK.Serialization
 
 			// Step 2 - Preloads the fields and creates sub-data objects
 			foreach (var d in sorted)
-				d.LoadFields(errors, parameters);
+				d.LoadFieldsFromXML(filenameMappings[d], errors, parameters);
 
 			// Step 3 - run sorting algorithm for reference resolve
 			foreach (var d in serializedData)
-				d.ResolveReferenceFields(allParsedObjects, errors, parameters);
+				d.ResolveReferenceFields(filenameMappings[d], allParsedObjects, errors, parameters);
 
 			// Step 4 - Final data apply
 			List<SerializedData> inheritingFromTmp = new List<SerializedData>();
@@ -142,7 +145,7 @@ namespace UnityTK.Serialization
 					{
 						SerializedData _serializedData = null;
 						if (!this.serializedData.TryGetValue(inheritedData, out _serializedData) && !idMapping.TryGetValue(inheritedData, out _serializedData))
-							errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, d.filename, (d.xElement as IXmlLineInfo).LinePosition, "Could not find the root type '" + inheritedData + "' for object '" + (instances[d] as ISerializableRoot).identifier + "'! Ignoring inheritance!"));
+							errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, filenameMappings[d], (d.xElement as IXmlLineInfo).LinePosition, "Could not find the root type '" + inheritedData + "' for object '" + (instances[d] as ISerializableRoot).identifier + "'! Ignoring inheritance!"));
 						else
 							inheritingFromTmp.Add(_serializedData);
 
@@ -155,16 +158,36 @@ namespace UnityTK.Serialization
 
 					// Apply
 					foreach (var _d in inheritingFromTmp)
-						_d.ApplyTo(instances[d], errors, parameters);
+						_d.ApplyTo(filenameMappings[_d], instances[d], errors, parameters);
 				}
 
 				// Apply data over inherited
-				d.ApplyTo(instances[d], errors, parameters);
+				d.ApplyTo(filenameMappings[d], instances[d], errors, parameters);
 			}
 
 			// Step 5 - record serialized data in result
 			foreach (var kvp in idMapping)
 				this.serializedData.Add(kvp.Key, kvp.Value);
+        }
+
+        public override string Serialize(List<ISerializableRoot> roots, List<ISerializableRoot> referenceables, out List<SerializerError> errors)
+        {
+            errors = ListPool<SerializerError>.Get();
+			XDocument document = new XDocument();
+			XElement rootElement = new XElement(parameters.rootElementName);
+			document.Add(rootElement);
+
+			foreach (var root in roots)
+			{
+				var typeName = root.GetType().Name;
+				var element = new XElement(typeName);
+				element.SetAttributeValue(AttributeIdentifier, root.identifier);
+				var data = new SerializedData(SerializerCache.GetSerializableTypeCacheFor(typeName, parameters.standardNamespace), element);
+				data.WriteFromObject(root, referenceables, errors, parameters);
+				rootElement.Add(element);
+			}
+
+			return document.ToString();
         }
     }
 

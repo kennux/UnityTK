@@ -25,7 +25,7 @@ namespace UnityTK.Serialization.Prototypes
             });
         }
 
-		private List<ParsingError> errors = new List<ParsingError>();
+		private List<SerializerError> errors = new List<SerializerError>();
 		private List<IPrototype> prototypes = new List<IPrototype>();
         private ISerializer serializer;
 
@@ -45,7 +45,7 @@ namespace UnityTK.Serialization.Prototypes
 		/// <summary>
 		/// Returns the internal errors list.
 		/// </summary>
-		public List<ParsingError> GetParsingErrors()
+		public List<SerializerError> GetParsingErrors()
 		{
 			return this.errors;
 		}
@@ -60,7 +60,7 @@ namespace UnityTK.Serialization.Prototypes
 		public void Parse(string data, string filename)
 		{
             List<ISerializableRoot> serializables;
-            List<ParsingError> errors;
+            List<SerializerError> errors;
             serializer.Deserialize(new string[] { data }, new string[] { filename }, out serializables, out errors);
 
             this.errors.AddRange(errors);
@@ -77,7 +77,7 @@ namespace UnityTK.Serialization.Prototypes
 		public void Parse(string[] data, string[] filenames)
 		{
             List<ISerializableRoot> serializables;
-            List<ParsingError> errors;
+            List<SerializerError> errors;
             serializer.Deserialize(data, filenames, out serializables, out errors);
 
             this.errors.AddRange(errors);

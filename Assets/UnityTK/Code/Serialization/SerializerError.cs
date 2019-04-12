@@ -7,16 +7,16 @@ using UnityEngine;
 
 namespace UnityTK.Serialization
 {
-	public enum ParsingErrorSeverity
+	public enum SerializerErrorSeverity
 	{
 		INFO,
 		WARNING,
 		ERROR
 	}
 
-	public struct ParsingError
+	public struct SerializerError
 	{
-		public ParsingErrorSeverity severity;
+		public SerializerErrorSeverity severity;
 
 		/// <summary>
 		/// The file in which this error has been detected.
@@ -32,7 +32,7 @@ namespace UnityTK.Serialization
 
 		public readonly string stackTrace;
 
-		public ParsingError(ParsingErrorSeverity severity, string file, int lineNumber, string message)
+		public SerializerError(SerializerErrorSeverity severity, string file, int lineNumber, string message)
 		{
 			this.severity = severity;
 			this.file = file;
@@ -57,9 +57,9 @@ namespace UnityTK.Serialization
 			string msg = GetFullMessage();
 			switch (this.severity)
 			{
-				case ParsingErrorSeverity.INFO: Debug.Log(msg); break;
-				case ParsingErrorSeverity.WARNING: Debug.LogWarning(msg); break;
-				case ParsingErrorSeverity.ERROR: Debug.LogError(msg); break;
+				case SerializerErrorSeverity.INFO: Debug.Log(msg); break;
+				case SerializerErrorSeverity.WARNING: Debug.LogWarning(msg); break;
+				case SerializerErrorSeverity.ERROR: Debug.LogError(msg); break;
 			}
 		}
 	}

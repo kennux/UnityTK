@@ -99,26 +99,69 @@ namespace UnityTK.Serialization.XML
 
 		public readonly Type collectionType;
 		public readonly XElement xElement;
-		public readonly string filename;
 		
 		/// <summary>
 		/// </summary>
 		/// <param name="collectionType">The collection type to be parsed.</param>
-		/// <param name="element">The xml element to parse the data from.</param>
-		/// <param name="filename">The filename to be reported in case of errors.</param>
-		public SerializedCollectionData(Type collectionType, XElement xElement, string filename)
+		/// <param name="xElement">The xml element to parse the data from.</param>
+		public SerializedCollectionData(Type collectionType, XElement xElement)
 		{
 			this.collectionType = collectionType;
 			this.xElement = xElement;
-			this.filename = filename;
+		}
+		
+		/// <summary>
+		/// Serializes the collection obj to <see cref="xElement"/>.
+		/// </summary>
+		/// <param name="targetElement">The element to write the loaded data to.</param>
+		/// <param name="obj">The collection to load and write to <see cref="xElement"/></param>
+		/// <param name="referenceables">Serializable object roots which will possibly be referenced by elements in obj.</param>
+		public void WriteFromObject(object collection, XElement targetElement, List<ISerializableRoot> referenceables, List<SerializerError> errors, XMLSerializerParams parameters)
+		{
+			Type elementType = GetElementType(this.collectionType);
+			var elementTypeCache = SerializerCache.GetSerializableTypeCacheFor(elementType);
+			string elementTypeName = elementType.Name;
+
+			foreach (var obj in (collection as IEnumerable))
+			{
+				XElement _targetElement = new XElement("li");
+
+				if (typeof(ISerializableRoot).IsAssignableFrom(elementType))
+				{
+					// object ref
+					this.elements.Add((obj as ISerializableRoot).identifier);
+				}
+				else
+				{
+					// Determine type
+					var serializableTypeCache = elementTypeCache;
+					string typeName = elementTypeName;
+
+					// Write class attribute
+					_targetElement.SetAttributeValue(XMLSerializer.AttributeType, typeName);
+
+					// Validity checks
+					// Field not serializable?
+					if (ReferenceEquals(serializableTypeCache, null))
+					{
+						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, "SERIALIZER", -1, "Collection element with unknown type " + typeName + " unserializable! Skipping field!"));
+						continue;
+					}
+
+					// Add element
+					new SerializedData(serializableTypeCache, _targetElement).WriteFromObject(obj, referenceables, errors, parameters);
+				}
+
+				targetElement.Add(_targetElement);
+			}
 		}
 
 		/// <summary>
-		/// <see cref="SerializedData.LoadFields(List{ParsingError}, PrototypeParserState)"/>
+		/// <see cref="SerializedData.LoadFields(List{SerializerError}, PrototypeParserState)"/>
 		/// </summary>
 		/// <param name="errors"></param>
-		/// <param name="state"></param>
-		public void ParseAndLoadData(List<ParsingError> errors, XMLSerializerParams parameters)
+		/// <param name="filename">The filename from where data will be parsed. Only used for error reporting.</param>
+		public void ParseAndLoadData(string filename, List<SerializerError> errors, XMLSerializerParams parameters)
 		{
 			var elementNodes = xElement.Nodes().ToList();
 			var collection = GetCollectionInstance(this.collectionType, elementNodes.Count);
@@ -132,7 +175,7 @@ namespace UnityTK.Serialization.XML
 				var xElementNode = node as XElement;
 				if (ReferenceEquals(xElementNode, null)) // Malformed XML
 				{
-					errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, (node as IXmlLineInfo).LineNumber, "Unable to cast node to element for " + node + "! Skipping element!"));
+					errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, filename, (node as IXmlLineInfo).LineNumber, "Unable to cast node to element for " + node + "! Skipping element!"));
 					continue;
 				}
 
@@ -163,12 +206,12 @@ namespace UnityTK.Serialization.XML
 					if (ReferenceEquals(serializableTypeCache, null))
 					{
 						// TODO: Line number, better reporting as to why this type is unserializable!
-						errors.Add(new ParsingError(ParsingErrorSeverity.ERROR, filename, -1, "Collection element with unknown type " + typeName + " unserializable! Skipping field!"));
+						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, filename, -1, "Collection element with unknown type " + typeName + " unserializable! Skipping field!"));
 						continue;
 					}
 
 					// Add element
-					this.elements.Add(new SerializedData(serializableTypeCache, xElementNode, this.filename));
+					this.elements.Add(new SerializedData(serializableTypeCache, xElementNode));
 				}
 			}
 
@@ -177,7 +220,7 @@ namespace UnityTK.Serialization.XML
 				var sElement = element as SerializedData;
 				if (!ReferenceEquals(sElement, null))
 				{
-					sElement.LoadFields(errors, parameters);
+					sElement.LoadFieldsFromXML(filename, errors, parameters);
 				}
 			}
 		}
@@ -193,7 +236,7 @@ namespace UnityTK.Serialization.XML
 			}
 		}
 		
-		public void ResolveReferenceFieldsAndSubData(List<ISerializableRoot> objects, List<ParsingError> errors, XMLSerializerParams parameters)
+		public void ResolveReferenceFieldsAndSubData(string filename, List<ISerializableRoot> objects, List<SerializerError> errors, XMLSerializerParams parameters)
 		{
 			for (int i = 0; i < this.elements.Count; i++)
 			{
@@ -204,9 +247,9 @@ namespace UnityTK.Serialization.XML
 				
 				if (!ReferenceEquals(sElement, null))
 				{
-					sElement.ResolveReferenceFields(objects, errors, parameters);
+					sElement.ResolveReferenceFields(filename, objects, errors, parameters);
 					var value = sElement.targetType.Create();
-					sElement.ApplyTo(value, errors, parameters);
+					sElement.ApplyTo(filename, value, errors, parameters);
 					this.elements[i] = value;
 				}
 				else if (!ReferenceEquals(protoRef, null))

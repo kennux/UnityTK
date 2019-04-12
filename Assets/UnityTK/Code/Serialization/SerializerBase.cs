@@ -6,7 +6,8 @@ namespace UnityTK.Serialization
 {
     public interface ISerializer
     {
-        void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<ParsingError> errors);
+        void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<SerializerError> errors);
+        string Serialize(List<ISerializableRoot> roots, List<ISerializableRoot> referenceables, out List<SerializerError> errors);
     }
 
     public abstract class SerializerBase<T> : ISerializer
@@ -18,7 +19,8 @@ namespace UnityTK.Serialization
             this.parameters = parameters;
         }
 
-        public abstract void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<ParsingError> errors);
+        public abstract void Deserialize(string[] data, string[] filenames, out List<ISerializableRoot> parsedObjects, out List<SerializerError> errors);
+        public abstract string Serialize(List<ISerializableRoot> roots, List<ISerializableRoot> referenceables, out List<SerializerError> errors);
     }
 
 }

@@ -21,11 +21,22 @@ namespace UnityTK.Serialization.XML
 			return _Deserialize(value.Value, parameters);
 		}
 
+		public void Serialize(object obj, XElement target, XMLSerializerParams parameters)
+		{
+			target.Value = Serialize((T)obj, parameters);
+		}
+
 		protected abstract T _Deserialize(string value, XMLSerializerParams parameters);
+		protected abstract string Serialize(T value, XMLSerializerParams parameters);
 	}
 	
 	public class XMLSerializer_Float : XMLSerializer_ValueTypeBase<float>
 	{
+		protected override string Serialize(float value, XMLSerializerParams parameters)
+		{
+			return value.ToString(CultureInfo.InvariantCulture);
+		}
+
 		protected override float _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return float.Parse(value, CultureInfo.InvariantCulture);
@@ -34,6 +45,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Int : XMLSerializer_ValueTypeBase<int>
 	{
+		protected override string Serialize(int value, XMLSerializerParams parameters)
+		{
+			return value.ToString();
+		}
+
 		protected override int _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return int.Parse(value);
@@ -42,6 +58,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_String : XMLSerializer_ValueTypeBase<string>
 	{
+		protected override string Serialize(string value, XMLSerializerParams parameters)
+		{
+			return value;
+		}
+
 		protected override string _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return value;
@@ -50,6 +71,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Double : XMLSerializer_ValueTypeBase<double>
 	{
+		protected override string Serialize(double value, XMLSerializerParams parameters)
+		{
+			return value.ToString(CultureInfo.InvariantCulture);
+		}
+
 		protected override double _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return double.Parse(value, CultureInfo.InvariantCulture);
@@ -58,6 +84,10 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Short : XMLSerializer_ValueTypeBase<short>
 	{
+		protected override string Serialize(short value, XMLSerializerParams parameters)
+		{
+			return value.ToString();
+		}
 		protected override short _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return short.Parse(value);
@@ -66,6 +96,10 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Byte : XMLSerializer_ValueTypeBase<byte>
 	{
+		protected override string Serialize(byte value, XMLSerializerParams parameters)
+		{
+			return value.ToString();
+		}
 		protected override byte _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return byte.Parse(value);
@@ -74,6 +108,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Bool : XMLSerializer_ValueTypeBase<bool>
 	{
+		protected override string Serialize(bool value, XMLSerializerParams parameters)
+		{
+			return value.ToString();
+		}
+
 		protected override bool _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			return bool.Parse(value);
@@ -82,6 +121,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Vector2 : XMLSerializer_ValueTypeBase<Vector2>
 	{
+		protected override string Serialize(Vector2 value, XMLSerializerParams parameters)
+		{
+			return string.Format("{0},{1}", value.x.ToString(), value.y.ToString());
+		}
+
 		protected override Vector2 _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
@@ -94,6 +138,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Vector3 : XMLSerializer_ValueTypeBase<Vector3>
 	{
+		protected override string Serialize(Vector3 value, XMLSerializerParams parameters)
+		{
+			return string.Format("{0},{1},{2}", value.x.ToString(), value.y.ToString(), value.z.ToString());
+		}
+
 		protected override Vector3 _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
@@ -107,6 +156,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Vector4 : XMLSerializer_ValueTypeBase<Vector4>
 	{
+		protected override string Serialize(Vector4 value, XMLSerializerParams parameters)
+		{
+			return string.Format("{0},{1},{2},{3}", value.x.ToString(), value.y.ToString(), value.z.ToString(), value.w.ToString());
+		}
+
 		protected override Vector4 _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
@@ -120,6 +174,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Color : XMLSerializer_ValueTypeBase<Color>
 	{
+		protected override string Serialize(Color value, XMLSerializerParams parameters)
+		{
+			return string.Format("{0},{1},{2},{3}", value.r.ToString(), value.g.ToString(), value.b.ToString(), value.a.ToString());
+		}
+
 		protected override Color _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
@@ -133,6 +192,11 @@ namespace UnityTK.Serialization.XML
 	
 	public class XMLSerializer_Quaternion : XMLSerializer_ValueTypeBase<Quaternion>
 	{
+		protected override string Serialize(Quaternion value, XMLSerializerParams parameters)
+		{
+			return string.Format("{0},{1},{2},{3}", value.x.ToString(), value.y.ToString(), value.z.ToString(), value.w.ToString());
+		}
+
 		protected override Quaternion _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			string[] parts = value.Split(',');
@@ -155,10 +219,20 @@ namespace UnityTK.Serialization.XML
 		{
 			return Enum.Parse(type, value.Value as string);
 		}
+
+		public void Serialize(object obj, XElement target, XMLSerializerParams parameters)
+		{
+			target.Value = obj.ToString();
+		}
 	}
 
 	public class XMLSerializer_Type : XMLSerializer_ValueTypeBase<Type>
 	{
+		protected override string Serialize(Type value, XMLSerializerParams parameters)
+		{
+			return value.Name;
+		}
+
 		protected override Type _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			// Create std namespace name string by prepending std namespace to value

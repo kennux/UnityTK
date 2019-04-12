@@ -7,7 +7,7 @@ using System;
 using UnityTK.Serialization.Prototypes;
 using UnityTK.Serialization;
 
-namespace UnityTK.Test.Prototypes
+namespace UnityTK.Test.Serialization
 {
 	public class TestPrototypeSpec : TestPrototype
 	{

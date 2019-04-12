@@ -15,7 +15,7 @@ namespace UnityTK.Serialization.XML
 
 		/// <summary>
 		/// Will retrieve a build error if there was one for the specified type.
-		/// If there was no error, null will be returned. This is only used for diagnostic information output in <see cref="ParsingValidation"/>.
+		/// If there was no error, null will be returned. This is only used for diagnostic information output in <see cref="SerializerValidation"/>.
 		/// 
 		/// <see cref="TryBuild(Type)"/>
 		/// </summary>
@@ -50,7 +50,7 @@ namespace UnityTK.Serialization.XML
 			return stc;
 		}
 
-		public class FieldCache
+		public struct FieldCache
 		{
 			public FieldInfo fieldInfo;
 			public SerializableTypeCache serializableTypeCache
@@ -60,6 +60,10 @@ namespace UnityTK.Serialization.XML
 			public bool isSerializableRoot
 			{
 				get { return typeof(ISerializableRoot).IsAssignableFrom(this.fieldInfo.FieldType); }
+			}
+			public bool isSerialized
+			{
+				get { return this.fieldInfo.GetCustomAttribute<NonSerializedAttribute>() == null; }
 			}
 
 			public FieldCache(FieldInfo fieldInfo)
@@ -94,10 +98,16 @@ namespace UnityTK.Serialization.XML
 			return !ReferenceEquals(this.type.GetField(fieldName), null);
 		}
 
-		public FieldCache GetFieldData(string fieldName)
+		public FieldCache? GetFieldData(string fieldName)
 		{
 			var fi = this.type.GetField(fieldName);
-			return ReferenceEquals(fi, null) ? null : new FieldCache(fi);
+			return ReferenceEquals(fi, null) ? (FieldCache?)null : new FieldCache(fi);
+		}
+
+		public void GetAllFields(List<FieldCache> outFields)
+		{
+			foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
+				outFields.Add(new FieldCache(field));
 		}
 	}
 }
