@@ -273,7 +273,7 @@ namespace UnityTK.Serialization.XML
 		protected override Type _Deserialize(string value, XMLSerializerParams parameters)
 		{
 			// Create std namespace name string by prepending std namespace to value
-			bool doStdNamespaceCheck = !value.Contains('.');
+			bool doStdNamespaceCheck = !string.IsNullOrWhiteSpace(parameters.standardNamespace);
 			string stdNamespacePrepended = doStdNamespaceCheck ? parameters.standardNamespace + "." + value : null;
 
 			// Look for type
