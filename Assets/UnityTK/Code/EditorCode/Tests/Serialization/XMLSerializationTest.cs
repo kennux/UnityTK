@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using UnityTK.Serialization.Prototypes;
 using UnityTK.Serialization;
+using System.Linq;
 
 namespace UnityTK.Test.Serialization
 {
@@ -14,6 +15,59 @@ namespace UnityTK.Test.Serialization
 		class TestRoot : ISerializableRoot
 		{
 			public string identifier { get; set; }
+		}
+
+		class CollectionTest : TestRoot
+		{
+			public ValueTypeTestNoRoot[] test;
+			public List<ValueTypeTest> test2;
+			public List<int> test3;
+
+			public override bool Equals(object obj)
+			{
+				var casted = obj as CollectionTest;
+				if (casted == null)
+					return false;
+
+				if (casted.identifier != identifier)
+					return false;
+
+				if (test.Length != casted.test.Length)
+					return false;
+
+				if (test2.Count != casted.test2.Count)
+					return false;
+
+				if (test3.Count != casted.test3.Count)
+					return false;
+
+				for (int i = 0; i < test.Length; i++)
+					if (!test[i].Equals(casted.test[i]))
+						return false;
+
+				for (int i = 0; i < test2.Count; i++)
+					if (!test2[i].Equals(casted.test2[i]))
+						return false;
+
+				for (int i = 0; i < test3.Count; i++)
+					if (test3[i] != casted.test3[i])
+						return false;
+				return true;
+			}
+		}
+
+		class ValueTypeTestNoRoot
+		{
+			public int integer;
+
+			public override bool Equals(object obj)
+			{
+				var casted = obj as ValueTypeTestNoRoot;
+				if (casted == null)
+					return false;
+				
+				return casted.integer == this.integer;
+			}
 		}
 
 		class ValueTypeTest : TestRoot
@@ -165,6 +219,44 @@ namespace UnityTK.Test.Serialization
 
 			Assert.AreEqual(roots.Count, 1);
 			Assert.AreEqual(test, roots[0]);
+		}
+
+        [Test]
+		public void TestCollections()
+		{
+			var serializer = CreateSerializer();
+			ValueTypeTest _test = new ValueTypeTest();
+			_test.integer = 1337;
+			_test.identifier = "vtTest";
+			ValueTypeTest _test2 = new ValueTypeTest();
+			_test2.integer = 123;
+			_test2.identifier = "vtTest2";
+			ValueTypeTestNoRoot _test3 = new ValueTypeTestNoRoot();
+			_test3.integer = 1337;
+
+			CollectionTest test = new CollectionTest();
+			test.test = new ValueTypeTestNoRoot[] { _test3 };
+			test.test2 = new ValueTypeTest[] { _test2, _test }.ToList();
+			test.test3 = new List<int>();
+			test.test3.Add(321);
+			test.test3.Add(132);
+
+			List<ISerializableRoot> roots = new List<ISerializableRoot>();
+			roots.Add(test);
+			roots.Add(_test2);
+			roots.Add(_test);
+			string xml = serializer.Serialize(roots, out errors);
+			FlushErrors();
+			Debug.Log(xml);
+
+			roots.Clear();
+			serializer.Deserialize(new string[] { xml }, new string[] { "MEMORY" }, null, out roots, out errors);
+			FlushErrors();
+
+			Assert.AreEqual(roots.Count, 3);
+			Assert.AreEqual(test, roots[0]);
+			Assert.AreEqual(1337, (roots[0] as CollectionTest).test2[1].integer);
+			Assert.AreEqual(132, (roots[0] as CollectionTest).test3[1]);
 		}
 
         [Test]

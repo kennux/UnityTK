@@ -125,11 +125,34 @@ namespace UnityTK.Serialization.XML
 			foreach (var obj in (collection as IEnumerable))
 			{
 				XElement _targetElement = new XElement("li");
+				targetElement.Add(_targetElement);
 
-				if (typeof(ISerializableRoot).IsAssignableFrom(elementType))
+				if (obj == null)
+				{
+					_targetElement.Add(XMLSerializer.TokenNull);
+					continue;
+				}
+
+				var objType = obj.GetType();
+				IXMLDataSerializer serializer = SerializerCache.GetBestSerializerFor(objType);
+				if (!ReferenceEquals(serializer, null))
+				{
+					try
+					{
+						if (!SerializerValidation.SerializerWasFound(parameters, null, serializer, "Collection", null, objType, "SERIALIZE", errors))
+							continue;
+							
+						serializer.Serialize(obj, _targetElement, parameters);
+					}
+					catch (Exception ex)
+					{
+						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, "SERIALIZE", -1, "Serializer threw exception on collection of type " + objType + ":\n\n" + ex.ToString() + "\n\nSkipping field!"));
+					}
+				}
+				else if (typeof(ISerializableRoot).IsAssignableFrom(elementType))
 				{
 					// object ref
-					this.elements.Add((obj as ISerializableRoot).identifier);
+					_targetElement.Value = (obj as ISerializableRoot).identifier;
 				}
 				else
 				{
@@ -144,15 +167,13 @@ namespace UnityTK.Serialization.XML
 					// Field not serializable?
 					if (ReferenceEquals(serializableTypeCache, null))
 					{
-						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, "SERIALIZER", -1, "Collection element with unknown type " + typeName + " unserializable! Skipping field!"));
+						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, "SERIALIZER", -1, "Collection element with unknown type " + typeName + " unserializable! Skipping element!"));
 						continue;
 					}
 
 					// Add element
 					new SerializedData(serializableTypeCache, _targetElement).WriteFromObject(obj, errors, parameters);
 				}
-
-				targetElement.Add(_targetElement);
 			}
 		}
 
@@ -178,8 +199,23 @@ namespace UnityTK.Serialization.XML
 					errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, filename, (node as IXmlLineInfo).LineNumber, "Unable to cast node to element for " + node + "! Skipping element!"));
 					continue;
 				}
+				
+				IXMLDataSerializer serializer = SerializerCache.GetBestSerializerFor(elementType);
+				if (!ReferenceEquals(serializer, null))
+				{
+					try
+					{
+						if (!SerializerValidation.SerializerWasFound(parameters, null, serializer, "Collection", null, elementType, "SERIALIZE", errors))
+							continue;
 
-				if (typeof(ISerializableRoot).IsAssignableFrom(elementType))
+						this.elements.Add(serializer.Deserialize(elementType, xElementNode, parameters));
+					}
+					catch (Exception ex)
+					{
+						errors.Add(new SerializerError(SerializerErrorSeverity.ERROR, "SERIALIZE", -1, "Serializer threw exception on collection of type " + elementType + ":\n\n" + ex.ToString() + "\n\nSkipping element!"));
+					}
+				}
+				else if (typeof(ISerializableRoot).IsAssignableFrom(elementType))
 				{
 					// object ref
 					this.elements.Add(new SerializedRootObjectReference()
