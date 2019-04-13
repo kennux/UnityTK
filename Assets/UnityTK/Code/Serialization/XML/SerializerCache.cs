@@ -91,7 +91,7 @@ namespace UnityTK.Serialization.XML
 
             public override int GetHashCode()
             {
-                return Essentials.CombineHashCodes(writtenName.GetHashCode(), preferredNamespace.GetHashCode());
+                return Essentials.CombineHashCodes(writtenName.GetHashCode(), preferredNamespace == null ? 0 : preferredNamespace.GetHashCode());
             }
 
             public TypeCacheKey(string writtenName, string preferredNamespace)
@@ -121,6 +121,13 @@ namespace UnityTK.Serialization.XML
                         break;
                     }
                 }
+
+				if (foundType == null && !dontDoNamespaceCheck)
+				{
+					var t = GetSerializableTypeCacheFor(writtenName, null);
+					if (t != null)
+						return t;
+				}
 
                 _serializableTypeCache.Add(cacheKey, foundType);
             }
