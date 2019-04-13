@@ -160,7 +160,7 @@ namespace UnityTK.Serialization.XML
 	{
 		protected override string Serialize(Vector2 value, XMLSerializerParams parameters)
 		{
-			return string.Format("{0},{1}", value.x.ToString(), value.y.ToString());
+			return string.Format("{0},{1}", value.x.ToString().Replace(',', '.'), value.y.ToString().Replace(',', '.'));
 		}
 
 		protected override Vector2 _Deserialize(string value, XMLSerializerParams parameters)
@@ -177,7 +177,7 @@ namespace UnityTK.Serialization.XML
 	{
 		protected override string Serialize(Vector3 value, XMLSerializerParams parameters)
 		{
-			return string.Format("{0},{1},{2}", value.x.ToString(), value.y.ToString(), value.z.ToString());
+			return string.Format("{0},{1},{2}", value.x.ToString().Replace(',', '.'), value.y.ToString().Replace(',', '.'), value.z.ToString().Replace(',', '.'));
 		}
 
 		protected override Vector3 _Deserialize(string value, XMLSerializerParams parameters)
@@ -195,7 +195,7 @@ namespace UnityTK.Serialization.XML
 	{
 		protected override string Serialize(Vector4 value, XMLSerializerParams parameters)
 		{
-			return string.Format("{0},{1},{2},{3}", value.x.ToString(), value.y.ToString(), value.z.ToString(), value.w.ToString());
+			return string.Format("{0},{1},{2},{3}", value.x.ToString().Replace(',', '.'), value.y.ToString().Replace(',', '.'), value.z.ToString().Replace(',', '.'), value.w.ToString().Replace(',', '.'));
 		}
 
 		protected override Vector4 _Deserialize(string value, XMLSerializerParams parameters)
@@ -213,7 +213,7 @@ namespace UnityTK.Serialization.XML
 	{
 		protected override string Serialize(Color value, XMLSerializerParams parameters)
 		{
-			return string.Format("{0},{1},{2},{3}", value.r.ToString(), value.g.ToString(), value.b.ToString(), value.a.ToString());
+			return string.Format("{0},{1},{2},{3}", value.r.ToString().Replace(',', '.'), value.g.ToString().Replace(',', '.'), value.b.ToString().Replace(',', '.'), value.a.ToString().Replace(',', '.'));
 		}
 
 		protected override Color _Deserialize(string value, XMLSerializerParams parameters)
@@ -231,7 +231,7 @@ namespace UnityTK.Serialization.XML
 	{
 		protected override string Serialize(Quaternion value, XMLSerializerParams parameters)
 		{
-			return string.Format("{0},{1},{2},{3}", value.x.ToString(), value.y.ToString(), value.z.ToString(), value.w.ToString());
+			return string.Format("{0},{1},{2},{3}", value.x.ToString().Replace(',', '.'), value.y.ToString().Replace(',', '.'), value.z.ToString().Replace(',', '.'), value.w.ToString().Replace(',', '.'));
 		}
 
 		protected override Quaternion _Deserialize(string value, XMLSerializerParams parameters)
