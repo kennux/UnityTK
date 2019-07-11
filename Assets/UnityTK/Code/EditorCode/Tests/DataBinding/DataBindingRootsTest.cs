@@ -59,7 +59,7 @@ namespace UnityTK.Test.DataBinding
 
 			bool exceptionFired = false;
 			try { root.target = 1; }
-			catch (System.ArgumentException ex) { exceptionFired = true; }
+			catch (System.ArgumentException) { exceptionFired = true; }
 			Assert.IsTrue(exceptionFired);
         }
     }

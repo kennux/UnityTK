@@ -39,6 +39,11 @@ namespace UnityTK.DataBinding
 
         }
 
+        public void OnEnable()
+        {
+            UpdateBinding();
+        }
+
         public void Update()
         {
             this._time += Time.deltaTime;

@@ -310,7 +310,7 @@ namespace UnityTK.Test.Utility
             {
                 graph2.Connect(node1, node3, cData2);
             }
-            catch (OutOfMemoryException ex)
+            catch (OutOfMemoryException)
             {
                 exceptionThrown = true;
             }
@@ -322,7 +322,7 @@ namespace UnityTK.Test.Utility
             {
                 graph2.Add(3, node1);
             }
-            catch (OutOfMemoryException ex)
+            catch (OutOfMemoryException)
             {
                 exceptionThrown = true;
             }

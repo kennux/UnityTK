@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1998945230717521107}
   - component: {fileID: 6542925329192507633}
   - component: {fileID: 6011085585653315474}
+  - component: {fileID: 8941283161963298558}
   m_Layer: 5
   m_Name: UnityTKTextTooltip
   m_TagString: Untagged
@@ -131,3 +132,19 @@ MonoBehaviour:
   updateFramerate: 2
   bindTargetType: UnityTK.TextTooltipViewModel, UnityTK
   bindTargetTypeValid: 1
+--- !u!114 &8941283161963298558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4390959022961042254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43b22a2b9b403f34f91a72c146211abe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bindTarget: {fileID: 4390959022961042251}
+  template: {fileID: 11400000, guid: c567db79762f99d42ba81b33b3c512c5, type: 2}
+  parentNode: {fileID: 6011085585653315474}
+  field: text

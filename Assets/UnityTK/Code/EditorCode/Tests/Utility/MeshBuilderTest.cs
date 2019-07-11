@@ -89,7 +89,7 @@ namespace UnityTK.Test.Utility
 				builder.AddVertex(ref vertexData);
 				Assert.IsTrue(false);
 			}
-			catch (System.InvalidOperationException ex)
+			catch (System.InvalidOperationException)
 			{
 
 			}
@@ -102,7 +102,7 @@ namespace UnityTK.Test.Utility
 				builder.AddVertex(ref vd);
 				Assert.IsTrue(false);
 			}
-			catch (System.InvalidOperationException ex)
+			catch (System.InvalidOperationException)
 			{
 
 			}

@@ -20,8 +20,16 @@ namespace UnityTK
 
 		[Header("Only for RectTransforms")]
 		public Vector2 tooltipPivotInRectTransform = new Vector2(.5f,.5f);
+        private bool pointerInside;
 
-		public void OnPointerEnter(PointerEventData eventData)
+        public void OnDisable()
+        {
+            if (pointerInside)
+                Tooltip.Close();
+            pointerInside = true;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
 		{
 			var model = TextTooltipViewModel.instance;
 			model.text = text;
@@ -35,11 +43,13 @@ namespace UnityTK
 				target = TooltipAnchorTarget.ForWorldObject(this.transform);
 
 			Tooltip.Open(model, target);
-		}
+            pointerInside = true;
+        }
 
 		public void OnPointerExit(PointerEventData eventData)
 		{
 			Tooltip.Close();
-		}
+            pointerInside = false;
+        }
 	}
 }

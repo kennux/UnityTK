@@ -10,7 +10,8 @@ using System.Linq;
 
 namespace UnityTK.Test.Serialization
 {
-	public class XMLSerializationTest
+#pragma warning disable CS0659 // Warning about overriding equals but not GetHashCode, this doesn't really matter for this test.
+    public class XMLSerializationTest
 	{
 		class TestRoot : ISerializableRoot
 		{
@@ -410,5 +411,6 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(test, roots[0]);
 			Assert.AreEqual(test2, roots[1]);
 		}
-	}
+    }
+#pragma warning restore CS0659
 }
