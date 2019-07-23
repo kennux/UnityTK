@@ -31,7 +31,7 @@ namespace UnityTK.DataBinding
         /// <param name="type">The type this element will bind to.</param>
         public void SetElementType(System.Type type)
         {
-            this.targetType = type.AssemblyQualifiedName;
+            this.targetType = ReflectionHelper.GetSimpleAssemblyQualifiedName(type);
         }
 
         /// <summary>
