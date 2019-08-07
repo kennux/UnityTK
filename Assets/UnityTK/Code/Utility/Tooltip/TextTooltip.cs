@@ -21,6 +21,7 @@ namespace UnityTK
 		[Header("Only for RectTransforms")]
 		public Vector2 tooltipPivotInRectTransform = new Vector2(.5f,.5f);
         private bool pointerInside;
+        private string currentText;
 
         public void OnDisable()
         {
@@ -29,10 +30,33 @@ namespace UnityTK
             pointerInside = true;
         }
 
+        public void OnEnable()
+        {
+            var rectTransform = this.transform as RectTransform;
+            if (rectTransform == null)
+                return;
+
+            if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, null))
+                OnPointerEnter(null); // Open tooltip
+        }
+
+        public void Update()
+        {
+            if (!pointerInside)
+                return;
+
+            if (currentText != text)
+            {
+                OnPointerExit(null);
+                OnPointerEnter(null);
+            }
+        }
+
         public void OnPointerEnter(PointerEventData eventData)
 		{
 			var model = TextTooltipViewModel.instance;
 			model.text = text;
+            currentText = text;
 
 			TooltipAnchorTarget target;
 			if (this.anchorToMouse)
