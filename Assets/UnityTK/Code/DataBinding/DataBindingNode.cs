@@ -51,9 +51,13 @@ namespace UnityTK.DataBinding
             // Update self
             this.DoUpdateBinding();
 
+            // Remove destroyed children
+            this.children.RemoveAll(child => !child); 
+
             // Update children
             for (int i = 0; i < this.children.Count; i++)
-                this.children[i].UpdateBinding();
+                if (this.children[i].enabled && this.children[i].gameObject.activeInHierarchy)
+                    this.children[i].UpdateBinding();
         }
 
         /// <summary>
