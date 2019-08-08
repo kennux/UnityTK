@@ -30,7 +30,6 @@ namespace UnityTK.Test.DataBinding
         public static DataBindingCollectionLeaf CreateCollectionLeaf(DataBindingNode node, string field, DataBindingCollectionElement prefab)
         {
             var leafGo = new GameObject("CollectionLeaf");
-            leafGo.SetActive(false);
 
             leafGo.transform.parent = node.transform;
 
@@ -141,10 +140,10 @@ namespace UnityTK.Test.DataBinding
             collectionLeaf.UpdateBinding();
 
             // Initialize child leaves
-            foreach (var element in collectionLeaf.GetComponentsInChildren<DataBindingCollectionElement>())
+            foreach (var element in collectionLeaf.GetComponentsInChildren<DataBindingCollectionElement>(true))
             {
                 // Awake leaves
-                foreach (var leaf in element.GetComponentsInChildren<UnityTK.DataBinding.DataBinding>())
+                foreach (var leaf in element.GetComponentsInChildren<UnityTK.DataBinding.DataBinding>(true))
                     leaf.Awake();
 
                 // Update element
