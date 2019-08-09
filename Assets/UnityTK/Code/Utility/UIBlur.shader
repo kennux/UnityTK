@@ -99,8 +99,8 @@
                         c.a = tex2D(_AlphaTex, uv).r;
                     #endif //UNITY_TEXTURE_ALPHASPLIT_ALLOWED
 
-                    c *= IN.color;
-                    c.rgb *= c.a;
+                    c.rgb = lerp(c.rgb, IN.color.rgb, IN.color.a);
+                    c.a = 1;
                     return c;
                 }
             ENDCG
