@@ -54,6 +54,12 @@ namespace UnityTK
 
         public void OnPointerEnter(PointerEventData eventData)
 		{
+            if (string.IsNullOrEmpty(text))
+            {
+                Tooltip.Close();
+                return;
+            }
+            
 			var model = TextTooltipViewModel.instance;
 			model.text = text;
             currentText = text;
