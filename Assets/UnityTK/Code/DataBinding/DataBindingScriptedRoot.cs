@@ -28,8 +28,8 @@ namespace UnityTK.DataBinding
 			get { return _target; }
 			set
 			{
-				if (!ReferenceEquals(value, null) && !ReferenceEquals(value.GetType(), GetBoundType()))
-					throw new ArgumentException("Target must be of type " + this.bindTargetType);
+				if (!ReferenceEquals(value, null) && !GetBoundType().IsAssignableFrom(value.GetType()))
+					throw new ArgumentException("Target " + GetBoundType().ToString() + " can't be assigned from " + value.GetType().ToString());
 				_target = value;
 			}
 		}
