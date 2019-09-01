@@ -10,7 +10,7 @@ namespace UnityTK.BuildSystem
     /// <summary>
     /// Build task that builds a player.
     /// </summary>
-    [CreateAssetMenu(fileName = "Build Player Task", menuName = "UnityTK/BuildSystem/Build Player Task")]
+    [CreateAssetMenu(fileName = "BuildPlayerTask", menuName = "UnityTK/BuildSystem/Build Player Task")]
     public class BuildTask_BuildPlayer : BuildTask
     {
         [Header("Task")]

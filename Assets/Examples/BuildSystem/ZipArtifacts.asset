@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7540dd427a6980446be454ed3ae3942a, type: 3}
-  m_Name: NestedJobTest
+  m_Script: {fileID: 11500000, guid: 0ead8d19a849f46459ade8202df21b28, type: 3}
+  m_Name: ZipArtifacts
   m_EditorClassIdentifier: 
-  tasks:
-  - {fileID: 11400000, guid: 2c2c2ade1e003314da0ed1c94b360728, type: 2}
-  destination: ./Test/
-  deleteExistingDestination: 1
+  subfolders:
+  - Win64
+  archiveDestination: Win64.zip
+  backend7ZipExePath: C:/Program Files/7-Zip/7z.exe
