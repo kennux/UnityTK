@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7540dd427a6980446be454ed3ae3942a, type: 3}
-  m_Name: TestJob
+  m_Name: NestedJobTest
   m_EditorClassIdentifier: 
   tasks:
-  - {fileID: 11400000, guid: d43410207f9c4cf42815d68bbff4b32a, type: 2}
-  - {fileID: 11400000, guid: b1ed952066200074b9dc73f2cbc24b39, type: 2}
-  destination: ./Builds/
-  deleteExistingDestination: 1
+  - {fileID: 11400000, guid: 2c2c2ade1e003314da0ed1c94b360728, type: 2}
+  destination: ./Test/
+  deleteExistingDestination: 0

@@ -10,7 +10,7 @@ namespace UnityTK.BuildSystem
     /// <see cref="BuildTask"/> which will build all asset bundles specified in the project.
     /// </summary>
     [CreateAssetMenu(fileName = "Build AssetBundles Task", menuName = "UnityTK/BuildSystem/Build AssetBundles Task")]
-    public class BuildAssetBundlesTask : BuildTask
+    public class BuildTask_BuildAssetBundles : BuildTask
     {
         [Header("Task")]
         public string subfolder;

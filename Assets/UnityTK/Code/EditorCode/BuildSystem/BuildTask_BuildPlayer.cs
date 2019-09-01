@@ -11,7 +11,7 @@ namespace UnityTK.BuildSystem
     /// Build task that builds a player.
     /// </summary>
     [CreateAssetMenu(fileName = "Build Player Task", menuName = "UnityTK/BuildSystem/Build Player Task")]
-    public class BuildPlayerTask : BuildTask
+    public class BuildTask_BuildPlayer : BuildTask
     {
         [Header("Task")]
         public string subfolder;
