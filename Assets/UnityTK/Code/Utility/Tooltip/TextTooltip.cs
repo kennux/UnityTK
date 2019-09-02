@@ -27,7 +27,7 @@ namespace UnityTK
         {
             if (pointerInside)
                 Tooltip.Close();
-            pointerInside = true;
+            pointerInside = false;
         }
 
         public void OnEnable()
