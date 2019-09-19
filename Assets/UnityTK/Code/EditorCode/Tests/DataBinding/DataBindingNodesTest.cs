@@ -6,36 +6,36 @@ using UnityTK.DataBinding;
 
 namespace UnityTK.Test.DataBinding
 {
-    public class DataBindingNodesTest
-    {
-        /// <summary>
-        /// Creates a new data binding branch on a new gameobject parented to node's gameobject.
-        /// Also initializes the branch bind target with the node (so the branch will bind to the node).
-        /// </summary>
-        public static DataBindingBranch CreateBranch(DataBindingNode node, string field)
-        {
-            var branchGo = new GameObject("Branch");
-            branchGo.transform.parent = node.transform;
-            var branch = branchGo.AddComponent<DataBindingBranch>();
-            branch.parentNode = node;
-            branch.field = field;
-            branch.Awake();
+	public class DataBindingNodesTest
+	{
+		/// <summary>
+		/// Creates a new data binding branch on a new gameobject parented to node's gameobject.
+		/// Also initializes the branch bind target with the node (so the branch will bind to the node).
+		/// </summary>
+		public static DataBindingBranch CreateBranch(DataBindingNode node, string field)
+		{
+			var branchGo = new GameObject("Branch");
+			branchGo.transform.parent = node.transform;
+			var branch = branchGo.AddComponent<DataBindingBranch>();
+			branch.parentNode = node;
+			branch.field = field;
+			branch.Awake();
 
-            return branch;
-        }
-        
-        [Test]
-        public void DataBindingBranchTest()
-        {
-            // Create root
-            DataBindingTestExample example;
-            var root = DataBindingRootsTest.CreateRootWithTest(out example);
+			return branch;
+		}
+		
+		[Test]
+		public void DataBindingBranchTest()
+		{
+			// Create root
+			DataBindingTestExample example;
+			var root = DataBindingRootsTest.CreateRootWithTest(out example);
 
-            // Create branch
-            var branch = CreateBranch(root, "nest");
+			// Create branch
+			var branch = CreateBranch(root, "nest");
 
-            Assert.AreEqual(example.nest, branch.boundObject);
-            Assert.AreEqual(typeof(DataBindingTestExample.Nest), branch.boundType);
-        }
-    }
+			Assert.AreEqual(example.nest, branch.boundObject);
+			Assert.AreEqual(typeof(DataBindingTestExample.Nest), branch.boundType);
+		}
+	}
 }

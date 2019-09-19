@@ -18,24 +18,24 @@ namespace UnityTK.Serialization.Prototypes
 	{
 		public const string RootContainerName = "PrototypeContainer";
 
-        public static XMLSerializer CreateXMLSerializer(string standardNamespace)
-        {
-            return new XMLSerializer(new XMLSerializerParams()
-            {
-                rootElementName = RootContainerName,
-                standardNamespace = standardNamespace
-            });
-        }
+		public static XMLSerializer CreateXMLSerializer(string standardNamespace)
+		{
+			return new XMLSerializer(new XMLSerializerParams()
+			{
+				rootElementName = RootContainerName,
+				standardNamespace = standardNamespace
+			});
+		}
 
 		private List<SerializerError> errors = new List<SerializerError>();
 		private List<IPrototype> prototypes = new List<IPrototype>();
 		private List<ISerializableRoot> allRoots = new List<ISerializableRoot>();
-        private ISerializer serializer;
+		private ISerializer serializer;
 
-        public PrototypeParser(ISerializer serializer)
-        {
-            this.serializer = serializer;
-        }
+		public PrototypeParser(ISerializer serializer)
+		{
+			this.serializer = serializer;
+		}
 
 		/// <summary>
 		/// Returns the internal prototypes list.
@@ -55,10 +55,10 @@ namespace UnityTK.Serialization.Prototypes
 
 		/// <summary>
 		/// Parses the specified data and returns all prototypes which could be parsed.
-        /// <see cref="ISerializer.Deserialize(string[], string[], out List{ISerializableRoot})"/>
+		/// <see cref="ISerializer.Deserialize(string[], string[], out List{ISerializableRoot})"/>
 		/// </summary>
 		/// <param name="data">The data to use for parsing.</param>
-        /// <param name="filename">The filename used to report errors</param>
+		/// <param name="filename">The filename used to report errors</param>
 		/// <returns></returns>
 		public void Parse(string data, string filename, List<ISerializableRoot> externalReferenceables = null)
 		{
@@ -69,11 +69,11 @@ namespace UnityTK.Serialization.Prototypes
 				allReferenceables.AddRange(externalReferenceables);
 			}
 
-            List<ISerializableRoot> serializables;
-            List<SerializerError> errors;
-            serializer.Deserialize(new string[] { data }, new string[] { filename }, allReferenceables, out serializables, out errors);
+			List<ISerializableRoot> serializables;
+			List<SerializerError> errors;
+			serializer.Deserialize(new string[] { data }, new string[] { filename }, allReferenceables, out serializables, out errors);
 
-            this.errors.AddRange(errors);
+			this.errors.AddRange(errors);
 			foreach (var s in serializables)
 			{
 				allRoots.Add(s);
@@ -96,11 +96,11 @@ namespace UnityTK.Serialization.Prototypes
 				allReferenceables.AddRange(externalReferenceables);
 			}
 
-            List<ISerializableRoot> serializables;
-            List<SerializerError> errors;
-            serializer.Deserialize(data, filenames, allReferenceables, out serializables, out errors);
+			List<ISerializableRoot> serializables;
+			List<SerializerError> errors;
+			serializer.Deserialize(data, filenames, allReferenceables, out serializables, out errors);
 			
-            this.errors.AddRange(errors);
+			this.errors.AddRange(errors);
 			foreach (var s in serializables)
 			{
 				allRoots.Add(s);

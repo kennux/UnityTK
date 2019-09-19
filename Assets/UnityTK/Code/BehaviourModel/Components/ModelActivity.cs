@@ -5,10 +5,10 @@ using System;
 
 namespace UnityTK.BehaviourModel
 {
-    /// <summary>
-    /// An activity can be started and stopped. A start or stop can fail.
-    /// An example for an activity would be running in a first person shooter.
-    /// When the player presses the run button, the activity is being started and its being stopped when the button is being released.
+	/// <summary>
+	/// An activity can be started and stopped. A start or stop can fail.
+	/// An example for an activity would be running in a first person shooter.
+	/// When the player presses the run button, the activity is being started and its being stopped when the button is being released.
 	/// </summary>
 	public class ModelActivity
 	{
@@ -140,12 +140,12 @@ namespace UnityTK.BehaviourModel
 	}
 
 
-    /// <summary>
-    /// An activity can be started and stopped. A start or stop can fail.
-    /// An example for an activity would be running in a first person shooter.
-    /// When the player presses the run button, the activity is being started and its being stopped when the button is being released.
-    /// </summary>
-    public class ModelActivity<T>
+	/// <summary>
+	/// An activity can be started and stopped. A start or stop can fail.
+	/// An example for an activity would be running in a first person shooter.
+	/// When the player presses the run button, the activity is being started and its being stopped when the button is being released.
+	/// </summary>
+	public class ModelActivity<T>
 	{
 		public delegate void Callback(T obj);
 		public delegate void CallbackNoParam();

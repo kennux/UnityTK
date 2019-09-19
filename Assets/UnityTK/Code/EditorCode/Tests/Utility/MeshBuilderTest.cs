@@ -6,8 +6,8 @@ using System.Collections.Generic;
 
 namespace UnityTK.Test.Utility
 {
-    public class MeshBuilderTest
-    {
+	public class MeshBuilderTest
+	{
 		[Test]
 		public void TestChannelEnumerator()
 		{
@@ -20,7 +20,7 @@ namespace UnityTK.Test.Utility
 			channelsArr = new MeshBuilderChannel[] { MeshBuilderChannel.NORMALS, MeshBuilderChannel.TANGENTS, MeshBuilderChannel.UV, MeshBuilderChannel.UV8 };
 
 			CollectionAssert.AreEquivalent(channelsArr, channels.AsEnumerable());
-        }
+		}
 
 		[Test]
 		public void TestBuilding()
@@ -107,6 +107,6 @@ namespace UnityTK.Test.Utility
 
 			}
 			builder.Stop();
-        }
-    }
+		}
+	}
 }

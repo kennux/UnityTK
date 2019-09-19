@@ -8,14 +8,14 @@ using UnityTK.Serialization.XML;
 
 namespace UnityTK.Serialization
 {
-    public struct XMLSerializerParams
-    {
-        public string standardNamespace;
-        public string rootElementName;
-    }
+	public struct XMLSerializerParams
+	{
+		public string standardNamespace;
+		public string rootElementName;
+	}
 
-    public class XMLSerializer : SerializerBase<XMLSerializerParams>
-    {
+	public class XMLSerializer : SerializerBase<XMLSerializerParams>
+	{
 		public const string AttributeInherits = "Inherits";
 		public const string AttributeIdentifier = "Id";
 		public const string AttributeType = "Type";
@@ -24,10 +24,10 @@ namespace UnityTK.Serialization
 
 		public const string TokenNull = "$NULL";
 
-        public XMLSerializer(XMLSerializerParams parameters) : base(parameters) { }
+		public XMLSerializer(XMLSerializerParams parameters) : base(parameters) { }
 
 		private Dictionary<SerializedData, string> filenameMappings = new Dictionary<SerializedData, string>();
-        private List<ISerializableRoot> allParsedObjects = new List<ISerializableRoot>();
+		private List<ISerializableRoot> allParsedObjects = new List<ISerializableRoot>();
 		private Dictionary<string, SerializedData> serializedData = new Dictionary<string, SerializedData>();
 		private void _PreParse(string xmlContent, string filename, XMLSerializerParams parameters, List<SerializedData> result, Dictionary<SerializedData, string> filenameMappings, List<SerializerError> errors)
 		{
@@ -36,7 +36,7 @@ namespace UnityTK.Serialization
 			// Validity checks
 			if (!SerializerValidation.ContainerElementName(parameters, xElement, filename, errors))
 				return;
-            
+			
 			// Iterate over nodes
 			foreach (var xNode in xElement.Nodes())
 			{
@@ -46,9 +46,9 @@ namespace UnityTK.Serialization
 				if (!SerializerValidation.NodeIsElement(parameters, xNode, filename, errors))
 					continue;
 
-                var elementType = SerializerCache.GetSerializableTypeCacheFor(nodeXElement.Name.LocalName, parameters.standardNamespace);
-                if (!SerializerValidation.RootTypeFound(parameters, nodeXElement.Name.LocalName, nodeXElement, elementType, filename, errors))
-                    continue;
+				var elementType = SerializerCache.GetSerializableTypeCacheFor(nodeXElement.Name.LocalName, parameters.standardNamespace);
+				if (!SerializerValidation.RootTypeFound(parameters, nodeXElement.Name.LocalName, nodeXElement, elementType, filename, errors))
+					continue;
 
 				// Prepare
 				var data = new SerializedData(elementType, nodeXElement);
@@ -57,22 +57,22 @@ namespace UnityTK.Serialization
 			}
 		}
 
-        public override void Deserialize(string[] data, string[] filenames, List<ISerializableRoot> externalReferenceables, out List<ISerializableRoot> parsedObjects, out List<SerializerError> errors)
-        {
+		public override void Deserialize(string[] data, string[] filenames, List<ISerializableRoot> externalReferenceables, out List<ISerializableRoot> parsedObjects, out List<SerializerError> errors)
+		{
 			if (externalReferenceables == null)
 				externalReferenceables = new List<ISerializableRoot>();
 
-            parsedObjects = new List<ISerializableRoot>();
-            List<SerializedData> serializedData = ListPool<SerializedData>.Get();
-            errors = ListPool<SerializerError>.Get();
+			parsedObjects = new List<ISerializableRoot>();
+			List<SerializedData> serializedData = ListPool<SerializedData>.Get();
+			errors = ListPool<SerializerError>.Get();
 
 			List<ISerializableRoot> allReferenceables = new List<ISerializableRoot>(externalReferenceables);
 
-            for (int i = 0; i < data.Length; i++)
-            {
-                _PreParse(data[i], filenames[i], parameters, serializedData, filenameMappings, errors);
-            }
-            
+			for (int i = 0; i < data.Length; i++)
+			{
+				_PreParse(data[i], filenames[i], parameters, serializedData, filenameMappings, errors);
+			}
+			
 			// Get prototypes with others inheriting from first
 
 			// Key = type which is inheriting from something, Value = the type its inheriting from
@@ -105,8 +105,8 @@ namespace UnityTK.Serialization
 					if (attribId != null)
 						(obj as ISerializableRoot).identifier = attribId.Value;
 
-                    parsedObjects.Add(obj as ISerializableRoot);
-                    allParsedObjects.Add(obj as ISerializableRoot);
+					parsedObjects.Add(obj as ISerializableRoot);
+					allParsedObjects.Add(obj as ISerializableRoot);
 					allReferenceables.Add(obj as ISerializableRoot);
 				}
 			}
@@ -176,11 +176,11 @@ namespace UnityTK.Serialization
 			// Step 5 - record serialized data in result
 			foreach (var kvp in idMapping)
 				this.serializedData.Add(kvp.Key, kvp.Value);
-        }
+		}
 
-        public override string Serialize(List<ISerializableRoot> roots, out List<SerializerError> errors)
-        {
-            errors = ListPool<SerializerError>.Get();
+		public override string Serialize(List<ISerializableRoot> roots, out List<SerializerError> errors)
+		{
+			errors = ListPool<SerializerError>.Get();
 			XDocument document = new XDocument();
 			XElement rootElement = new XElement(parameters.rootElementName);
 			document.Add(rootElement);
@@ -196,7 +196,7 @@ namespace UnityTK.Serialization
 			}
 
 			return document.ToString();
-        }
-    }
+		}
+	}
 
 }

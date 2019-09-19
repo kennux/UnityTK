@@ -9,45 +9,45 @@ using UnityTK.DataBinding;
 
 namespace UnityTK.Test.DataBinding
 {
-    public class DataBindingTestExample : MonoBehaviour
-    {
-        public float testNumber;
-        public string testStr;
-        public Nest nest = new Nest();
+	public class DataBindingTestExample : MonoBehaviour
+	{
+		public float testNumber;
+		public string testStr;
+		public Nest nest = new Nest();
 
-        public List<Nest> nestArray = new List<Nest>();
+		public List<Nest> nestArray = new List<Nest>();
 
-        [System.Serializable]
-        public class Nest
-        {
-            public string testStr;
-            public float testNumber;
-        }
+		[System.Serializable]
+		public class Nest
+		{
+			public string testStr;
+			public float testNumber;
+		}
 
-        public string Test()
-        {
-            this.testStr = Random.value.ToString();
-            return this.testStr;
-        }
+		public string Test()
+		{
+			this.testStr = Random.value.ToString();
+			return this.testStr;
+		}
 
-        public string Test2()
-        {
-            return Random.value.ToString();
-        }
+		public string Test2()
+		{
+			return Random.value.ToString();
+		}
 
-        public string UnitTest2()
-        {
-            return this.testStr;
-        }
+		public string UnitTest2()
+		{
+			return this.testStr;
+		}
 
-        public void UnitTest()
-        {
-            this.testStr = Random.value.ToString();
-        }
+		public void UnitTest()
+		{
+			this.testStr = Random.value.ToString();
+		}
 
-        public void Test3(string test)
-        {
-            Debug.Log(test);
-        }
-    }
+		public void Test3(string test)
+		{
+			Debug.Log(test);
+		}
+	}
 }

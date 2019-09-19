@@ -64,16 +64,16 @@ namespace UnityTK.Test.Serialization
 		}
 	}
 
-    public class XMLPrototypeParserTest
-    {
-        protected virtual ISerializer CreateSerializer()
-        {
-            return PrototypeParser.CreateXMLSerializer("UnityTK.Test.Serialization");
-        }
+	public class XMLPrototypeParserTest
+	{
+		protected virtual ISerializer CreateSerializer()
+		{
+			return PrototypeParser.CreateXMLSerializer("UnityTK.Test.Serialization");
+		}
 
-        [Test]
-        public void TestCustomPrototypeClass()
-        {
+		[Test]
+		public void TestCustomPrototypeClass()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototypeSpec Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -94,11 +94,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(2.5f, (prototypes[0] as TestPrototype).someRate);
 			Assert.AreEqual(5f, (prototypes[0] as TestPrototype).someInt);
 			Assert.AreEqual(500, (prototypes[0] as TestPrototypeSpec).testField);
-        }
+		}
 
-        [Test]
-        public void TestValueTypes()
-        {
+		[Test]
+		public void TestValueTypes()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -127,11 +127,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(new Vector4(9, 2.5f, 5, 1.25f), (prototypes[0] as TestPrototype).vec4);
 			Assert.AreEqual(new Quaternion(9, 2.5f, 5, 1.25f), (prototypes[0] as TestPrototype).quat);
 			Assert.AreEqual(new Color(0.25f, 1f, 0.5f, 1f), (prototypes[0] as TestPrototype).color);
-        }
+		}
 
-        [Test]
-        public void TestTypeSerializer()
-        {
+		[Test]
+		public void TestTypeSerializer()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<type>TestPrototype+TestBase</type>\n" +
@@ -148,11 +148,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(1, prototypes.Count);
 			
 			Assert.AreSame(typeof(TestPrototype.TestBase), (prototypes[0] as TestPrototype).type);
-        }
+		}
 
-        [Test]
-        public void TestPrototypeRefs()
-        {
+		[Test]
+		public void TestPrototypeRefs()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -175,11 +175,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(2.5f, (prototypes[0] as TestPrototype).someRate);
 			Assert.AreEqual(5f, (prototypes[0] as TestPrototype).someInt);
 			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[1] as TestPrototype).someOtherPrototype);
-        }
+		}
 
-        [Test]
-        public void TestSubData()
-        {
+		[Test]
+		public void TestSubData()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<testBase>\n" +
@@ -198,11 +198,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(1, prototypes.Count);
 			
 			Assert.AreEqual("teststr", (prototypes[0] as TestPrototype).testBase.baseStr);
-        }
+		}
 
-        [Test]
-        public void TestSubDataStruct()
-        {
+		[Test]
+		public void TestSubDataStruct()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<_struct>\n" +
@@ -221,11 +221,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(1, prototypes.Count);
 			
 			Assert.AreEqual(1337, (prototypes[0] as TestPrototype)._struct.test);
-        }
+		}
 
-        [Test]
-        public void TestSubDataCustomType()
-        {
+		[Test]
+		public void TestSubDataCustomType()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<testBase Type=\"SpecializedClass\">\n" +
@@ -246,11 +246,11 @@ namespace UnityTK.Test.Serialization
 			
 			Assert.AreEqual("teststr", (prototypes[0] as TestPrototype).testBase.baseStr);
 			Assert.AreEqual(10, ((prototypes[0] as TestPrototype).testBase as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestCollectionsArray()
-        {
+		[Test]
+		public void TestCollectionsArray()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
@@ -279,11 +279,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr1", collection[0].baseStr);
 			Assert.AreEqual("teststr2", collection[1].baseStr);
 			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestCollectionsList()
-        {
+		[Test]
+		public void TestCollectionsList()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
@@ -312,15 +312,15 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr1", collection[0].baseStr);
 			Assert.AreEqual("teststr2", collection[1].baseStr);
 			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		// Inheritance tests
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		
-        [Test]
-        public void TestInheritance()
-        {
+		[Test]
+		public void TestInheritance()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -373,11 +373,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr", (prototypes[1] as TestPrototype).testBase.baseStr);
 			Assert.AreEqual(1337, (prototypes[1] as TestPrototype)._struct.test);
 			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[1] as TestPrototype).someOtherPrototype);
-        }
+		}
 		
-        [Test]
-        public void TestDeepInheritance()
-        {
+		[Test]
+		public void TestDeepInheritance()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -442,11 +442,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr", (prototypes[2] as TestPrototype).testBase.baseStr);
 			Assert.AreEqual(1337, (prototypes[2] as TestPrototype)._struct.test);
 			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[2] as TestPrototype).someOtherPrototype);
-        }
+		}
 		
-        [Test]
-        public void TestInheritanceSplit()
-        {
+		[Test]
+		public void TestInheritanceSplit()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -502,11 +502,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr", (prototypes[1] as TestPrototype).testBase.baseStr);
 			Assert.AreEqual(1337, (prototypes[1] as TestPrototype)._struct.test);
 			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[1] as TestPrototype).someOtherPrototype);
-        }
+		}
 
-        [Test]
-        public void TestAbstractPrototypes()
-        {
+		[Test]
+		public void TestAbstractPrototypes()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\" Abstract=\"True\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -525,15 +525,15 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(1, prototypes.Count);
 			
 			Assert.AreEqual(2.5f, (prototypes[0] as TestPrototype).someRate);
-        }
+		}
 
 		/////////////////////////////////////////////////////////////////////////////////////////////
 		// Override tests
 		/////////////////////////////////////////////////////////////////////////////////////////////
 
-        [Test]
-        public void TestOverrideCombineCollectionsArray()
-        {
+		[Test]
+		public void TestOverrideCombineCollectionsArray()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
@@ -582,11 +582,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr4", collection[3].baseStr);
 			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
 			Assert.AreEqual(11, (collection[3] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestOverrideCombineCollectionsList()
-        {
+		[Test]
+		public void TestOverrideCombineCollectionsList()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
@@ -635,11 +635,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr4", collection[3].baseStr);
 			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
 			Assert.AreEqual(11, (collection[3] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestImplicitCombineCollectionsArray()
-        {
+		[Test]
+		public void TestImplicitCombineCollectionsArray()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
@@ -707,11 +707,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr4", collection[3].baseStr);
 			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
 			Assert.AreEqual(11, (collection[3] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestImplicitCombineCollectionsList()
-        {
+		[Test]
+		public void TestImplicitCombineCollectionsList()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
@@ -779,11 +779,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr4", collection[3].baseStr);
 			Assert.AreEqual(10, (collection[1] as TestPrototype.SpecializedClass).lul);
 			Assert.AreEqual(11, (collection[3] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestOverrideReplaceCollectionsArray()
-        {
+		[Test]
+		public void TestOverrideReplaceCollectionsArray()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<array>\n" +
@@ -829,11 +829,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr3", collection[0].baseStr);
 			Assert.AreEqual("teststr4", collection[1].baseStr);
 			Assert.AreEqual(11, (collection[1] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestOverrideReplaceCollectionsList()
-        {
+		[Test]
+		public void TestOverrideReplaceCollectionsList()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<list>\n" +
@@ -879,11 +879,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual("teststr3", collection[0].baseStr);
 			Assert.AreEqual("teststr4", collection[1].baseStr);
 			Assert.AreEqual(11, (collection[1] as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestOverridePrototypeRefs()
-        {
+		[Test]
+		public void TestOverridePrototypeRefs()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -910,11 +910,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(5f, (prototypes[0] as TestPrototype).someInt);
 			Assert.AreSame((prototypes[0] as TestPrototype), (prototypes[1] as TestPrototype).someOtherPrototype);
 			Assert.AreSame((prototypes[1] as TestPrototype), (prototypes[2] as TestPrototype).someOtherPrototype);
-        }
+		}
 
-        [Test]
-        public void TestOverrideSubData()
-        {
+		[Test]
+		public void TestOverrideSubData()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<testBase Type=\"SpecializedClass\">\n" +
@@ -942,11 +942,11 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(1, ((prototypes[0] as TestPrototype).testBase as TestPrototype.SpecializedClass).lul);
 			Assert.AreEqual("teststr2", (prototypes[1] as TestPrototype).testBase.baseStr);
 			Assert.AreEqual(1, ((prototypes[1] as TestPrototype).testBase as TestPrototype.SpecializedClass).lul);
-        }
+		}
 
-        [Test]
-        public void TestOverrideSubDataStruct()
-        {
+		[Test]
+		public void TestOverrideSubDataStruct()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\">\n" +
 				"		<_struct>\n" +
@@ -971,11 +971,11 @@ namespace UnityTK.Test.Serialization
 			
 			Assert.AreEqual(1337, (prototypes[0] as TestPrototype)._struct.test);
 			Assert.AreEqual(1338, (prototypes[1] as TestPrototype)._struct.test2);
-        }
+		}
 
-        [Test]
-        public void TestOverrideValueTypes()
-        {
+		[Test]
+		public void TestOverrideValueTypes()
+		{
 			string xml = "<PrototypeContainer>\n" +
 				"	<TestPrototype Id=\"Test\" Abstract=\"True\">\n" +
 				"		<someRate>2.5</someRate>\n" +
@@ -997,6 +997,6 @@ namespace UnityTK.Test.Serialization
 			
 			Assert.AreEqual(4f, (prototypes[0] as TestPrototype).someRate);
 			Assert.AreEqual(5f, (prototypes[0] as TestPrototype).someInt);
-        }
-    }
+		}
+	}
 }

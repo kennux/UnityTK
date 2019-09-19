@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace UnityTK.DataBinding
 {
-    /// <summary>
-    /// Implements a databinding root node that can be used to bind to an arbitrary objects.
+	/// <summary>
+	/// Implements a databinding root node that can be used to bind to an arbitrary objects.
 	/// The bind target will not be settable via the inspector, but instead by directly setting <see cref="target"/>
-    /// </summary>
-    public class DataBindingScriptedRoot : DataBindingReflectionRoot
-    {
+	/// </summary>
+	public class DataBindingScriptedRoot : DataBindingReflectionRoot
+	{
 		/// <summary>
 		/// The bind target type.
 		/// Used for <see cref="GetBoundType"/>
@@ -19,11 +19,11 @@ namespace UnityTK.DataBinding
 		[ReadOnlyInspector]
 		public bool bindTargetTypeValid;
 
-        /// <summary>
-        /// The target object this root is binding to.
+		/// <summary>
+		/// The target object this root is binding to.
 		/// Must be of type <see cref="bindTargetType"/> or <see cref="ArgumentException"/> will be thrown.
-        /// </summary>
-        public object target
+		/// </summary>
+		public object target
 		{
 			get { return _target; }
 			set
@@ -38,8 +38,8 @@ namespace UnityTK.DataBinding
 		private Type bindTargetTypeCache;
 		private string _bindTargetTypeCache;
 
-        protected override Type GetBoundType()
-        {
+		protected override Type GetBoundType()
+		{
 			if ((ReferenceEquals(bindTargetTypeCache, null) || !ReferenceEquals(bindTargetType, _bindTargetTypeCache)) && 
 				!string.IsNullOrEmpty(this.bindTargetType))
 			{
@@ -48,12 +48,12 @@ namespace UnityTK.DataBinding
 			}
 
 			return bindTargetTypeCache;
-        }
+		}
 
-        protected override object GetBoundObject()
-        {
-            return this.target;
-        }
+		protected override object GetBoundObject()
+		{
+			return this.target;
+		}
 
 		private void OnValidate()
 		{

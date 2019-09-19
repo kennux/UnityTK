@@ -20,49 +20,49 @@ namespace UnityTK
 
 		[Header("Only for RectTransforms")]
 		public Vector2 tooltipPivotInRectTransform = new Vector2(.5f,.5f);
-        private bool pointerInside;
-        private string currentText;
+		private bool pointerInside;
+		private string currentText;
 
-        public void OnDisable()
-        {
-            if (pointerInside)
-                Tooltip.Close();
-            pointerInside = false;
-        }
-
-        public void OnEnable()
-        {
-            var rectTransform = this.transform as RectTransform;
-            if (rectTransform == null)
-                return;
-
-            if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, null))
-                OnPointerEnter(null); // Open tooltip
-        }
-
-        public void Update()
-        {
-            if (!pointerInside)
-                return;
-
-            if (currentText != text)
-            {
-                OnPointerExit(null);
-                OnPointerEnter(null);
-            }
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
+		public void OnDisable()
 		{
-            if (string.IsNullOrEmpty(text))
-            {
-                Tooltip.Close();
-                return;
-            }
-            
+			if (pointerInside)
+				Tooltip.Close();
+			pointerInside = false;
+		}
+
+		public void OnEnable()
+		{
+			var rectTransform = this.transform as RectTransform;
+			if (rectTransform == null)
+				return;
+
+			if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, null))
+				OnPointerEnter(null); // Open tooltip
+		}
+
+		public void Update()
+		{
+			if (!pointerInside)
+				return;
+
+			if (currentText != text)
+			{
+				OnPointerExit(null);
+				OnPointerEnter(null);
+			}
+		}
+
+		public void OnPointerEnter(PointerEventData eventData)
+		{
+			if (string.IsNullOrEmpty(text))
+			{
+				Tooltip.Close();
+				return;
+			}
+			
 			var model = TextTooltipViewModel.instance;
 			model.text = text;
-            currentText = text;
+			currentText = text;
 
 			TooltipAnchorTarget target;
 			if (this.anchorToMouse)
@@ -73,13 +73,13 @@ namespace UnityTK
 				target = TooltipAnchorTarget.ForWorldObject(this.transform);
 
 			Tooltip.Open(model, target);
-            pointerInside = true;
-        }
+			pointerInside = true;
+		}
 
 		public void OnPointerExit(PointerEventData eventData)
 		{
 			Tooltip.Close();
-            pointerInside = false;
-        }
+			pointerInside = false;
+		}
 	}
 }

@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace UnityTK.Cameras
 {
-    /// <summary>
-    /// Base class for implementing <see cref="FreeLookCameraMode"/> input modules.
-    /// </summary>
-    public abstract class FreeLookCameraModeInput : CameraModeInput<FreeLookCameraModeInputData>
-    {
-    }
+	/// <summary>
+	/// Base class for implementing <see cref="FreeLookCameraMode"/> input modules.
+	/// </summary>
+	public abstract class FreeLookCameraModeInput : CameraModeInput<FreeLookCameraModeInputData>
+	{
+	}
 }

@@ -15,8 +15,8 @@ namespace UnityTK.BehaviourModel
 
 		public void SetGetter(System.Func<T> getter)
 		{
-            if (this.onGetValue != null)
-                Debug.LogWarning("Model property overridden from " + this.onGetValue + " to " + getter);
+			if (this.onGetValue != null)
+				Debug.LogWarning("Model property overridden from " + this.onGetValue + " to " + getter);
 
 			this.onGetValue = getter;
 		}

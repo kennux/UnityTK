@@ -11,7 +11,7 @@ using System.Linq;
 namespace UnityTK.Test.Serialization
 {
 #pragma warning disable CS0659 // Warning about overriding equals but not GetHashCode, this doesn't really matter for this test.
-    public class XMLSerializationTest
+	public class XMLSerializationTest
 	{
 		class TestRoot : ISerializableRoot
 		{
@@ -201,7 +201,7 @@ namespace UnityTK.Test.Serialization
 				error.DoUnityDebugLog();
 		}
 
-        [Test]
+		[Test]
 		public void TestValueTypes()
 		{
 			var serializer = CreateSerializer();
@@ -222,7 +222,7 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(test, roots[0]);
 		}
 
-        [Test]
+		[Test]
 		public void TestCollections()
 		{
 			var serializer = CreateSerializer();
@@ -260,7 +260,7 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(132, (roots[0] as CollectionTest).test3[1]);
 		}
 
-        [Test]
+		[Test]
 		public void TestNonSerialized()
 		{
 			var serializer = CreateSerializer();
@@ -285,7 +285,7 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual((roots[0] as NonSerializedTest).integer3, -1);
 		}
 
-        [Test]
+		[Test]
 		public void TestAlwaysSerialized()
 		{
 			var serializer = CreateSerializer();
@@ -313,7 +313,7 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual((roots[0] as AlwaysSerializedTest).test, null);
 		}
 
-        [Test]
+		[Test]
 		public void TestReferences()
 		{
 			var serializer = CreateSerializer();
@@ -347,7 +347,7 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(test2, roots[1]);
 		}
 
-        [Test]
+		[Test]
 		public void TestExternalReferences()
 		{
 			var serializer = CreateSerializer();
@@ -376,7 +376,7 @@ namespace UnityTK.Test.Serialization
 			Assert.IsTrue(ReferenceEquals(test2.someRef, test));
 		}
 
-        [Test]
+		[Test]
 		public void TestPolymorphism()
 		{
 			var serializer = CreateSerializer();
@@ -411,6 +411,6 @@ namespace UnityTK.Test.Serialization
 			Assert.AreEqual(test, roots[0]);
 			Assert.AreEqual(test2, roots[1]);
 		}
-    }
+	}
 #pragma warning restore CS0659
 }

@@ -149,8 +149,8 @@ namespace UnityTK
 			{
 				// Validate
 				var go = Instantiate(prefab.gameObject);
-                go.transform.SetParent(this.contentAnchor, false);
-                go.SetActive(false);
+				go.transform.SetParent(this.contentAnchor, false);
+				go.SetActive(false);
 
 				instance = go.GetComponent<DataBindingScriptedRoot>();
 				this.contentPrefabInstances.Add(prefab, instance);

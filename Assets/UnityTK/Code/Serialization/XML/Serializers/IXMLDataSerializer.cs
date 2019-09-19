@@ -17,13 +17,13 @@ namespace UnityTK.Serialization.XML
 		/// </summary>
 		bool CanBeUsedFor(Type type);
 
-        /// <summary>
-        /// Deserializes an object of the specified type using the xml element passed in.
-        /// </summary>
-        /// <param name="type">The type to deserialize value to.</param>
-        /// <param name="value">The serialized value read from XML</param>
-        /// <param name="parameters">Current serializer parameters</param>
-        /// <returns>The deserialized object</returns>
+		/// <summary>
+		/// Deserializes an object of the specified type using the xml element passed in.
+		/// </summary>
+		/// <param name="type">The type to deserialize value to.</param>
+		/// <param name="value">The serialized value read from XML</param>
+		/// <param name="parameters">Current serializer parameters</param>
+		/// <returns>The deserialized object</returns>
 		object Deserialize(Type type, XElement value, XMLSerializerParams parameters);
 
 		/// <summary>

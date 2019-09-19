@@ -9,12 +9,12 @@ namespace UnityTK
 	public class SceneField
 	{
 #pragma warning disable CS0649 // We'll be accessing this field by reflection so its actually intended that it will never be assigned to directly
-        [SerializeField]
+		[SerializeField]
 		private Object m_SceneAsset;
 		[SerializeField]
 		private string m_SceneName = "";
 #pragma warning restore CS0649
-        public string SceneName
+		public string SceneName
 		{
 			get { return m_SceneName; }
 		}
