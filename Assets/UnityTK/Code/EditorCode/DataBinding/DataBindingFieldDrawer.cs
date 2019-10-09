@@ -22,7 +22,14 @@ namespace UnityTK.DataBinding.Editor
 				filterType = ((IDataBinding)property.serializedObject.targetObject).GetBindTargetType();
 			}
 
-			var parent = property.serializedObject.FindProperty(attrib.parentNodeField).objectReferenceValue;
+			object parent;
+			if (property.propertyPath.Contains('.'))
+			{
+				string propertyPath = property.propertyPath.Substring(0, property.propertyPath.LastIndexOf('.')) + "." + attrib.parentNodeField;
+				parent = property.serializedObject.FindProperty(propertyPath).objectReferenceValue;
+			}
+			else
+				parent = property.serializedObject.FindProperty(attrib.parentNodeField).objectReferenceValue;
 			if (!(parent is DataBindingNode))
 			{
 				if (!Essentials.UnityIsNull(parent))
