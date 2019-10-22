@@ -51,6 +51,17 @@ namespace UnityTK.DataBinding
 		[DataBindingField]
 		public string field;
 
+		/// <summary>
+		/// Whether or not to use <see cref="elementPool"/>.
+		/// If set to false, elements will always be instantiated / destroyed when needed.
+		/// </summary>
+		public bool poolElements = true;
+
+		/// <summary>
+		/// Pool of instances of <see cref="elementPrefab"/>
+		/// </summary>
+		private Stack<DataBindingCollectionElement> elementPool = new Stack<DataBindingCollectionElement>();
+
 		public override DataBinding parent
 		{
 			get { return this.parentNode; }
@@ -157,7 +168,13 @@ namespace UnityTK.DataBinding
 		{
 			for (int i = 0; i < this.instances.Count; i++)
 			{
-				Destroy(this.instances[i].element.gameObject);
+				if (poolElements)
+				{
+					elementPool.Push(this.instances[i].element);
+					this.instances[i].element.gameObject.SetActive(false);
+				}
+				else
+					Destroy(this.instances[i].element.gameObject);
 				elementInstancePool.Return(this.instances[i]);
 			}
 
@@ -185,10 +202,15 @@ namespace UnityTK.DataBinding
 		/// </summary>
 		private DataBindingCollectionElement CreateElement(object obj)
 		{
+			if (elementPool.Count > 0)
+			{
+				var elem = elementPool.Pop();
+				elem.gameObject.SetActive(true);
+				return elem;
+			}
+
 			var go = Instantiate(this.elementPrefab.gameObject, this.transform);
-
 			go.SetActive(true);
-
 			return go.GetComponent<DataBindingCollectionElement>();
 		}
 
