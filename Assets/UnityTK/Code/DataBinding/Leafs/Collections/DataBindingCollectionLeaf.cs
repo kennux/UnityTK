@@ -205,6 +205,18 @@ namespace UnityTK.DataBinding
 			if (elementPool.Count > 0)
 			{
 				var elem = elementPool.Pop();
+
+				// Set sibling index similar to as when it would be instantiated
+				int lastSibling = 0;
+				foreach (Transform child in transform)
+				{
+					if (child.gameObject.activeInHierarchy && lastSibling < child.GetSiblingIndex())
+					{
+						lastSibling = child.GetSiblingIndex();
+					}
+				}
+				elem.transform.SetSiblingIndex(lastSibling + 1);
+
 				elem.gameObject.SetActive(true);
 				return elem;
 			}
