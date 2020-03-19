@@ -1,0 +1,14 @@
+{
+  "name": "net.kennux.unitytk",
+  "version": "0.1.0",
+  "displayName": "UnityTK",
+  "description": "A library of scripts for Unity Engine projects",
+  "unity": "2019.3",
+  "dependencies": {
+ },
+  "author": {
+    "name": "Kenneth Ellersdorfer",
+    "email": "kennux@ymail.com",
+    "url": "https://www.kennux.net"
+  }
+}
